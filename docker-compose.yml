@@ -1,0 +1,10 @@
+services:
+  python:
+    build: ./
+    command: python3 ./main.py
+    volumes:
+      - ./:/usr/src/app
+  # installer:
+  #   image: 'cdrx/pyinstaller-windows'
+  #   volumes:
+  #     - ./:/src
