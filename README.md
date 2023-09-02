@@ -22,10 +22,12 @@ In windows, this can be done by opening the folder in explorer then right-click 
 
 If this is the first time running the program, you will need to install it's dependencies. Type:
 > pip install --no-cache-dir -r requirements.txt
+
 Into the terminal and press enter.
 
 When that's done, enter:
 > python3 ./main.py
+
 To start the program.
 
 ## Docker
@@ -39,6 +41,7 @@ When that's up and running, open your terminal to the same folder as "main.py".
 In windows, this can be done by opening the folder in explorer then right-click -> "Open in Terminal"
 Now just enter:
 > docker-compose run --rm -it python python3 ./main.py
+
 To start the program.
 
 # Using the program
@@ -54,6 +57,6 @@ The id request refers to the card's passcode. There are many ways to find these,
 * The 'X' in the URl is the card's id.
 
 ### Example
-If "3-Hump Lacooda" is your DM, first you would go to: https://ygoprodeck.com/card/3-hump-lacooda-7280
-The "Image (.jpg)" should lead you to: https://images.ygoprodeck.com/images/cards/86988864.jpg
-The card's id is: **86988864**
+* If "3-Hump Lacooda" is your DM, first you would go to: https://ygoprodeck.com/card/3-hump-lacooda-7280
+* The "Image (.jpg)" should lead you to: https://images.ygoprodeck.com/images/cards/86988864.jpg
+* The card's id is: **86988864**
