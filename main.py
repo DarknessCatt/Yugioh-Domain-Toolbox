@@ -4,14 +4,18 @@ from classes.card import Card
 from classes.domain import Domain
 from classes.sql import CardsCDB
 
+# Runs setups for classes which require external classes.
 def setup():
     Archetypes.Setup()
     AttributesAndRaces.Setup()
     CardsCDB.Setup()
 
+# Main function. Runs when main.py is called.
 def main():
+    # Step 0) Setup stuff.
     setup()
    
+   # Step 1) Get the Deckmaster.
     print("Please type the Deck Master's id:")
     answer = input()
 
@@ -33,8 +37,8 @@ def main():
         print("Exiting.\n")
         return
 
+    # Step 2) Get the domain.
     card = Card(data)
-
     domain = Domain(card)
     print(domain)
     
@@ -72,6 +76,7 @@ def main():
             card = Card(row)
             domain.AddCardToDomain(card)
 
+    # Step 3) Export the domain.
     print("\nDo you want me to export the list to:")
     print("(1) YGOPRODeck's Collection CSV, or")
     print("(2) EDOPro's Banlist, or")

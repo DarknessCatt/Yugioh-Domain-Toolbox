@@ -6,7 +6,21 @@ The CSV can be loaded into a YGOPRODeck's Collection while th IFlist can be adde
 These are terms refer to the Yugioh's Domain Format.
 More info can be found in their discord's server: https://discord.gg/dpUsHxqu
 
-# How to start:
+# Using the executable and caveats:
+Windows executables for this program are available in [Releases](https://github.com/DarknessCatt/YGODomainGenerator/releases).
+It should be ready to use once downloaded, just run it (check the "Using the program") section below.
+
+However, due to current limitations, the executables use local files for card information instead of downloading the most updated version available. This can potentially cause outdated domains if the release is too old.
+
+There are two ways to deal with this:
+* Wait for a new release.
+* Download and replace the files yourself. They are located in the folder "references" next to the exe.
+    * Make sure the filename is the same otherwise it won't work.
+    * [cards.cdb](https://github.com/ProjectIgnis/BabelCDB/raw/master/cards.cdb)
+    * [common.h](https://raw.githubusercontent.com/ProjectIgnis/EDOPro/master/gframe/common.h)
+    * [strings.conf](https://raw.githubusercontent.com/ProjectIgnis/EDOPro/master/config/strings.conf)
+
+# How to run it without the executable:
 First, you will need to download these files.
 You can either git clone the repository (if you know how) or download it as a zip by clicking the green button "Code" -> "Download Zip"
 
