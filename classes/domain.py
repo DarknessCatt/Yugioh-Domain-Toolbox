@@ -35,10 +35,11 @@ class Domain:
         # Find exact battle stats mentions on the card, like the Monarch's Squires.
         BATTLE_STATS = "([0-9]{1,4} ATK\/[0-9]{1,4} DEF|ATK [0-9]{1,4}\/DEF [0-9]{1,4}|[0-9]{1,4} ATK and [0-9]{1,4} DEF)"
         # Find all the races (types) mentioned in the desc
-        RACES = "({})".format("|".join(AttributesAndRaces.races.keys()))
+        # The list is manually typed because in the ref file they are named "beastwarrior" / "divine" and so on, which would provide no matches.
+        RACES = "(aqua|beast-warrior|beast|cyberse|dinosaur|divine-beast|dragon|fairy|fiend|fish|insect|machine|plant|psychic|pyro|reptile|rock|sea serpent|spellcaster|thunder|warrior|winged beast|wyrm|zombie)"
         # Find all the attributes mentioned in the desc 
         ATTRIBUTES = "({})".format("|".join(AttributesAndRaces.attributes.keys()))
-
+        
         text = self.DM.desc
         _, text = Domain.CleanDesc(text, NOT_TREATED_AS)
         mentions, text = Domain.CleanDesc(text, MENTIONED_QUOTES)
@@ -62,8 +63,9 @@ class Domain:
             self.battleStats.add(tuple([int(r.group(1)), int(r.group(2))]))
 
         # Add the HEXCODE of the attributes.
-        for attribute in races:
-            self.races.add(AttributesAndRaces.races[attribute])
+        for race in races:
+            #remove non character so beast-warrior -> beastwarrior, winged beast -> wingedbeast and so on.
+            self.races.add(AttributesAndRaces.races[re.sub("\W", "", race)])
 
         # Add the HEXCODE of the races.
         for attribute in attributes:
