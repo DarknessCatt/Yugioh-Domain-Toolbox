@@ -5,7 +5,7 @@ import requests
 
 from constants.urlReference import URLs
 
-# Handles the download of files.
+# Handles the download of files used in the program.
 class DownloadManager:
     FILES_BASE_FOLDER = "references"
     CARD_INFO_FOLDER = "cardinfo"
@@ -31,6 +31,8 @@ class DownloadManager:
 
     @staticmethod
     def DownloadFiles() -> None:
+        print("Downloading files.")
+
         # Delete reference folder if it exists.
         if(DownloadManager.DoesReferenceFolderExist()):
             shutil.rmtree(DownloadManager.FILES_BASE_FOLDER)
@@ -64,3 +66,5 @@ class DownloadManager:
                     r = requests.get(info["download_url"])
                     f.write(r.content)
                     f.seek(0)
+        
+        print("Done.\n")

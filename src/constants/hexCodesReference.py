@@ -29,6 +29,7 @@ class Archetypes:
     # populates the dictionary.
     @staticmethod
     def Setup() -> None:
+        print("Setting up Archetype Reference.")
         with open(os.path.join(DownloadManager.GetCardInfoFolder(), DownloadManager.ARCHETYPES_FILENAME), "r", encoding="utf8") as f:
             text = f.read()
             Archetypes.ReadSection(
@@ -37,6 +38,7 @@ class Archetypes:
                 Archetypes.ARCHETYPE_LINE,
                 Archetypes.archetypes
             )
+        print("Done.\n")
 
 # Reference class for all the attributes and races HEXCODES
 # Could have a separate class for each one, but they are both retrieved from the same file.
@@ -76,16 +78,20 @@ class AttributesAndRaces:
         with open(os.path.join(DownloadManager.GetCardInfoFolder(), DownloadManager.ATTR_RACES_FILENAME), "r", encoding="utf8") as f:
             text = f.read()
 
+            print("Setting up Attributes Reference.")
             AttributesAndRaces.ReadSection(
                 text,
                 AttributesAndRaces.ATTRIBUTES_HEADER, 
                 AttributesAndRaces.ATTRIBUTES_LINE,
                 AttributesAndRaces.attributes
             )
+            print("Done.\n")
             
+            print("Setting up Types Reference.")
             AttributesAndRaces.ReadSection(
                 text,
                 AttributesAndRaces.RACES_HEADER,
                 AttributesAndRaces.RACES_LINE,
                 AttributesAndRaces.races
             )
+            print("Done.\n")

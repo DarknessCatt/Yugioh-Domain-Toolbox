@@ -16,15 +16,73 @@ class CardsCDB:
     to let them handle what and which order it was retrieved. I agree it's debatable, might change in the future.
     * Races -> Monster types (warrior, zombie, etc) are called races in the DB.
     """
+    # The prefix used in the file with all the merged CDBs
+    MERGED_CDB_PREFIX = 'merged_'
+    
     db = None
     cursor = None
+
+    # Merges all CDB files into a single database.
+    # Used since some pre-release cards are in separate files.
+    @staticmethod
+    def MergeCDBs() -> None:
+        print("Merging all CDBs into a single file.")
+
+        db = sqlite3.connect(os.path.join(DownloadManager.GetCdbFolder(), DownloadManager.CARDS_CDB))
+        cursor = db.cursor()
+
+        # Retrieve all tables and columns from the CDB
+        queryTables = "SELECT name FROM sqlite_master WHERE type='table';"
+        tablesList = cursor.execute(queryTables).fetchall()
+
+        tableColumns = {}
+
+        for table in tablesList:
+            queryColumn = "PRAGMA table_info({})".format(table[0])
+            columns = cursor.execute(queryColumn).fetchall()
+            # Creates a list of (?, ?, ?, ... , ?) to be used when inserting values in the cdb
+            tableColumns[table[0]] = ','.join(['?'] * len(columns))
+
+        for file in os.listdir(DownloadManager.GetCdbFolder()):
+            if(file != DownloadManager.CARDS_CDB and file.endswith(".cdb")):
+                tempDB = sqlite3.connect(os.path.join(DownloadManager.GetCdbFolder(), file))
+                tempCursor = tempDB.cursor()
+
+                for table, column in tableColumns.items():
+                    selectQuery = "SELECT * FROM {}".format(table)
+                    insertQuery = "INSERT OR IGNORE INTO {} VALUES ({})"
+                    for row in tempCursor.execute(selectQuery).fetchall():
+                        query = insertQuery.format(table, column)
+                        cursor.execute(query, row)
+
+                tempDB.close()
+        
+        # Commiting save this to the current file (cards.cdb)
+        db.commit()
+        db.close()
+
+        # Rename cards.cdb into merged_cards.cdb
+        os.rename(
+            os.path.join(DownloadManager.GetCdbFolder(), DownloadManager.CARDS_CDB),
+            os.path.join(DownloadManager.GetCdbFolder(), CardsCDB.MERGED_CDB_PREFIX + DownloadManager.CARDS_CDB)
+        )
+    
 
     # Prepares the database by downloading the cards.cdb from github and reading it.
     @staticmethod
     def Setup() -> None:
-        CardsCDB.db = sqlite3.connect(os.path.join(DownloadManager.GetCdbFolder(), DownloadManager.CARDS_CDB))
+        print("Setting up card database.")
+
+        mergedCdbPath = os.path.join(DownloadManager.GetCdbFolder(), CardsCDB.MERGED_CDB_PREFIX + DownloadManager.CARDS_CDB)
+
+        if(not os.path.exists(mergedCdbPath)):
+            CardsCDB.MergeCDBs()
+
+        CardsCDB.db = sqlite3.connect(mergedCdbPath)
         CardsCDB.cursor = CardsCDB.db.cursor()
-    
+
+        print("Done.\n")
+
     # Gets a single monster through it's id (passcode)
     @staticmethod
     def GetMonsterById(id: int) -> any:
