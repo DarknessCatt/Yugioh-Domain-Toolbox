@@ -91,6 +91,14 @@ class CardsCDB:
 
         print("Done.\n")
 
+    # Closes the db, if any.
+    @staticmethod
+    def CloseDB() -> None:
+        if(CardsCDB.db != None):
+            CardsCDB.cursor = None
+            CardsCDB.db.close()
+            CardsCDB.db = None
+
     # Gets a single monster through it's id (passcode)
     @staticmethod
     def GetMonsterById(id: int) -> any:
