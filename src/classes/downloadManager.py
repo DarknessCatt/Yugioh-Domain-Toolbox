@@ -1,4 +1,3 @@
-
 import os
 import shutil
 import requests
@@ -18,18 +17,23 @@ class DownloadManager:
     RELEASE_CDB = "release-"
 
     @staticmethod
+    # Returns true if the reference folder exists.
+    # Sort of "check" to see if the files have been downloaded.
     def DoesReferenceFolderExist() -> bool:
         return os.path.exists(DownloadManager.FILES_BASE_FOLDER)
 
     @staticmethod
+    # Returns the path to the folder with cards information.
     def GetCardInfoFolder() -> str:
         return os.path.join(DownloadManager.FILES_BASE_FOLDER, DownloadManager.CARD_INFO_FOLDER)
     
     @staticmethod
+    # Returns the path to the folder with the cdbs.
     def GetCdbFolder() -> str:
         return os.path.join(DownloadManager.FILES_BASE_FOLDER, DownloadManager.CDB_FOLDER)
 
     @staticmethod
+    # (Re)Downloads all files needed.
     def DownloadFiles() -> None:
         print("Downloading files.")
 

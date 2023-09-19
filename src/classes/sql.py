@@ -28,6 +28,7 @@ class CardsCDB:
     def MergeCDBs() -> None:
         print("Merging all CDBs into a single file.")
 
+        # Since the cards.cdb is always the biggest, we will use it as a base
         db = sqlite3.connect(os.path.join(DownloadManager.GetCdbFolder(), DownloadManager.CARDS_CDB))
         cursor = db.cursor()
 
@@ -35,6 +36,7 @@ class CardsCDB:
         queryTables = "SELECT name FROM sqlite_master WHERE type='table';"
         tablesList = cursor.execute(queryTables).fetchall()
 
+        # Dict of tables into their insertion queries
         tableColumns = {}
 
         for table in tablesList:
@@ -44,18 +46,26 @@ class CardsCDB:
             tableColumns[table[0]] = ','.join(['?'] * len(columns))
 
         for file in os.listdir(DownloadManager.GetCdbFolder()):
+            # For each CDB file other than cards.cdb
             if(file != DownloadManager.CARDS_CDB and file.endswith(".cdb")):
+                # Create a temp database connection
                 tempDB = sqlite3.connect(os.path.join(DownloadManager.GetCdbFolder(), file))
                 tempCursor = tempDB.cursor()
 
+                # For each table in cards.cdb
                 for table, column in tableColumns.items():
                     selectQuery = "SELECT * FROM {}".format(table)
                     insertQuery = "INSERT OR IGNORE INTO {} VALUES ({})"
+                    # For each row in the same table
                     for row in tempCursor.execute(selectQuery).fetchall():
+                        # Insert it into the cards.cdb
                         query = insertQuery.format(table, column)
                         cursor.execute(query, row)
 
                 tempDB.close()
+
+                # Delete CDB after it has been merged
+                os.remove(os.path.join(DownloadManager.GetCdbFolder(), file))
         
         # Commiting save this to the current file (cards.cdb)
         db.commit()
@@ -66,15 +76,13 @@ class CardsCDB:
             os.path.join(DownloadManager.GetCdbFolder(), DownloadManager.CARDS_CDB),
             os.path.join(DownloadManager.GetCdbFolder(), CardsCDB.MERGED_CDB_PREFIX + DownloadManager.CARDS_CDB)
         )
-    
 
-    # Prepares the database by downloading the cards.cdb from github and reading it.
+    # Prepares the database by reading the cdb files.
     @staticmethod
     def Setup() -> None:
         print("Setting up card database.")
 
         mergedCdbPath = os.path.join(DownloadManager.GetCdbFolder(), CardsCDB.MERGED_CDB_PREFIX + DownloadManager.CARDS_CDB)
-
         if(not os.path.exists(mergedCdbPath)):
             CardsCDB.MergeCDBs()
 

@@ -8,4 +8,3 @@ services:
     build: ./pyinstaller
     volumes:
       - ./src:/src
-    command: [echo, test] #"cd ./test && pyinstaller -F ../main.py"]
