@@ -1,3 +1,5 @@
+from sys import exit
+
 from constants.hexCodesReference import AttributesAndRaces, Archetypes
 
 from classes.downloadManager import DownloadManager
