@@ -60,6 +60,7 @@ class CommandLineInterface:
                 return
             
             elif(answer == '2'):
+                CardsCDB.CloseDB()
                 DownloadManager.DownloadFiles()
                 self.Setup()
                 continue

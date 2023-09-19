@@ -95,11 +95,13 @@ class Domain:
         self.cards = []
 
     def __str__(self) -> str:
+        print(self.setcodes)
+
         return "\n".join([
             self.DM.name,
-            "Attributes:" + str(self.attributes),
-            "Types:" + str(self.races),
-            "Archetypes:" + str(self.setcodes),
+            "Attributes:" + str([AttributesAndRaces.reverseAttr[code] for code in self.attributes]),
+            "Types:" + str([AttributesAndRaces.reverseRace[code] for code in self.races]),
+            "Archetypes:" + str([Archetypes.reverseArch[code] for code in self.setcodes]),
             "ATK/DEF: " + str(self.battleStats),
             "Named Cards: " + str(self.namedCards)
         ])
@@ -131,7 +133,7 @@ class Domain:
                 domainSubSetcode = domainSetcode & Card.HEX_SUB_SETCODE
 
                 # Alright, the archetype check is a bit confusing at first.
-                # Basically, this allows subarchetypes to be included into the base archtype, but not vice-versa;
+                # Basically, this allows subarchetypes to be included into the base archetype, but not vice-versa;
                 # So "Gem-" deckmaster will add "Gem-Knight" monsters, but not the other way around.
                 
                 # This is done in two steps: 
