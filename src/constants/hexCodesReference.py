@@ -12,6 +12,7 @@ class Archetypes:
 
     # A dictionary with the archetypes name as key and the HEXCODE as value.
     archetypes = {}
+    # Reverse lookup of the archetypes dict
     reverseArch = {}
 
     # Reads the provided text and retrives information from it
@@ -65,10 +66,12 @@ class AttributesAndRaces:
 
     # A dictionary with the attributes name as key and the HEXCODE as value.
     attributes = {}
+    # Reverse lookup of the attributes dict
     reverseAttr = {}
 
     # A dictionary with the types name as key and the HEXCODE as value.
     races = {}
+    # Reverse lookup of the races dict
     reverseRace = {}
 
     # Reads the provided text and retrives the information from it

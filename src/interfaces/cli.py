@@ -7,7 +7,10 @@ from classes.card import Card
 from classes.domain import Domain
 from classes.sql import CardsCDB
 
+# Class that handles the CLI interface of the program
 class CommandLineInterface:
+
+    # Common messages used throughout the interface
 
     PLEASE_NUMBER = "Please, input only the required number."
     OR_EXIT = "Or \"exit\" (without quotes) to close the program."
@@ -27,6 +30,7 @@ class CommandLineInterface:
         CardsCDB.Setup()
         print("")
 
+    # Requests the user input, adding common prints and exiting if needed.
     def RequestInput(self) -> str:
         print(self.PLEASE_NUMBER)
         print(self.OR_EXIT)
@@ -40,12 +44,14 @@ class CommandLineInterface:
         
         return answer
 
+    # Prints an information message, requiring the user to press enter before continuing
     def InfoMessage(self, msg: str) -> None:
         print(msg)
         print(self.PRESS_ENTER_CONTINUE)
         input()
         print("")
 
+    # The program's intro, which gives the user the option to update files before continuing.
     def IntroInput(self) -> None:
         print("Welcome to Domain Generator!\n")
         while(True):
@@ -70,7 +76,8 @@ class CommandLineInterface:
             else:
                 self.InfoMessage(self.INVALID_ANSWER)
                 continue
-                
+    
+    # Prompt to get the deck master and it's domain.
     def GetDeckMasterAndDomain(self) -> Domain:
         while(True):
             print("What is the Deck Master's id? (passcode).")
@@ -92,7 +99,8 @@ class CommandLineInterface:
                     print(domain)
                     print("")
                     return domain
-                
+    
+    # Prompt that adds cards to a deckmaster's domain.
     def GetDomainCards(self, domain: Domain) -> None:
         print("Retrieving monsters in this domain...")
 
@@ -129,7 +137,8 @@ class CommandLineInterface:
             else:
                 self.InfoMessage(self.INVALID_ANSWER)
                 continue
-            
+    
+    # Prompt to check which formats the user wants to export the domain.
     def ExportDomain(self, domain: Domain) -> None:
         while(True):
             print("\nDo you want me to export the list to:")
@@ -159,6 +168,7 @@ class CommandLineInterface:
                 self.InfoMessage(self.INVALID_ANSWER)
                 continue
 
+    # The main interface loop.
     def StartInterface(self) -> None:
         # Step 0) Setup stuff.
         self.Setup()

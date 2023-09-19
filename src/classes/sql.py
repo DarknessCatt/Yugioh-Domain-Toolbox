@@ -91,6 +91,7 @@ class CardsCDB:
 
         print("Done.\n")
 
+    # Closes the db, if any.
     @staticmethod
     def CloseDB() -> None:
         if(CardsCDB.db != None):
