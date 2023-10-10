@@ -8,7 +8,7 @@ class Card:
     HEX_SUB_SETCODE = int('0xf000',0)
 
     # Data which should be retrieved from the sqlite query.
-    QUERY_VALUES = "datas.id, setcode, atk, def, race, attribute, name, desc from datas NATURAL JOIN texts"
+    QUERY_VALUES = "datas.id, setcode, atk, def, race, attribute, name, desc, type from datas NATURAL JOIN texts"
 
     # Headers used when generating the csv.
     # Having then here is quite debatable, not gonna lie.
@@ -28,6 +28,10 @@ class Card:
 
         self.name = data[6]
         self.desc = data[7]
+
+        # this one is converted to int since we actually need to use it
+        # unlike the other values which are just reference.
+        self.type = int(data[8])
 
         # The setcodes (archetypes) are a bit tricky to retrieve.
         # They are stored in the DB by concatenating hexdecimal values.

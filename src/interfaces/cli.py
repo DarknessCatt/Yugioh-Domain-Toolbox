@@ -141,7 +141,7 @@ class CommandLineInterface:
     # Prompt to check which formats the user wants to export the domain.
     def ExportDomain(self, domain: Domain) -> None:
         while(True):
-            print("\nDo you want me to export the list to:")
+            print("Do you want me to export the list to:")
             print("(1) YGOPRODeck's Collection CSV.")
             print("(2) EDOPro's Banlist.")
             print("(3) Both.")

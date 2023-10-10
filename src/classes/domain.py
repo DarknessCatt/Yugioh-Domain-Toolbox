@@ -95,22 +95,26 @@ class Domain:
         self.cards = []
 
     def __str__(self) -> str:
-        print(self.setcodes)
-
         return "\n".join([
             self.DM.name,
-            "Attributes:" + str([AttributesAndRaces.reverseAttr[code] for code in self.attributes]),
-            "Types:" + str([AttributesAndRaces.reverseRace[code] for code in self.races]),
-            "Archetypes:" + str([Archetypes.reverseArch[code] for code in self.setcodes]),
+            "Attributes: " + str([AttributesAndRaces.reverseAttr[code] for code in self.attributes]),
+            "Types: " + str([AttributesAndRaces.reverseRace[code] for code in self.races]),
+            "Archetypes: " + str([Archetypes.reverseArch[code] for code in self.setcodes]),
             "ATK/DEF: " + str(self.battleStats),
             "Named Cards: " + str(self.namedCards)
         ])
 
     # Adds a card to this domain, no questions asked.
-    # Used for cards with an attribute or race in the domain,
+    # Used mostly for cards with an attribute or race in the domain,
     # since this check is more straightfoward.
+    # Also used for spells / traps.
     def AddCardToDomain(self, card : Card):
         self.cards.append(card)
+
+    # Removes all the spells and traps from the domain.
+    def RemoveSpellsAndTraps(self):
+        # if the first bit of type (card.type & 1) is 1, it means the card is a monster.
+        self.cards = [card for card in self.cards if card.type & 1 == 1]
 
     # Checks if a cards belong in the domain, then adds it if so.
     # Used to check direct name mentions, atk and def, and archetypes.
