@@ -97,9 +97,9 @@ class Domain:
     def __str__(self) -> str:
         return "\n".join([
             self.DM.name,
-            "Attributes:" + str([AttributesAndRaces.reverseAttr[code] for code in self.attributes]),
-            "Types:" + str([AttributesAndRaces.reverseRace[code] for code in self.races]),
-            "Archetypes:" + str([Archetypes.reverseArch[code] for code in self.setcodes]),
+            "Attributes: " + str([AttributesAndRaces.reverseAttr[code] for code in self.attributes]),
+            "Types: " + str([AttributesAndRaces.reverseRace[code] for code in self.races]),
+            "Archetypes: " + str([Archetypes.reverseArch[code] for code in self.setcodes]),
             "ATK/DEF: " + str(self.battleStats),
             "Named Cards: " + str(self.namedCards)
         ])
