@@ -9,6 +9,7 @@ from classes.downloadManager import DownloadManager
 from classes.card import Card
 from classes.domain import Domain
 from classes.sql import CardsCDB
+from classes.domainExporter import DomainExporter
 
 # Class that handles the CLI interface of the program
 class GraphicalUserInterface:
@@ -70,16 +71,16 @@ class GraphicalUserInterface:
     # Prompt to check which formats the user wants to export the domain.
     def ExportDomain(self, domain: Domain, export) -> None:
         if(export == self.EXPORT_OPT_YGOPRO_CSV):
-            domain.CreateCSV()
+            DomainExporter.toCSV(domain)
             return
         
         elif(export == self.EXPORT_OPT_SIMULATOR_BANLIST):
-            domain.CreateIflist()
+            DomainExporter.toIflist(domain)
             return
         
         else:
-            domain.CreateCSV()
-            domain.CreateIflist()
+            DomainExporter.toCSV(domain)
+            DomainExporter.toIflist(domain)
             return
 
     # The main interface loop.
