@@ -7,6 +7,9 @@ from classes.downloadManager import DownloadManager
 class Archetypes:
     # The header of the section containing the archetypes.
     ARCHETYPE_HEADER = "#Official Archetypes\n"
+    ARCHETYPE2_HEADER = "#Official archetypes\n" #yes, the pre-archetype file has a undercase 'a'.
+    PRE_ARCHETYPE_HEADER = "#Pre-release archetypes\n"
+
     # The line that describes the format of each archetype entry in the section.
     ARCHETYPE_LINE = "!setname (\S+) (.*)"
 
@@ -20,6 +23,11 @@ class Archetypes:
     def ReadSection(text:str, header: str, line: str, dic: dict, reverseDic: dict) -> None:
         # First, retrive the entire section of the file.
         section = re.search("{}({}\n)*".format(header, line), text)
+
+        if(section is None or section.group(0) is None):
+            print("Could not find section [{}].".format(header))
+            return
+
         # Remove the header from the section.
         list = section.group(0).strip().removeprefix(header)
         # For each entry in the section, retrieve the archetype's name and hexcode.
@@ -35,8 +43,8 @@ class Archetypes:
         Archetypes.archetypes = {}
         Archetypes.reverseArch = {}
 
+        print("Setting up Archetype Reference.")
         with open(os.path.join(DownloadManager.GetCardInfoFolder(), DownloadManager.ARCHETYPES_FILENAME), "r", encoding="utf8") as f:
-            print("Setting up Archetype Reference.")
             text = f.read()
             Archetypes.ReadSection(
                 text,
@@ -45,7 +53,28 @@ class Archetypes:
                 Archetypes.archetypes,
                 Archetypes.reverseArch
             )
-            print("Done.\n")
+        
+        with open(os.path.join(DownloadManager.GetCardInfoFolder(), DownloadManager.PRE_ARCHETYPES_FILENAME), "r", encoding="utf8") as f:
+            text = f.read()
+
+            Archetypes.ReadSection(
+                text,
+                Archetypes.ARCHETYPE2_HEADER,
+                Archetypes.ARCHETYPE_LINE,
+                Archetypes.archetypes,
+                Archetypes.reverseArch
+            )
+
+            # The Pre-Archetypes has two sections, one for released and other for pre-released.
+            Archetypes.ReadSection(
+                text,
+                Archetypes.PRE_ARCHETYPE_HEADER,
+                Archetypes.ARCHETYPE_LINE,
+                Archetypes.archetypes,
+                Archetypes.reverseArch
+            )
+        
+        print("Done.\n")
 
 # Reference class for all the attributes and races HEXCODES
 # Could have a separate class for each one, but they are both retrieved from the same file.
@@ -78,6 +107,11 @@ class AttributesAndRaces:
     @staticmethod
     def ReadSection(text:str, header: str, line: str, dic: dict, reverseDic: dict) -> None:
         section = re.search("{}({}\n)*".format(header, line), text)
+
+        if(section is None or section.group(0) is None):
+            print("Could not find section [{}].".format(header))
+            return
+
         list = section.group(0).strip().removeprefix(header)
         for entry in list.split("\n"):
             info = re.search(line, entry)

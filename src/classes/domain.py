@@ -100,8 +100,8 @@ class Domain:
             "Attributes: " + str([AttributesAndRaces.reverseAttr[code] for code in self.attributes]),
             "Types: " + str([AttributesAndRaces.reverseRace[code] for code in self.races]),
             "Archetypes: " + str([Archetypes.reverseArch[code] for code in self.setcodes]),
-            "ATK/DEF: " + str(self.battleStats),
-            "Named Cards: " + str(self.namedCards)
+            "ATK/DEF: " + (str(self.battleStats) if len(self.battleStats) > 0 else "{}"),
+            "Named Cards: " + (str(self.namedCards) if len(self.namedCards) > 0 else "{}")
         ])
 
     # Adds a card to this domain, no questions asked.

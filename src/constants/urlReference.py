@@ -4,3 +4,4 @@ class URLs:
     BABEL_CDB = "https://api.github.com/repos/ProjectIgnis/BabelCDB/contents/"
     ATTRIBUTES_AND_RACES = "https://raw.githubusercontent.com/ProjectIgnis/EDOPro/master/gframe/common.h"
     ARCHETYPES = "https://raw.githubusercontent.com/ProjectIgnis/Distribution/master/config/strings.conf"
+    PRE_ARCHETYPES = "https://raw.githubusercontent.com/ProjectIgnis/DeltaPuppetOfStrings/master/strings.conf"
