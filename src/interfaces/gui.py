@@ -107,7 +107,7 @@ class GraphicalUserInterface:
 
             if domain != None:
                 print(domain)
-                idconfirm["text"] = domain.DM.name
+                idconfirm["text"] = str(domain)
                 button["state"] = "normal"
             else:
                 idconfirm["text"] = self.MSG_WAITING_ID
@@ -120,9 +120,8 @@ class GraphicalUserInterface:
             self.ExportDomain(domain, exportchoice.get())
             
             # Notify on export successful.
-            success = tkinter.Label(frame, text = idconfirm["text"] + self.EXPORT_SUCCESS, font=("Arial", 12), fg='#0f0')
+            success = tkinter.Label(frame, text = domain.DM.name + self.EXPORT_SUCCESS, font=("Arial", 12), fg='#0f0')
             success.pack()
-            
             
         # Setup stuff.
         self.Setup()
