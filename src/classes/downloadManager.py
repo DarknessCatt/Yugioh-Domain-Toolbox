@@ -12,6 +12,7 @@ class DownloadManager:
 
     ATTR_RACES_FILENAME = "attrRaces.txt"
     ARCHETYPES_FILENAME = "archetypes.txt"
+    PRE_ARCHETYPES_FILENAME = "archetypes2.txt"
 
     CARDS_CDB = "cards.cdb"
     RELEASE_CDB = "release-"
@@ -58,6 +59,11 @@ class DownloadManager:
         # Download the archetypes file
         with open(os.path.join(cardInfoFolder, DownloadManager.ARCHETYPES_FILENAME), "wb") as f:
             r = requests.get(URLs.ARCHETYPES)
+            f.write(r.content)
+            f.seek(0)
+        
+        with open(os.path.join(cardInfoFolder, DownloadManager.PRE_ARCHETYPES_FILENAME), "wb") as f:
+            r = requests.get(URLs.PRE_ARCHETYPES)
             f.write(r.content)
             f.seek(0)
         

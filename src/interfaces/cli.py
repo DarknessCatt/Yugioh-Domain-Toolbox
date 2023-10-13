@@ -35,7 +35,7 @@ class CommandLineInterface:
         print(self.PLEASE_NUMBER)
         print(self.OR_EXIT)
         
-        answer = input()
+        answer = input().strip()
         print("")
 
         if(answer.lower() == 'exit'):
