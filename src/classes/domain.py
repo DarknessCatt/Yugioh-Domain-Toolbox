@@ -111,11 +111,6 @@ class Domain:
     def AddCardToDomain(self, card : Card):
         self.cards.append(card)
 
-    # Removes all the spells and traps from the domain.
-    def RemoveSpellsAndTraps(self):
-        # if the first bit of type (card.type & 1) is 1, it means the card is a monster.
-        self.cards = [card for card in self.cards if card.type & 1 == 1]
-
     # Checks if a cards belong in the domain, then adds it if so.
     # Used to check direct name mentions, atk and def, and archetypes.
     def CheckAndAddCardToDomain(self, card : Card):
@@ -153,4 +148,13 @@ class Domain:
                 if(cardBaseSetcode == domainBaseSetcode and (cardSubSetcode & domainSubSetcode) == domainSubSetcode):
                     self.AddCardToDomain(card)
                     return
+
+    # Removes all cards from the domain.
+    def RemoveAllCards(self):
+        self.cards = []
+
+    # Removes all the spells and traps from the domain.
+    def RemoveSpellsAndTraps(self):
+        # if the first bit of type (card.type & 1) is 1, it means the card is a monster.
+        self.cards = [card for card in self.cards if card.type & 1 == 1]
                 

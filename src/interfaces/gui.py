@@ -52,6 +52,9 @@ class GraphicalUserInterface:
     
     # Adds cards to a deckmaster's domain.
     def GetDomainCards(self, domain: Domain, spelltrap: str) -> None:
+        # Remove all cards before adding new ones.
+        domain.RemoveAllCards()
+
         data = CardsCDB.GetMonstersByAttributeAndRace(domain)
         for row in data:
             card = Card(row)
