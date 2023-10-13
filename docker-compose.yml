@@ -1,10 +1,8 @@
 services:
   python:
     build: ./src
-    command: python3 ./main.py
+    stdin_open: true
+    tty: true
+    command: python3 ./main.py --cli
     volumes:
       - ./src:/usr/src/app
-  pyinstaller:
-    build: ./pyinstaller
-    volumes:
-      - ./src:/src
