@@ -25,7 +25,7 @@ class GraphicalUserInterface:
     SPELL_OPT_ONLY_MONSTERS = "Domain (won't include spell/traps)"
     SPELL_OPT_ADD_SPELLS = "Domain + spells/traps"
     
-    EXPORT_SUCCESS = "Domain successfully exported!"
+    EXPORT_SUCCESS = "'s Domain successfully exported!"
 
     currDomain = None
 
@@ -116,7 +116,7 @@ class GraphicalUserInterface:
             self.ExportDomain(domain, exportchoice.get())
             
             # Notify on export successful.
-            success = tkinter.Label(frame, text = self.EXPORT_SUCCESS, font=("Arial", 12), fg='#0f0')
+            success = tkinter.Label(frame, text = idconfirm["text"] + self.EXPORT_SUCCESS, font=("Arial", 12), fg='#0f0')
             success.pack()
             
             
