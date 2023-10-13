@@ -35,22 +35,40 @@ class DomainExporter:
         
         print("iflist created!\n")
     
+
+    # Dict of characters we have to replace in YGOPRODECK
+    YGOPRODECK_REPLACEMENTS = {
+        # Symbols
+        "・" : "",
+        "Ω" : "Omega",
+        "\"": "\"\"",
+
+        # Specific Names
+        "Twin Long Rods #1" : "Twin Long Rods 1", # This '#' is missing in YGOProDeck.
+        "Power Pro Knight Girls" : "Power Pro Knight Sisters", # No official translation, it seems.
+        "Falchionβ" : "Falchion Beta", # Not going to replace just the symbol for now due to the extra space.
+    }
+
     # Headers used when generating the csv.
     CSV_HEADERS = ["cardname", "cardq", "cardrarity", "cardcondition", "card_edition", "cardset", "cardcode", "cardid"]
 
     # Convertes the card information into a line for the csv.
     # Thanks @Zefile8 for the original code.
     @staticmethod
-    def cardToCSVLine(card : Card) -> str:
+    def cardToCSVLine(card : Card, pattern : str) -> str:
         data = []
 
-        data.append("\"" + card.name.replace("\"","\"\"") + "\"") #cardname
+        # Replaces the card's name symbols for YGOPRODECK,
+        name = re.sub(pattern, 
+                      lambda m : DomainExporter.YGOPRODECK_REPLACEMENTS.get(m.group(0)),
+                      card.name)
+        data.append("\"" + name + "\"") #cardname
         data.append("1") #cardq
         data.append(str(None)) #cardrarity
         data.append(str(None)) #cardcondition
         data.append(str(None)) #card_edition
         data.append(str(None)) #cardset
-        data.append("DOMAIN") #cardcode
+        data.append("DOMA-" + str(card.id)) #cardcode
         data.append(str(card.id)) #cardid
 
         return ",".join(data)
@@ -61,11 +79,14 @@ class DomainExporter:
     def toCSV(domain : Domain) -> None:
         print("Creating CSV for " + domain.DM.name)
 
+        # Pattern to replace the names in YGOPRODECK
+        pattern = '|'.join(sorted(re.escape(k) for k in DomainExporter.YGOPRODECK_REPLACEMENTS))
+
         data = []
         data.append(",".join(DomainExporter.CSV_HEADERS))
 
         for card in domain.cards:
-            data.append(DomainExporter.cardToCSVLine(card))
+            data.append(DomainExporter.cardToCSVLine(card, pattern))
         
         filename = "[Domain]" + re.sub("\W", "", domain.DM.name) + ".csv"
 
