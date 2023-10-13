@@ -111,11 +111,6 @@ class Domain:
     def AddCardToDomain(self, card : Card):
         self.cards.append(card)
 
-    # Removes all the spells and traps from the domain.
-    def RemoveSpellsAndTraps(self):
-        # if the first bit of type (card.type & 1) is 1, it means the card is a monster.
-        self.cards = [card for card in self.cards if card.type & 1 == 1]
-
     # Checks if a cards belong in the domain, then adds it if so.
     # Used to check direct name mentions, atk and def, and archetypes.
     def CheckAndAddCardToDomain(self, card : Card):
@@ -154,50 +149,12 @@ class Domain:
                     self.AddCardToDomain(card)
                     return
 
-    # Creates an EDOPRO iflist (banlist) containing only the cards within this domain.
-    def CreateIflist(self) -> None:
-        print("Creating iflist for " + self.DM.name)
+    # Removes all cards from the domain.
+    def RemoveAllCards(self):
+        self.cards = []
 
-        # The header for the file
-        IFLIST_HEADER = "#[{}]\n!{}\n$whitelist"
-        # The line for each entry.
-        # Limit all cards to 1 since it's a highlander format.
-        IFLIST_LINE = "{} 1 -- {}"
-
-        title = "[Domain] " + self.DM.name
-        text = [IFLIST_HEADER.format(title, title)]
-
-        for card in self.cards:
-            text.append(IFLIST_LINE.format(card.id, card.name))
-
-        # Removes all now alphabetic characters from the filename to prevent errors.
-        filename = re.sub("\W", "", title) + ".iflist.conf"
-
-        if os.path.exists(filename):
-            os.remove(filename)
-
-        with open(filename, "w", encoding="utf8") as f:
-            f.write("\n".join(text))
-        
-        print("iflist created!")
-    
-    # Creates an CSV for YGOPRODECK containing the cards within this domain.
-    # Thanks @Zefile8 for the original code.
-    def CreateCSV(self) -> None:
-        print("Creating CSV for " + self.DM.name)
-
-        data = []
-        data.append(",".join(Card.CSV_HEADERS))
-
-        for card in self.cards:
-            data.append(card.toCSVLine())
-        
-        filename = "[Domain]" + re.sub("\W", "", self.DM.name) + ".csv"
-
-        if os.path.exists(filename):
-            os.remove(filename)
-
-        with open(filename, "w", encoding="utf8") as f:
-            f.write("\n".join(data))
-
-        print("CSV created!")
+    # Removes all the spells and traps from the domain.
+    def RemoveSpellsAndTraps(self):
+        # if the first bit of type (card.type & 1) is 1, it means the card is a monster.
+        self.cards = [card for card in self.cards if card.type & 1 == 1]
+                

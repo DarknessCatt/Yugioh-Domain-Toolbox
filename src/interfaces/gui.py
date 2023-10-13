@@ -9,6 +9,7 @@ from classes.downloadManager import DownloadManager
 from classes.card import Card
 from classes.domain import Domain
 from classes.sql import CardsCDB
+from classes.domainExporter import DomainExporter
 
 # Class that handles the CLI interface of the program
 class GraphicalUserInterface:
@@ -31,9 +32,7 @@ class GraphicalUserInterface:
 
     # Runs setups for classes which require external classes.
     def Setup(self):
-        if(not DownloadManager.DoesReferenceFolderExist()):
-            DownloadManager.DownloadFiles()
-
+        DownloadManager.DownloadFiles()
         Archetypes.Setup()
         AttributesAndRaces.Setup()
         CardsCDB.Setup()
@@ -51,6 +50,9 @@ class GraphicalUserInterface:
     
     # Adds cards to a deckmaster's domain.
     def GetDomainCards(self, domain: Domain, spelltrap: str) -> None:
+        # Remove all cards before adding new ones.
+        domain.RemoveAllCards()
+
         data = CardsCDB.GetMonstersByAttributeAndRace(domain)
         for row in data:
             card = Card(row)
@@ -70,16 +72,16 @@ class GraphicalUserInterface:
     # Prompt to check which formats the user wants to export the domain.
     def ExportDomain(self, domain: Domain, export) -> None:
         if(export == self.EXPORT_OPT_YGOPRO_CSV):
-            domain.CreateCSV()
+            DomainExporter.toCSV(domain)
             return
         
         elif(export == self.EXPORT_OPT_SIMULATOR_BANLIST):
-            domain.CreateIflist()
+            DomainExporter.toIflist(domain)
             return
         
         else:
-            domain.CreateCSV()
-            domain.CreateIflist()
+            DomainExporter.toCSV(domain)
+            DomainExporter.toIflist(domain)
             return
 
     # The main interface loop.
@@ -103,7 +105,7 @@ class GraphicalUserInterface:
 
             if domain != None:
                 print(domain)
-                idconfirm["text"] = domain.DM.name
+                idconfirm["text"] = str(domain)
                 button["state"] = "normal"
             else:
                 idconfirm["text"] = self.MSG_WAITING_ID
@@ -116,9 +118,8 @@ class GraphicalUserInterface:
             self.ExportDomain(domain, exportchoice.get())
             
             # Notify on export successful.
-            success = tkinter.Label(frame, text = idconfirm["text"] + self.EXPORT_SUCCESS, font=("Arial", 12), fg='#0f0')
+            success = tkinter.Label(frame, text = domain.DM.name + self.EXPORT_SUCCESS, font=("Arial", 12), fg='#0f0')
             success.pack()
-            
             
         # Setup stuff.
         self.Setup()

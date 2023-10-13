@@ -6,6 +6,7 @@ from classes.downloadManager import DownloadManager
 from classes.card import Card
 from classes.domain import Domain
 from classes.sql import CardsCDB
+from classes.domainExporter import DomainExporter
 
 # Class that handles the CLI interface of the program
 class CommandLineInterface:
@@ -152,16 +153,16 @@ class CommandLineInterface:
                 continue
 
             elif(answer == '1'):
-                domain.CreateCSV()
+                DomainExporter.toCSV(domain)
                 return 
             
             elif(answer == '2'):
-                domain.CreateIflist()
+                DomainExporter.toIflist(domain)
                 return
 
             elif(answer == '3'):
-                domain.CreateCSV()
-                domain.CreateIflist()
+                DomainExporter.toCSV(domain)
+                DomainExporter.toIflist(domain)
                 return
 
             else:
