@@ -7,25 +7,25 @@ from classes.domain import Domain
 class DomainExporter:
 
     # The header for the file
-    IFLIST_HEADER = "#[{}]\n!{}\n$whitelist"
+    LFLIST_HEADER = "#[{}]\n!{}\n$whitelist"
     
     # The line for each entry.
     # Limit all cards to 1 since it's a highlander format.
-    IFLIST_LINE = "{} 1 -- {}"
+    LFLIST_LINE = "{} 1 -- {}"
 
-    # Creates an EDOPRO/Ygo Omega iflist (banlist) containing only the cards within this domain.
+    # Creates an EDOPRO/Ygo Omega lflist (banlist) containing only the cards within this domain.
     @staticmethod
-    def toIflist(domain : Domain) -> None:
-        print("Creating iflist for " + domain.DM.name)
+    def toLflist(domain : Domain) -> None:
+        print("Creating lflist for " + domain.DM.name)
 
         title = "[Domain] " + domain.DM.name
-        text = [DomainExporter.IFLIST_HEADER.format(title, title)]
+        text = [DomainExporter.LFLIST_HEADER.format(title, title)]
 
         for card in domain.cards:
-            text.append(DomainExporter.IFLIST_LINE.format(card.id, card.name))
+            text.append(DomainExporter.LFLIST_LINE.format(card.id, card.name))
 
         # Removes all now alphabetic characters from the filename to prevent errors.
-        filename = re.sub("\W", "", title) + ".iflist.conf"
+        filename = re.sub("\W", "", title) + ".lflist.conf"
 
         if os.path.exists(filename):
             os.remove(filename)
@@ -33,7 +33,7 @@ class DomainExporter:
         with open(filename, "w", encoding="utf8") as f:
             f.write("\n".join(text))
         
-        print("iflist created!\n")
+        print("lflist created!\n")
     
 
     # Dict of characters we have to replace in YGOPRODECK

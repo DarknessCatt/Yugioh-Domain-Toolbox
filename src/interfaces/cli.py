@@ -144,7 +144,7 @@ class CommandLineInterface:
         while(True):
             print("Do you want me to export the list to:")
             print("(1) YGOPRODeck's Collection CSV.")
-            print("(2) EDOPro's Banlist.")
+            print("(2) EDOPro's / YGO Omega's Banlist.")
             print("(3) Both.")
             answer = self.RequestInput()
 
@@ -157,12 +157,12 @@ class CommandLineInterface:
                 return 
             
             elif(answer == '2'):
-                DomainExporter.toIflist(domain)
+                DomainExporter.toLflist(domain)
                 return
 
             elif(answer == '3'):
                 DomainExporter.toCSV(domain)
-                DomainExporter.toIflist(domain)
+                DomainExporter.toLflist(domain)
                 return
 
             else:

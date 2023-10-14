@@ -21,7 +21,7 @@ class GraphicalUserInterface:
 
     EXPORT_OPT_YGOPRO_CSV = "YGOPRODeck Collection's CSV."
     EXPORT_OPT_SIMULATOR_BANLIST = "EDOPro / YGO Omega Banlist."
-    EXPORT_OPT_ALL_ABOVE = "All the above."
+    EXPORT_OPT_ALL_ABOVE = "All of the above."
 
     SPELL_OPT_ONLY_MONSTERS = "Domain (won't include spell/traps)"
     SPELL_OPT_ADD_SPELLS = "Domain + spells/traps"
@@ -76,12 +76,12 @@ class GraphicalUserInterface:
             return
         
         elif(export == self.EXPORT_OPT_SIMULATOR_BANLIST):
-            DomainExporter.toIflist(domain)
+            DomainExporter.toLflist(domain)
             return
         
         else:
             DomainExporter.toCSV(domain)
-            DomainExporter.toIflist(domain)
+            DomainExporter.toLflist(domain)
             return
 
     # The main interface loop.
