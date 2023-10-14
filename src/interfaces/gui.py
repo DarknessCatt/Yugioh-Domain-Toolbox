@@ -76,12 +76,12 @@ class GraphicalUserInterface:
             return
         
         elif(export == self.EXPORT_OPT_SIMULATOR_BANLIST):
-            DomainExporter.toIflist(domain)
+            DomainExporter.toLflist(domain)
             return
         
         else:
             DomainExporter.toCSV(domain)
-            DomainExporter.toIflist(domain)
+            DomainExporter.toLflist(domain)
             return
 
     # The main interface loop.
