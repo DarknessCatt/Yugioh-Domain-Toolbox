@@ -1,10 +1,8 @@
 services:
   python:
-    build: ./
-    command: python3 ./main.py
+    build: ./src
+    stdin_open: true
+    tty: true
+    command: python3 ./main.py --cli
     volumes:
-      - ./:/usr/src/app
-  # installer:
-  #   image: 'cdrx/pyinstaller-windows'
-  #   volumes:
-  #     - ./:/src
+      - ./src:/usr/src/app
