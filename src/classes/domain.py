@@ -26,12 +26,12 @@ class Domain:
 
         # Remove the "this card is not treated as ..."
         # Since we already retrieve the information from the DB, this is not useful for us.
-        NOT_TREATED_AS = "\(This card is not treated as an? \".*\" card.\)"
+        NOT_TREATED_AS = "\(This card is not treated as an? \".*?\" card.\)"
         # Finds all direct mentions (words between quotes), which can be either card names or archetypes
         MENTIONED_QUOTES = "\"(.*?)\""
         # Used to remove tokens description from cards.
         # This is important in order to avoid problens in the next two searchs
-        TOKENS = "(\(.*\))"
+        TOKENS = "(\(.*?\))"
         # Find exact battle stats mentions on the card, like the Monarch's Squires.
         BATTLE_STATS = "([0-9]{1,4} ATK\/[0-9]{1,4} DEF|ATK [0-9]{1,4}\/DEF [0-9]{1,4}|[0-9]{1,4} ATK and [0-9]{1,4} DEF)"
         # Find all the races (types) mentioned in the desc
