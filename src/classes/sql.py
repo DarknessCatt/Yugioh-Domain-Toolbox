@@ -106,6 +106,14 @@ class CardsCDB:
         query = query.format(Card.QUERY_VALUES, id)
         return CardsCDB.cursor.execute(query).fetchone()
     
+    # Gets a single monster through it's name
+    # Ideally called by the Domain class when finding cards referenced in the text.
+    @staticmethod
+    def GetMonsterByName(name: str) -> any:
+        query = "SELECT {} WHERE datas.type & 1 = 1 AND datas.type & 16384 = 0 AND texts.name = '{}' COLLATE NOCASE"
+        query = query.format(Card.QUERY_VALUES, name)
+        return CardsCDB.cursor.execute(query).fetchone()
+
     # Gets all monsters within the domain's race and attributes
     @staticmethod
     def GetMonstersByAttributeAndRace(domain: Domain) -> sqlite3.Cursor:
