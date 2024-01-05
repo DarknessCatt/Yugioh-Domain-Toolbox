@@ -90,7 +90,7 @@ class Domain:
         NOT_TREATED_AS = "\(This card is not treated as an? \".*?\" card.\)"
         # Find cards with quotes in their names.
         # This is important since the next search would bug and split the quotes.
-        QUOTE_CARDS = "({})".format("|".join(self.QUOTE_CARDS))
+        QUOTE_CARDS = "\"({})\"".format("|".join(self.QUOTE_CARDS))
         # Finds all direct mentions (words between quotes), which can be either card names or archetypes
         MENTIONED_QUOTES = "\"(.*?)\""
         # Used to remove tokens description from cards.
@@ -120,9 +120,7 @@ class Domain:
         # Mentions is straightfoward: it's either an archetype or an card name.
         # (not always true about the card name, but doesn't lead to problems since it has to be an exact match anyway)
         for mention in mentions:
-            if(mention == ""):
-                continue
-            elif(mention in Archetypes.archetypes):
+            if(mention in Archetypes.archetypes):
                 # Add the HEXCODE of the archetypes.
                 self.setcodes.add(Archetypes.archetypes[mention])
             else:
