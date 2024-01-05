@@ -161,7 +161,10 @@ class Domain:
         # but better safe than sorry.
         self.races.add(AttributesAndRaces.races[AttributesAndRaces.DIVINE])
 
-        self.GetCardDomainFromDesc()
+        # This checks if the monster is a normal ("vanilla") monster.
+        # Flavor text is ignored for domain, so we don't check the description in these cases.
+        if(self.DM.type & 16 == 0):
+            self.GetCardDomainFromDesc()
 
         self.cards = []
 
