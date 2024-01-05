@@ -2,6 +2,7 @@ import re
 
 from constants.hexCodesReference import AttributesAndRaces, Archetypes
 from classes.card import Card
+import classes
 
 # A Deck masters domain, including information as well as the cards themselves.
 class Domain:
@@ -114,8 +115,8 @@ class Domain:
         attributes, text = Domain.CleanDesc(text, ATTRIBUTES)
 
         # These are the names of the cards, so just add them.
-        for card in quotes:
-            self.namedCards.add(card)
+        for quote_card in quotes:
+            self.namedCards.add(quote_card)
 
         # Mentions is straightfoward: it's either an archetype or an card name.
         # (not always true about the card name, but doesn't lead to problems since it has to be an exact match anyway)
@@ -125,6 +126,14 @@ class Domain:
                 self.setcodes.add(Archetypes.archetypes[mention])
             else:
                 self.namedCards.add(mention)
+
+        # Add archetype of named cards.
+        for name in self.namedCards:
+            # Have to do to avoid a circular import.
+            data = classes.sql.CardsCDB.GetMonsterByName(name)
+            if(not data is None):
+                card = Card(data)
+                self.setcodes.update(card.setcodes)
 
         # Retrieve the battle stats (ATK/DEF) mentioned and convert them to ints.
         for stats in battleStats:
