@@ -4,6 +4,7 @@ from tkinter import *
 from tkinter import ttk
 
 from constants.hexCodesReference import AttributesAndRaces, Archetypes
+from constants.programInfo import ProgramInfo
 
 from classes.downloadManager import DownloadManager
 from classes.card import Card
@@ -14,7 +15,7 @@ from classes.domainExporter import DomainExporter
 # Class that handles the CLI interface of the program
 class GraphicalUserInterface:
 
-    TITLE = "Yugioh Domain Generator"
+    TITLE = "Yugioh Domain Generator ({})"
 
     MSG_WAITING_ID = "Waiting for valid monster ID..."
     MSG_ID_MUST_NUMBER = "ID must be a number!"
@@ -127,14 +128,14 @@ class GraphicalUserInterface:
         # TKinter stuff.
         frame = tkinter.Tk()
         frame.geometry("500x450+700+300")
-        frame.title(self.TITLE)
+        frame.title(self.TITLE.format(ProgramInfo.VERSION))
         
         # DeckMaster's ID and input
         idlabel = tkinter.Label(frame, text = "Deck Master's id:", font=("Arial", 12))
         idlabel.pack()
 
         idtext = StringVar()
-        idtext.trace("w", OnIdChanged)
+        idtext.trace_add("write", OnIdChanged)
         id = tkinter.Entry(frame, textvariable=idtext, width=30)
         id.pack()
 

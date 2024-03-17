@@ -1,6 +1,7 @@
 from sys import exit
 
 from constants.hexCodesReference import AttributesAndRaces, Archetypes
+from constants.programInfo import ProgramInfo
 
 from classes.downloadManager import DownloadManager
 from classes.card import Card
@@ -54,7 +55,7 @@ class CommandLineInterface:
 
     # The program's intro, which gives the user the option to update files before continuing.
     def IntroInput(self) -> None:
-        print("Welcome to Domain Generator!\n")
+        print("Welcome to Domain Generator! Version {}\n".format(ProgramInfo.VERSION))
         while(True):
             print("Please choose one option:")
             print("(1) Choose a Deck Master.")
