@@ -56,10 +56,10 @@ class CardsCDB:
                 for table, column in tableColumns.items():
                     selectQuery = "SELECT * FROM {}".format(table)
                     insertQuery = "INSERT OR IGNORE INTO {} VALUES ({})"
+                    query = insertQuery.format(table, column)
                     # For each row in the same table
                     for row in tempCursor.execute(selectQuery).fetchall():
                         # Insert it into the cards.cdb
-                        query = insertQuery.format(table, column)
                         cursor.execute(query, row)
 
                 tempDB.close()
@@ -102,17 +102,19 @@ class CardsCDB:
     # Gets a single monster through it's id (passcode)
     @staticmethod
     def GetMonsterById(id: int) -> any:
-        query = "SELECT {} WHERE datas.type & 1 = 1 AND datas.type & 16384 = 0 AND datas.id = {}"
-        query = query.format(Card.QUERY_VALUES, id)
-        return CardsCDB.cursor.execute(query).fetchone()
+        query = "SELECT {} WHERE datas.type & 1 = 1 AND datas.type & 16384 = 0 AND datas.id = ?"
+        query = query.format(Card.QUERY_VALUES)
+        parameters = (id,)
+        return CardsCDB.cursor.execute(query, parameters).fetchone()
     
     # Gets a single monster through it's name
     # Ideally called by the Domain class when finding cards referenced in the text.
     @staticmethod
     def GetMonsterByName(name: str) -> any:
-        query = "SELECT {} WHERE datas.type & 1 = 1 AND datas.type & 16384 = 0 AND texts.name = '{}' COLLATE NOCASE"
-        query = query.format(Card.QUERY_VALUES, name)
-        return CardsCDB.cursor.execute(query).fetchone()
+        query = "SELECT {} WHERE datas.type & 1 = 1 AND datas.type & 16384 = 0 AND texts.name = ? COLLATE NOCASE"
+        query = query.format(Card.QUERY_VALUES)
+        parameters = (name,)
+        return CardsCDB.cursor.execute(query, parameters).fetchone()
 
     # Gets all monsters within the domain's race and attributes
     @staticmethod
