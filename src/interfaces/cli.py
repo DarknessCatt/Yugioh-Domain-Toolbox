@@ -24,9 +24,7 @@ class CommandLineInterface:
 
     # Runs setups for classes which require external classes.
     def Setup(self):
-        if(not DownloadManager.DoesReferenceFolderExist()):
-            DownloadManager.DownloadFiles()
-
+        DownloadManager.DownloadFiles()
         Archetypes.Setup()
         AttributesAndRaces.Setup()
         CardsCDB.Setup()
@@ -56,28 +54,6 @@ class CommandLineInterface:
     # The program's intro, which gives the user the option to update files before continuing.
     def IntroInput(self) -> None:
         print("Welcome to Domain Generator! Version {}\n".format(ProgramInfo.VERSION))
-        while(True):
-            print("Please choose one option:")
-            print("(1) Choose a Deck Master.")
-            print("(2) Update card database.")
-            answer = self.RequestInput()
-
-            if(not answer.isdigit()):
-                self.InfoMessage(self.NOT_DIGIT_ANSWER)
-                continue
-
-            elif(answer == '1'):
-                return
-            
-            elif(answer == '2'):
-                CardsCDB.CloseDB()
-                DownloadManager.DownloadFiles()
-                self.Setup()
-                continue
-
-            else:
-                self.InfoMessage(self.INVALID_ANSWER)
-                continue
     
     # Prompt to get the deck master and it's domain.
     def GetDeckMasterAndDomain(self) -> Domain:
