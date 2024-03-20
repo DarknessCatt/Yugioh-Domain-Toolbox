@@ -20,12 +20,14 @@ class DownloadManager:
     CARDS_CDB = "cards.cdb"
     RELEASE_CDB = "release-"
 
-    CDBS_FILENAMES = None
-
+    # Checks if the reference folder (where all data is stored)
+    # exists or not.
     @staticmethod
     def DoesReferenceFolderExist() -> bool:
         return os.path.exists(DownloadManager.FILES_BASE_FOLDER)
 
+    # Returns the path to the download information time,
+    # that stores information regarding the download manager.
     @staticmethod
     def GetDownloadInfoFile() -> str:
         return os.path.join(DownloadManager.FILES_BASE_FOLDER, DownloadManager.DOWNLOAD_INFO_FILENAME)
@@ -45,18 +47,20 @@ class DownloadManager:
     def GetMergedCDBPath() -> str:
         return os.path.join(DownloadManager.GetCdbFolder(), DownloadManager.MERGED_CDB_PREFIX + DownloadManager.CARDS_CDB)
 
+    # Returns all cdb files that should be downloaded from BabelCDB.
     @staticmethod
     def GetCdbsForDownload() -> list:
-        if(DownloadManager.CDBS_FILENAMES is None):
-            files = []
-            cdbInfo = requests.get(URLs.BABEL_CDB).json()
-            for info in cdbInfo:
-                fileName = info["name"]
-                if(fileName == DownloadManager.CARDS_CDB or fileName.startswith(DownloadManager.RELEASE_CDB)):
-                    files.append((fileName, info["download_url"]))
-            DownloadManager.CDBS_FILENAMES = files
-        return DownloadManager.CDBS_FILENAMES
+        files = []
+        cdbInfo = requests.get(URLs.BABEL_CDB).json()
+        for info in cdbInfo:
+            fileName = info["name"]
+            if(fileName == DownloadManager.CARDS_CDB or fileName.startswith(DownloadManager.RELEASE_CDB)):
+                files.append((fileName, info["download_url"]))
+        return files
 
+    # Checks if a given file was changed since the last_update.
+    # This is done by pinging github's api to get the last commit that changed this file
+    # and using it's date as reference.
     @staticmethod
     def CheckIfFileWasUpdatedFromURL(URL : str, last_update : datetime) -> bool:
         fileInfo = requests.get(URL).json()
