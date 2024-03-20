@@ -24,9 +24,7 @@ class CommandLineInterface:
 
     # Runs setups for classes which require external classes.
     def Setup(self):
-        if(not DownloadManager.DoesReferenceFolderExist()):
-            DownloadManager.DownloadFiles()
-
+        DownloadManager.DownloadFiles()
         Archetypes.Setup()
         AttributesAndRaces.Setup()
         CardsCDB.Setup()

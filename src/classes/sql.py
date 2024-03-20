@@ -16,8 +16,6 @@ class CardsCDB:
     to let them handle what and which order it was retrieved. I agree it's debatable, might change in the future.
     * Races -> Monster types (warrior, zombie, etc) are called races in the DB.
     """
-    # The prefix used in the file with all the merged CDBs
-    MERGED_CDB_PREFIX = 'merged_'
     
     db = None
     cursor = None
@@ -74,7 +72,7 @@ class CardsCDB:
         # Rename cards.cdb into merged_cards.cdb
         os.rename(
             os.path.join(DownloadManager.GetCdbFolder(), DownloadManager.CARDS_CDB),
-            os.path.join(DownloadManager.GetCdbFolder(), CardsCDB.MERGED_CDB_PREFIX + DownloadManager.CARDS_CDB)
+            DownloadManager.GetMergedCDBPath()
         )
 
     # Prepares the database by reading the cdb files.
@@ -82,7 +80,7 @@ class CardsCDB:
     def Setup() -> None:
         print("Setting up card database.")
 
-        mergedCdbPath = os.path.join(DownloadManager.GetCdbFolder(), CardsCDB.MERGED_CDB_PREFIX + DownloadManager.CARDS_CDB)
+        mergedCdbPath = DownloadManager.GetMergedCDBPath()
         if(not os.path.exists(mergedCdbPath)):
             CardsCDB.MergeCDBs()
 
