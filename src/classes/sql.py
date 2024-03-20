@@ -16,8 +16,6 @@ class CardsCDB:
     to let them handle what and which order it was retrieved. I agree it's debatable, might change in the future.
     * Races -> Monster types (warrior, zombie, etc) are called races in the DB.
     """
-    # The prefix used in the file with all the merged CDBs
-    MERGED_CDB_PREFIX = 'merged_'
     
     db = None
     cursor = None
@@ -56,10 +54,10 @@ class CardsCDB:
                 for table, column in tableColumns.items():
                     selectQuery = "SELECT * FROM {}".format(table)
                     insertQuery = "INSERT OR IGNORE INTO {} VALUES ({})"
+                    query = insertQuery.format(table, column)
                     # For each row in the same table
                     for row in tempCursor.execute(selectQuery).fetchall():
                         # Insert it into the cards.cdb
-                        query = insertQuery.format(table, column)
                         cursor.execute(query, row)
 
                 tempDB.close()
@@ -74,7 +72,7 @@ class CardsCDB:
         # Rename cards.cdb into merged_cards.cdb
         os.rename(
             os.path.join(DownloadManager.GetCdbFolder(), DownloadManager.CARDS_CDB),
-            os.path.join(DownloadManager.GetCdbFolder(), CardsCDB.MERGED_CDB_PREFIX + DownloadManager.CARDS_CDB)
+            DownloadManager.GetMergedCDBPath()
         )
 
     # Prepares the database by reading the cdb files.
@@ -82,7 +80,7 @@ class CardsCDB:
     def Setup() -> None:
         print("Setting up card database.")
 
-        mergedCdbPath = os.path.join(DownloadManager.GetCdbFolder(), CardsCDB.MERGED_CDB_PREFIX + DownloadManager.CARDS_CDB)
+        mergedCdbPath = DownloadManager.GetMergedCDBPath()
         if(not os.path.exists(mergedCdbPath)):
             CardsCDB.MergeCDBs()
 
@@ -102,17 +100,19 @@ class CardsCDB:
     # Gets a single monster through it's id (passcode)
     @staticmethod
     def GetMonsterById(id: int) -> any:
-        query = "SELECT {} WHERE datas.type & 1 = 1 AND datas.type & 16384 = 0 AND datas.id = {}"
-        query = query.format(Card.QUERY_VALUES, id)
-        return CardsCDB.cursor.execute(query).fetchone()
+        query = "SELECT {} WHERE datas.type & 1 = 1 AND datas.type & 16384 = 0 AND datas.id = ?"
+        query = query.format(Card.QUERY_VALUES)
+        parameters = (id,)
+        return CardsCDB.cursor.execute(query, parameters).fetchone()
     
     # Gets a single monster through it's name
     # Ideally called by the Domain class when finding cards referenced in the text.
     @staticmethod
     def GetMonsterByName(name: str) -> any:
-        query = "SELECT {} WHERE datas.type & 1 = 1 AND datas.type & 16384 = 0 AND texts.name = '{}' COLLATE NOCASE"
-        query = query.format(Card.QUERY_VALUES, name)
-        return CardsCDB.cursor.execute(query).fetchone()
+        query = "SELECT {} WHERE datas.type & 1 = 1 AND datas.type & 16384 = 0 AND texts.name = ? COLLATE NOCASE"
+        query = query.format(Card.QUERY_VALUES)
+        parameters = (name,)
+        return CardsCDB.cursor.execute(query, parameters).fetchone()
 
     # Gets all monsters within the domain's race and attributes
     @staticmethod
