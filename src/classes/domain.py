@@ -48,6 +48,8 @@ class Domain:
         "Shiny Black \"C\"",
         "Shiny Black \"C\" Squadder",
         "Sneaky \"C\"",
+        "Spell Card: \"Monster Reborn\"",
+        "Spell Card: \"Soul Exchange\"",
         "Spirit Message \"A\"",
         "Spirit Message \"I\"",
         "Spirit Message \"L\"",
@@ -71,7 +73,7 @@ class Domain:
 
     # Helper method that searchs a text for a pattern then removes the matches from the text,
     # returning both the found values as well as the text after changes.
-    def CleanDesc(text: str, regex: str) -> (list, str):
+    def CleanDesc(text: str, regex: str) -> tuple[list, str]:
         matches = set()
         def sub(match: str) -> str:
             matches.add(match.group(1).lower())
@@ -79,6 +81,10 @@ class Domain:
 
         cleaned = re.sub(regex, sub, text, flags=re.IGNORECASE)
         return matches, cleaned
+
+    # Helper method to extract the base archetype of an archetype.
+    def GetBaseArch(self, arch : int) -> int:
+        return arch & Card.HEX_BASE_SETCODE
 
     # Retrieves the domain information from the DM's description.
     def GetCardDomainFromDesc(self) -> None:
@@ -173,6 +179,11 @@ class Domain:
         if(self.DM.type & 16 == 0):
             self.GetCardDomainFromDesc()
 
+        # Replace all sub-archetypes with their base archetypes,
+        # allowing, for example, a "Black Luster Soldier" ritual monster to
+        # include all "Chaos" monsters like "Chaos Valkyria."
+        self.setcodes = set(map(lambda arch : self.GetBaseArch(arch), self.setcodes))
+
         self.cards = []
 
     def __str__(self) -> str:
@@ -205,28 +216,13 @@ class Domain:
             return
 
         for cardSetcode in card.setcodes:
-            cardBaseSetcode = cardSetcode & Card.HEX_BASE_SETCODE
-            cardSubSetcode = cardSetcode & Card.HEX_SUB_SETCODE
+            # Since all setcodes in the domain are already their base version
+            # (It's converted in the constructor)
+            # We only have to compare it with the base archetype of the current card.
+            cardBaseSetcode = self.GetBaseArch(cardSetcode)
 
             for domainSetcode in self.setcodes:
-                domainBaseSetcode = domainSetcode & Card.HEX_BASE_SETCODE
-                domainSubSetcode = domainSetcode & Card.HEX_SUB_SETCODE
-
-                # Alright, the archetype check is a bit confusing at first.
-                # Basically, this allows subarchetypes to be included into the base archetype, but not vice-versa;
-                # So "Gem-" deckmaster will add "Gem-Knight" monsters, but not the other way around.
-                
-                # This is done in two steps: 
-                # First we check if the base setcode is the same ("Gem-" in this example).
-                # Next, we check if the sub-archetype code is the same, if one exists at all.
-                
-                # The sub-archetype is defined by the 4 first bits of the setcode.
-                # If 0, this means it's not a sub-archetype,
-                # So (cardSubSetcode & domainSubSetcode) always equals 0, which is equal to domainSubSetcode.
-                # Otherwise, (cardSubSetcode & domainSubSetcode) will not be 0 and their sub-archetypes must match.
-
-                # There's a few caveats to it, but that's the concept.
-                if(cardBaseSetcode == domainBaseSetcode and (cardSubSetcode & domainSubSetcode) == domainSubSetcode):
+                if(cardBaseSetcode == domainSetcode):
                     self.AddCardToDomain(card)
                     return
 
