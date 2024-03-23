@@ -48,6 +48,8 @@ class Domain:
         "Shiny Black \"C\"",
         "Shiny Black \"C\" Squadder",
         "Sneaky \"C\"",
+        "Spell Card: \"Monster Reborn\"",
+        "Spell Card: \"Soul Exchange\"",
         "Spirit Message \"A\"",
         "Spirit Message \"I\"",
         "Spirit Message \"L\"",
@@ -71,7 +73,7 @@ class Domain:
 
     # Helper method that searchs a text for a pattern then removes the matches from the text,
     # returning both the found values as well as the text after changes.
-    def CleanDesc(text: str, regex: str) -> (list, str):
+    def CleanDesc(text: str, regex: str) -> tuple[list, str]:
         matches = set()
         def sub(match: str) -> str:
             matches.add(match.group(1).lower())
