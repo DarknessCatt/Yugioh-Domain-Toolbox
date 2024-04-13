@@ -4,6 +4,7 @@ import tkinter.scrolledtext
 
 from classes.deckChecker import DeckChecker
 
+# Creates the GUI for the Deck Checker tool.
 class DeckCheckerGUI:
     
     def Tab(self, deckCheckerTab : Frame) -> None:

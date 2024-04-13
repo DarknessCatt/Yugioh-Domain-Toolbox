@@ -8,6 +8,7 @@ from classes.domain import Domain
 from classes.sql import CardsCDB
 from classes.domainExporter import DomainExporter
 
+# Creates the GUI for the Domain Generator tool.
 class DomainGeneratorGUI:
     MSG_WAITING_ID = "Waiting for valid monster ID..."
     MSG_ID_MUST_NUMBER = "ID must be a number!"

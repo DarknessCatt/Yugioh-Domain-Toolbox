@@ -4,9 +4,10 @@ from classes.card import Card
 from classes.domain import Domain
 from classes.ydke import YDKE
 
-
+# Provides methods for checking if a deck is valid for domain.
 class DeckChecker:
 
+    # Checks if the main, extra and side decks card count is valid.
     @staticmethod    
     def CheckCardCount(decks : list[array]) -> str:
         if(len(decks[0]) != 60):
@@ -20,6 +21,7 @@ class DeckChecker:
 
         return None
 
+    # Checks if there are no duplicate cards across the main, extra and side decks.
     @staticmethod
     def CheckSingleton(decks : list[array]) -> str:
         duplicates = set()
@@ -41,6 +43,7 @@ class DeckChecker:
 
         return None
 
+    # Checks if the DM is a monster card and if all other cards are within its domain.
     @staticmethod
     def CheckValidDomain(decks : list[array]) -> str:
         dmData = CardsCDB.GetMonsterById(decks[2][0])
@@ -73,6 +76,7 @@ class DeckChecker:
 
         return None
 
+    # Decodes the given ydke url and perform all deck checks.
     @staticmethod
     def CheckDeck(ydke : str) -> str:
         decks = YDKE.DecodeYDKE(ydke)

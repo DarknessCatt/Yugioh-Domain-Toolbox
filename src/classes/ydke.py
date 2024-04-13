@@ -1,6 +1,7 @@
 from array import array
 from base64 import b64decode
 
+# Handles YDKE URLs
 class YDKE:
     URL_START = "ydke://"
     SEPARATOR = "!"
