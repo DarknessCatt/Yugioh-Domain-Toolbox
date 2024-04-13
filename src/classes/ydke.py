@@ -9,13 +9,13 @@ class YDKE:
     # If YDKE can't be processed, returns None instead.
     @staticmethod
     def DecodeYDKE(url : str) -> list[array]:
-        if not url.startswith(YDKE.URL_START):
+        if(not url.startswith(YDKE.URL_START)):
             return None
 
         url = url.removeprefix(YDKE.URL_START)
         decks = url.split(YDKE.SEPARATOR)
 
-        if len(decks) < 3:
+        if(len(decks) < 3):
             return None
 
         passcodes = []
