@@ -2,13 +2,14 @@
 import tkinter
 from tkinter import ttk
 
-from interfaces.guiTabs.domGenTab import DomainGeneratorGUI
-
 from constants.programInfo import ProgramInfo
 from constants.hexCodesReference import AttributesAndRaces, Archetypes
 
 from classes.sql import CardsCDB
 from classes.downloadManager import DownloadManager
+
+from interfaces.guiTabs.domGenTab import DomainGeneratorGUI
+from interfaces.guiTabs.deckCheckerTab import DeckCheckerGUI
 
 # Class that handles the CLI interface of the program
 class GraphicalUserInterface:
@@ -36,15 +37,19 @@ class GraphicalUserInterface:
         # Tab setup
         tabControl = ttk.Notebook(frame)
         domainGeneratorTab = ttk.Frame(tabControl)
-        deckValidatorTab = ttk.Frame(tabControl) 
+        deckCheckerTab = ttk.Frame(tabControl) 
 
         tabControl.add(domainGeneratorTab, text="Domain Generator")
-        tabControl.add(deckValidatorTab, text="Deck Validator")
+        tabControl.add(deckCheckerTab, text="Deck Validator")
         tabControl.pack(expand = 1, fill ="both") 
 
         # Domain Generator
         domGenTabClass = DomainGeneratorGUI()
-        domGenTabClass.DomainGeneratorTab(domainGeneratorTab)
+        domGenTabClass.Tab(domainGeneratorTab)
         
+        # Deck Checker
+        deckCheckerClass = DeckCheckerGUI()
+        deckCheckerClass.Tab(deckCheckerTab)
+
         frame.mainloop()
         

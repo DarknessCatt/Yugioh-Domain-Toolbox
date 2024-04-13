@@ -3,9 +3,6 @@ from tkinter import *
 from tkinter import ttk
 import tkinter.scrolledtext
 
-from constants.hexCodesReference import AttributesAndRaces, Archetypes
-
-from classes.downloadManager import DownloadManager
 from classes.card import Card
 from classes.domain import Domain
 from classes.sql import CardsCDB
@@ -72,7 +69,7 @@ class DomainGeneratorGUI:
             DomainExporter.toLflist(domain)
             return
 
-    def DomainGeneratorTab(self, domainGeneratorTab : Frame) -> None:
+    def Tab(self, domainGeneratorTab : Frame) -> None:
         # "Global" Variables
         domain = None
         button = None
