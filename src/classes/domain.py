@@ -203,17 +203,23 @@ class Domain:
     def AddCardToDomain(self, card : Card):
         self.cards.append(card)
 
-    # Checks if a cards belong in the domain, then adds it if so.
-    # Used to check direct name mentions, atk and def, and archetypes.
-    def CheckAndAddCardToDomain(self, card : Card):
+    # Check if a card belongs in the domain
+    # During domain generation, can skip attribute and types checks
+    # (since we can easily query/exclude these through the DB)
+    def CheckIfCardInDomain(self, card : Card, skipAttributeType : bool = False) -> bool:
+        if(not skipAttributeType):
+            if(card.attribute in self.attributes):
+                return True
+
+            if(card.race in self.races):
+                return True
+
         if(card.name.lower() in self.namedCards):
-            self.cards.append(card)
-            return
+            return True
 
         atkAndDef = tuple([card.attack, card.defense])
         if(atkAndDef in self.battleStats):
-            self.cards.append(card)
-            return
+            return True
 
         for cardSetcode in card.setcodes:
             # Since all setcodes in the domain are already their base version
@@ -223,8 +229,15 @@ class Domain:
 
             for domainSetcode in self.setcodes:
                 if(cardBaseSetcode == domainSetcode):
-                    self.AddCardToDomain(card)
-                    return
+                    return True
+
+        return False
+
+    # Checks if a cards belong in the domain, then adds it if so.
+    # Used to check direct name mentions, atk and def, and archetypes.
+    def CheckAndAddCardToDomain(self, card : Card):
+        if(self.CheckIfCardInDomain(card, True)):
+            self.AddCardToDomain(card)
 
     # Removes all cards from the domain.
     def RemoveAllCards(self):

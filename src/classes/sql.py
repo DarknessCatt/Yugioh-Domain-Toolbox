@@ -97,6 +97,13 @@ class CardsCDB:
             CardsCDB.db.close()
             CardsCDB.db = None
 
+    # Gets a single card's name through it's id (passcode)
+    @staticmethod
+    def GetNameById(id: int) -> str:
+        query = "SELECT name FROM texts WHERE id = ?"
+        parameters = (id,)
+        return CardsCDB.cursor.execute(query, parameters).fetchone()[0]
+
     # Gets a single monster through it's id (passcode)
     @staticmethod
     def GetMonsterById(id: int) -> any:
