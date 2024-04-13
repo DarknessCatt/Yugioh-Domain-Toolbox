@@ -5,8 +5,10 @@ class YDKE:
     URL_START = "ydke://"
     SEPARATOR = "!"
 
+    # Decodes an YDKE, returning a 3 lists of passcodes: main, extra and side.
+    # If YDKE can't be processed, returns None instead.
     @staticmethod
-    def DecodeYDKE(url : str) -> list:
+    def DecodeYDKE(url : str) -> list[array]:
         if not url.startswith(YDKE.URL_START):
             return None
 

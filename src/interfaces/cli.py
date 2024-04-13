@@ -9,6 +9,8 @@ from classes.domain import Domain
 from classes.sql import CardsCDB
 from classes.domainExporter import DomainExporter
 
+from classes.deckChecker import DeckChecker
+
 # Class that handles the CLI interface of the program
 class CommandLineInterface:
 
@@ -150,6 +152,12 @@ class CommandLineInterface:
     def StartInterface(self) -> None:
         # Step 0) Setup stuff.
         self.Setup()
+
+        print("YDKE?")
+        answer = input().strip()
+        print(DeckChecker.CheckDeck(answer))
+
+        return
 
         # Step 1) Intro Screen
         self.IntroInput()
