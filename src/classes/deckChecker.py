@@ -77,7 +77,7 @@ class DeckChecker:
     def CheckDeck(ydke : str) -> str:
         decks = YDKE.DecodeYDKE(ydke)
         if(decks is None):
-            return "Could not process YDKE."
+            return "Could not process YDKE url."
         
         error = DeckChecker.CheckCardCount(decks)
         if(not error is None):

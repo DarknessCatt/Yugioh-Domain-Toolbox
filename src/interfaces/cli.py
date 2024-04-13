@@ -33,8 +33,8 @@ class CommandLineInterface:
         print("")
 
     # Requests the user input, adding common prints and exiting if needed.
-    def RequestInput(self) -> str:
-        print(self.PLEASE_NUMBER)
+    def RequestInput(self, inputMessage : str = None) -> str:
+        print(self.PLEASE_NUMBER if inputMessage is None else inputMessage)
         print(self.OR_EXIT)
         
         answer = input().strip()
@@ -57,6 +57,26 @@ class CommandLineInterface:
     def IntroInput(self) -> None:
         print("Welcome to Domain Generator! Version {}\n".format(ProgramInfo.VERSION))
     
+    def DecideTool(self) -> int:
+        while(True):
+            print("Which tool do you want to use?")
+            print("(1) Domain Generator.")
+            print("(2) Deck Validator.")
+            answer = self.RequestInput()
+
+            if(not answer.isdigit()):
+                self.InfoMessage(self.NOT_DIGIT_ANSWER)
+                continue
+            
+            else:
+                option = int(answer)
+                if(option < 0 or option > 2):
+                    self.InfoMessage(self.INVALID_ANSWER)
+                    continue
+                else:
+                    return option
+                    
+
     # Prompt to get the deck master and it's domain.
     def GetDeckMasterAndDomain(self) -> Domain:
         while(True):
@@ -153,23 +173,26 @@ class CommandLineInterface:
         # Step 0) Setup stuff.
         self.Setup()
 
-        print("YDKE?")
-        answer = input().strip()
-        print(DeckChecker.CheckDeck(answer))
-
-        return
-
-        # Step 1) Intro Screen
+        # Step 1) Intro Screen and decide tool
         self.IntroInput()
+        tool = self.DecideTool()
 
-        while(True):
-            # Step 2) Get the Deckmaster and Domain.
-            domain = self.GetDeckMasterAndDomain()
+        if tool == 1:
+            while(True):
+                # Step 2) Get the Deckmaster and Domain.
+                domain = self.GetDeckMasterAndDomain()
 
-            # Step 3) Add cards to Domain.
-            self.GetDomainCards(domain)
+                # Step 3) Add cards to Domain.
+                self.GetDomainCards(domain)
 
-            # Step 4) Export the domain.
-            self.ExportDomain(domain)
+                # Step 4) Export the domain.
+                self.ExportDomain(domain)
 
-            self.InfoMessage("\nProcess completed, you may now exit or create another domain.")
+                self.InfoMessage("\nProcess completed, you may now exit or create another domain.")
+        
+        elif tool == 2:
+            while(True):
+                answer = self.RequestInput("Please, provide the YDKE url.")
+                print(DeckChecker.CheckDeck(answer))
+                self.InfoMessage("\nProcess completed, you may now exit or check another deck.")
+            
