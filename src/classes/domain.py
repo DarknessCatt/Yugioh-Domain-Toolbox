@@ -94,7 +94,7 @@ class Domain:
 
         # Remove the "this card is not treated as ..."
         # Since we already retrieve the information from the DB, this is not useful for us.
-        NOT_TREATED_AS = "\(This card is not treated as an? \".*?\" card.\)"
+        NOT_TREATED_AS = "\(This card is not treated as an? (\".*?\") card.\)"
         # Find cards with quotes in their names.
         # This is important since the next search would bug and split the quotes.
         QUOTE_CARDS = "\"({})\"".format("|".join(self.QUOTE_CARDS))
@@ -149,7 +149,12 @@ class Domain:
         # Add the HEXCODE of the attributes.
         for race in races:
             #remove non character so beast-warrior -> beastwarrior, winged beast -> wingedbeast and so on.
-            self.races.add(AttributesAndRaces.races[re.sub("\W", "", race)])
+            key = re.sub("\W", "", race)
+            if(key == "divinebeast"):
+                # They are written "Divine-Beast" in card text
+                # but named "divine" in the AttributesAndRaces reference.
+                key = "divine"
+            self.races.add(AttributesAndRaces.races[key])
 
         # Add the HEXCODE of the races.
         for attribute in attributes:
