@@ -104,7 +104,8 @@ class Domain:
         # This is important in order to avoid problens in the next two searchs
         TOKENS = "(\(.*?\))"
         # Find exact battle stats mentions on the card, like the Monarch's Squires.
-        BATTLE_STATS = "([0-9]{1,4} ATK\/[0-9]{1,4} DEF|ATK [0-9]{1,4}\/DEF [0-9]{1,4}|[0-9]{1,4} ATK and [0-9]{1,4} DEF)"
+        # Cases (in order): X ATK/X DEF, X ATK and X DEF, X ATK and/or DEF, with X ATK/DEF
+        BATTLE_STATS = "with ([0-9]{1,4} ATK\/[0-9]{1,4} DEF|[0-9]{1,4} ATK and [0-9]{1,4} DEF|[0-9]{1,4} ATK and\/or DEF|[0-9]{1,4} ATK\/DEF)"
         # Find all the races (types) mentioned in the desc
         # The list is manually typed because in the ref file they are named "beastwarrior" / "divine" and so on, which would provide no matches.
         RACES = "(aqua|beast-warrior|beast|cyberse|dinosaur|divine-beast|dragon|fairy|fiend|fish|insect|machine|plant|psychic|pyro|reptile|rock|sea serpent|spellcaster|thunder|warrior|winged beast|wyrm|zombie)"
@@ -144,7 +145,12 @@ class Domain:
         # Retrieve the battle stats (ATK/DEF) mentioned and convert them to ints.
         for stats in battleStats:
             r = re.match("\D*([0-9]{1,4})\D+([0-9]{1,4})\D*", stats)
-            self.battleStats.add(tuple([int(r.group(1)), int(r.group(2))]))
+            if(not r is None):
+                self.battleStats.add(tuple([int(r.group(1)), int(r.group(2))]))
+            else:
+                # "X ATK and/or DEF" or "X ATK/DEF" case
+                r = re.match("\D*([0-9]{1,4})\D*", stats)
+                self.battleStats.add(tuple([int(r.group(1)), int(r.group(1))]))
 
         # Add the HEXCODE of the attributes.
         for race in races:
