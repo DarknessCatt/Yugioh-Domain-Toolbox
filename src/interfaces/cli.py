@@ -7,9 +7,11 @@ from classes.downloadManager import DownloadManager
 from classes.card import Card
 from classes.domain import Domain
 from classes.sql import CardsCDB
+from classes.ydke import YDKE
 from classes.domainExporter import DomainExporter
 
 from classes.deckChecker import DeckChecker
+from classes.lookup import Lookup
 
 # Class that handles the CLI interface of the program
 class CommandLineInterface:
@@ -30,6 +32,7 @@ class CommandLineInterface:
         Archetypes.Setup()
         AttributesAndRaces.Setup()
         CardsCDB.Setup()
+        Lookup.Setup()
         print("")
 
     # Requests the user input, adding common prints and exiting if needed.
@@ -62,6 +65,7 @@ class CommandLineInterface:
             print("Which tool do you want to use?")
             print("(1) Domain Generator.")
             print("(2) Deck Validator.")
+            print("(3) Reverse Domain Searcher.")
             answer = self.RequestInput()
 
             if(not answer.isdigit()):
@@ -70,7 +74,7 @@ class CommandLineInterface:
             
             else:
                 option = int(answer)
-                if(option < 0 or option > 2):
+                if(option < 0 or option > 3):
                     self.InfoMessage(self.INVALID_ANSWER)
                     continue
                 else:
@@ -195,4 +199,33 @@ class CommandLineInterface:
                 answer = self.RequestInput("Please, provide the YDKE url.")
                 print(DeckChecker.CheckDeck(answer))
                 self.InfoMessage("\nProcess completed, you may now exit or check another deck.")
-            
+        
+        elif tool == 3:            
+            while(True):
+                answer = self.RequestInput("Please, provide the YDKE url.")
+                decks = YDKE.DecodeYDKE(answer)
+                if(decks is None):
+                    print("Could not process YDKE url.")
+                
+                else:
+                    desired : list[Card] = []
+                    for deck in decks:
+                        for passcode in deck:
+                            data = CardsCDB.GetMonsterById(passcode)
+                            if(not data is None):
+                                desired.append(Card(data))
+                    
+                    candidates : list[set] = []
+                    for card in desired:
+                        candidates.append(set(Lookup.FilterMonster(card)))
+
+                    validDMs : set = candidates[0]
+                    for candidate in candidates:
+                        validDMs = validDMs.intersection(candidate)
+
+                    # TODO: Process this in some way (banlist?)
+                    for dm in validDMs:
+                        print(CardsCDB.GetNameById(dm[0]))
+                
+                self.InfoMessage("\nProcess completed, you may now exit or perform another search.")
+                        

@@ -34,7 +34,6 @@ class Lookup:
             Lookup.CreateDB(lookupPath)
 
         Lookup.db = sqlite3.connect(lookupPath)
-        print("Updating Lookup table (might take a few minutes).")
         Lookup.UpdateDB()
         print("Done.\n")
 
@@ -108,6 +107,8 @@ class Lookup:
         missing_monsters = all_monsters - lookup_monsters
 
         if(len(missing_monsters) > 0):
+            print("Updating Lookup table (might take a few minutes).")
+            
             manager = Manager()
             allDMs : list[Domain] = manager.list()
 
