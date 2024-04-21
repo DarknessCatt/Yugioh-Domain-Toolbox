@@ -121,6 +121,11 @@ class CardsCDB:
         parameters = (name,)
         return CardsCDB.cursor.execute(query, parameters).fetchone()
 
+    @staticmethod
+    def GetAllMonsterIds() -> sqlite3.Cursor:
+        query = "SELECT id from datas WHERE datas.type & 1 = 1 AND datas.type & 16384 = 0"
+        return CardsCDB.cursor.execute(query).fetchall()
+
     # Gets all monsters within the domain's race and attributes
     @staticmethod
     def GetMonstersByAttributeAndRace(domain: Domain) -> sqlite3.Cursor:
