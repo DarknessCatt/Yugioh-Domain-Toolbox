@@ -1,9 +1,7 @@
 from sys import exit
 
-from constants.hexCodesReference import AttributesAndRaces, Archetypes
 from constants.programInfo import ProgramInfo
 
-from classes.downloadManager import DownloadManager
 from classes.card import Card
 from classes.domain import Domain
 from classes.sql import CardsCDB
@@ -25,15 +23,6 @@ class CommandLineInterface:
 
     NOT_DIGIT_ANSWER = "The value provided doesn't seem to be an integer."
     INVALID_ANSWER = "The value provided is not a valid option."
-
-    # Runs setups for classes which require external classes.
-    def Setup(self):
-        DownloadManager.DownloadFiles()
-        Archetypes.Setup()
-        AttributesAndRaces.Setup()
-        CardsCDB.Setup()
-        Lookup.Setup()
-        print("")
 
     # Requests the user input, adding common prints and exiting if needed.
     def RequestInput(self, inputMessage : str = None) -> str:
@@ -174,9 +163,6 @@ class CommandLineInterface:
 
     # The main interface loop.
     def StartInterface(self) -> None:
-        # Step 0) Setup stuff.
-        self.Setup()
-
         # Step 1) Intro Screen and decide tool
         self.IntroInput()
         tool = self.DecideTool()
