@@ -104,7 +104,7 @@ class Lookup:
 
     @staticmethod
     def ProcessDomainsJob(data: list, allDMs: list, start: int, end: int):
-        sys.stdout = open('trash', 'w')
+        sys.stdout = open(os.devnull, 'w')
         Archetypes.Setup()
         AttributesAndRaces.Setup()
         CardsCDB.Setup()
