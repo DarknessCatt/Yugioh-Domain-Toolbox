@@ -10,6 +10,11 @@ class Card:
     # Data which should be retrieved from the sqlite query.
     QUERY_VALUES = "datas.id, setcode, atk, def, race, attribute, name, desc, type from datas NATURAL JOIN texts"
 
+    # Helper method to extract the base archetype of an archetype.
+    @staticmethod
+    def GetBaseArchetype(archetype : int) -> int:
+        return archetype & Card.HEX_BASE_SETCODE
+
     # Creates a new card from the data retrieved from the DB.
     def __init__(self, data) -> None:
         # Order of values depend on the values retrieve, so any changes here

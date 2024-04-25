@@ -210,8 +210,14 @@ class CommandLineInterface:
                         validDMs = validDMs.intersection(candidate)
 
                     # TODO: Process this in some way (banlist?)
+                    dmList = []
                     for dm in validDMs:
-                        print(CardsCDB.GetNameById(dm[0]))
+                        dmList.append(CardsCDB.GetNameById(dm[0]))
+                    
+                    dmList.sort()
+
+                    for dm in dmList:
+                        print(dm)
                 
                 self.InfoMessage("\nProcess completed, you may now exit or perform another search.")
                         

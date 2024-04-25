@@ -82,10 +82,6 @@ class Domain:
         cleaned = re.sub(regex, sub, text, flags=re.IGNORECASE)
         return matches, cleaned
 
-    # Helper method to extract the base archetype of an archetype.
-    def GetBaseArch(self, arch : int) -> int:
-        return arch & Card.HEX_BASE_SETCODE
-
     # Retrieves the domain information from the DM's description.
     def GetCardDomainFromDesc(self) -> None:
         # Amazing regex done by @Zefile8 and @EokLennon
@@ -193,7 +189,7 @@ class Domain:
         # Replace all sub-archetypes with their base archetypes,
         # allowing, for example, a "Black Luster Soldier" ritual monster to
         # include all "Chaos" monsters like "Chaos Valkyria."
-        self.setcodes = set(map(lambda arch : self.GetBaseArch(arch), self.setcodes))
+        self.setcodes = set(map(lambda arch : Card.GetBaseArchetype(arch), self.setcodes))
 
         self.cards = []
 
@@ -236,7 +232,7 @@ class Domain:
             # Since all setcodes in the domain are already their base version
             # (It's converted in the constructor)
             # We only have to compare it with the base archetype of the current card.
-            cardBaseSetcode = self.GetBaseArch(cardSetcode)
+            cardBaseSetcode = Card.GetBaseArchetype(cardSetcode)
 
             for domainSetcode in self.setcodes:
                 if(cardBaseSetcode == domainSetcode):

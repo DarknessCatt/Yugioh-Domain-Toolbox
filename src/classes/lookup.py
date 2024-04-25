@@ -1,3 +1,4 @@
+import sys
 import os
 import sqlite3
 
@@ -5,6 +6,8 @@ from multiprocessing import Process, Manager
 
 from classes.downloadManager import DownloadManager
 from classes.sql import CardsCDB
+from constants.hexCodesReference import AttributesAndRaces, Archetypes
+
 from classes.card import Card
 from classes.domain import Domain
 
@@ -100,6 +103,18 @@ class Lookup:
         cursor.close()
 
     @staticmethod
+    def ProcessDomainsJob(data: list, allDMs: list, start: int, end: int):
+        sys.stdout = open('trash', 'w')
+        Archetypes.Setup()
+        AttributesAndRaces.Setup()
+        CardsCDB.Setup()
+
+        for i in range(start, end):
+            card = Card(CardsCDB.GetMonsterById(data[i][0]))
+            dm = Domain(card)
+            allDMs.append(dm)
+
+    @staticmethod
     def UpdateDB() -> None:
         all_monsters = set(CardsCDB.GetAllMonsterIds())
         cursor = Lookup.db.cursor()
@@ -109,24 +124,17 @@ class Lookup:
         if(len(missing_monsters) > 0):
             print("Updating Lookup table (might take a few minutes).")
             
+            data = list(missing_monsters)
             manager = Manager()
             allDMs : list[Domain] = manager.list()
 
-            data = list(missing_monsters)
-            def processDomain(start : int, end : int):
-                for i in range(start, end):
-                    card = Card(CardsCDB.GetMonsterById(data[i][0]))
-                    dm = Domain(card)
-                    allDMs.append(dm)
-
             processes : list[Process] = []
-
             n = 0
             step = len(data) // (8 if len(data) > 7 else 1)
 
             while(n < len(data)):
                 endIndex = min(n + step, len(data))
-                processes.append(Process(target=processDomain, args=(n, endIndex)))
+                processes.append(Process(target=Lookup.ProcessDomainsJob, args=(data, allDMs, n, endIndex)))
                 n = endIndex
 
             for p in processes:
@@ -145,8 +153,6 @@ class Lookup:
 
         cursor = Lookup.db.cursor()
         for domain in domains:
-            print("Inserting " + domain.DM.name)
-
             cursor.execute(insert_master, (domain.DM.id,))
 
             for attr in domain.attributes:
@@ -189,7 +195,7 @@ class Lookup:
 
         for arch in monster.setcodes:
             select += " OR EXISTS (SELECT {master} FROM {arch} WHERE {master}.id = {master} AND {arch} = ?)".format(master=Lookup.DM_TABLE, arch=Lookup.ARCH_TABLE)
-            args.append(arch)
+            args.append(Card.GetBaseArchetype(arch))
 
         return filter.execute(select, tuple(args)).fetchall()
             

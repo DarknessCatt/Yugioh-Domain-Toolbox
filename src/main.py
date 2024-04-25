@@ -1,4 +1,6 @@
 import sys
+from multiprocessing import freeze_support
+
 from interfaces.cli import CommandLineInterface
 from interfaces.gui import GraphicalUserInterface
 
@@ -10,6 +12,9 @@ from classes.lookup import Lookup
 
 # Main function. Runs when main.py is called.
 def main():
+    freeze_support()
+
+    # Setup
     DownloadManager.DownloadFiles()
     Archetypes.Setup()
     AttributesAndRaces.Setup()
@@ -24,4 +29,5 @@ def main():
     
     interface.StartInterface()
 
-main()
+if __name__ == '__main__':
+    main()
