@@ -1,15 +1,15 @@
 from sys import exit
 
-from constants.hexCodesReference import AttributesAndRaces, Archetypes
 from constants.programInfo import ProgramInfo
 
-from classes.downloadManager import DownloadManager
 from classes.card import Card
 from classes.domain import Domain
 from classes.sql import CardsCDB
+from classes.ydke import YDKE
 from classes.domainExporter import DomainExporter
 
 from classes.deckChecker import DeckChecker
+from classes.lookup import DomainLookup
 
 # Class that handles the CLI interface of the program
 class CommandLineInterface:
@@ -23,14 +23,6 @@ class CommandLineInterface:
 
     NOT_DIGIT_ANSWER = "The value provided doesn't seem to be an integer."
     INVALID_ANSWER = "The value provided is not a valid option."
-
-    # Runs setups for classes which require external classes.
-    def Setup(self):
-        DownloadManager.DownloadFiles()
-        Archetypes.Setup()
-        AttributesAndRaces.Setup()
-        CardsCDB.Setup()
-        print("")
 
     # Requests the user input, adding common prints and exiting if needed.
     def RequestInput(self, inputMessage : str = None) -> str:
@@ -62,6 +54,7 @@ class CommandLineInterface:
             print("Which tool do you want to use?")
             print("(1) Domain Generator.")
             print("(2) Deck Validator.")
+            print("(3) Reverse Domain Searcher.")
             answer = self.RequestInput()
 
             if(not answer.isdigit()):
@@ -70,7 +63,7 @@ class CommandLineInterface:
             
             else:
                 option = int(answer)
-                if(option < 0 or option > 2):
+                if(option < 0 or option > 3):
                     self.InfoMessage(self.INVALID_ANSWER)
                     continue
                 else:
@@ -170,9 +163,6 @@ class CommandLineInterface:
 
     # The main interface loop.
     def StartInterface(self) -> None:
-        # Step 0) Setup stuff.
-        self.Setup()
-
         # Step 1) Intro Screen and decide tool
         self.IntroInput()
         tool = self.DecideTool()
@@ -195,4 +185,43 @@ class CommandLineInterface:
                 answer = self.RequestInput("Please, provide the YDKE url.")
                 print(DeckChecker.CheckDeck(answer))
                 self.InfoMessage("\nProcess completed, you may now exit or check another deck.")
-            
+        
+        elif tool == 3:            
+            while(True):
+                answer = self.RequestInput("Please, provide the YDKE url.")
+                decks = YDKE.DecodeYDKE(answer)
+                if(decks is None):
+                    print("Could not process YDKE url.")
+                
+                else:
+                    desired : list[Card] = []
+                    for deck in decks:
+                        for passcode in deck:
+                            data = CardsCDB.GetMonsterById(passcode)
+                            if(not data is None):
+                                desired.append(Card(data))
+                    
+                    if(len(desired) > 0):
+                        candidates : list[set] = []
+                        for card in desired:
+                            candidates.append(set(DomainLookup.FilterMonster(card)))
+
+                        validDMs : set = candidates[0]
+                        for candidate in candidates:
+                            validDMs = validDMs.intersection(candidate)
+
+                        # TODO: Process this in some way (banlist?)
+                        dmList = []
+                        for dm in validDMs:
+                            dmList.append(CardsCDB.GetNameById(dm[0]))
+                        
+                        dmList.sort()
+
+                        for dm in dmList:
+                            print(dm)
+                    
+                    else:
+                        print("The deck provided has no monsters.")
+                
+                self.InfoMessage("\nProcess completed, you may now exit or perform another search.")
+                        

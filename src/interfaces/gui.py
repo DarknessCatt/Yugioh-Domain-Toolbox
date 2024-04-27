@@ -3,32 +3,18 @@ import tkinter
 from tkinter import ttk
 
 from constants.programInfo import ProgramInfo
-from constants.hexCodesReference import AttributesAndRaces, Archetypes
-
-from classes.sql import CardsCDB
-from classes.downloadManager import DownloadManager
 
 from interfaces.guiTabs.domGenTab import DomainGeneratorGUI
 from interfaces.guiTabs.deckCheckerTab import DeckCheckerGUI
+from interfaces.guiTabs.reverseDomainTab import ReverseDomainGUI
 
 # Class that handles the CLI interface of the program
 class GraphicalUserInterface:
 
     TITLE = "Yugioh Domain Generator ({})"
 
-    # Runs setups for classes which require external classes.
-    def Setup(self):
-        DownloadManager.DownloadFiles()
-        Archetypes.Setup()
-        AttributesAndRaces.Setup()
-        CardsCDB.Setup()
-        print("")
-
     # The main interface loop.
     def StartInterface(self) -> None:            
-        # Setup stuff.
-        self.Setup()
-        
         # TKinter setup.
         frame = tkinter.Tk()
         frame.geometry("500x450+700+300")
@@ -37,10 +23,12 @@ class GraphicalUserInterface:
         # Tab setup
         tabControl = ttk.Notebook(frame)
         domainGeneratorTab = ttk.Frame(tabControl)
-        deckCheckerTab = ttk.Frame(tabControl) 
+        deckCheckerTab = ttk.Frame(tabControl)
+        reverseDomainTab = ttk.Frame(tabControl) 
 
         tabControl.add(domainGeneratorTab, text="Domain Generator")
         tabControl.add(deckCheckerTab, text="Deck Validator")
+        tabControl.add(reverseDomainTab, text="Reverse Domain Searcher")
         tabControl.pack(expand = 1, fill ="both") 
 
         # Domain Generator
@@ -50,6 +38,10 @@ class GraphicalUserInterface:
         # Deck Checker
         deckCheckerClass = DeckCheckerGUI()
         deckCheckerClass.Tab(deckCheckerTab)
+
+        # Reverse Domain
+        reverseDomainClass = ReverseDomainGUI()
+        reverseDomainClass.Tab(reverseDomainTab)
 
         frame.mainloop()
         
