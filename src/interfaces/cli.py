@@ -201,23 +201,27 @@ class CommandLineInterface:
                             if(not data is None):
                                 desired.append(Card(data))
                     
-                    candidates : list[set] = []
-                    for card in desired:
-                        candidates.append(set(Lookup.FilterMonster(card)))
+                    if(len(desired) > 0):
+                        candidates : list[set] = []
+                        for card in desired:
+                            candidates.append(set(Lookup.FilterMonster(card)))
 
-                    validDMs : set = candidates[0]
-                    for candidate in candidates:
-                        validDMs = validDMs.intersection(candidate)
+                        validDMs : set = candidates[0]
+                        for candidate in candidates:
+                            validDMs = validDMs.intersection(candidate)
 
-                    # TODO: Process this in some way (banlist?)
-                    dmList = []
-                    for dm in validDMs:
-                        dmList.append(CardsCDB.GetNameById(dm[0]))
+                        # TODO: Process this in some way (banlist?)
+                        dmList = []
+                        for dm in validDMs:
+                            dmList.append(CardsCDB.GetNameById(dm[0]))
+                        
+                        dmList.sort()
+
+                        for dm in dmList:
+                            print(dm)
                     
-                    dmList.sort()
-
-                    for dm in dmList:
-                        print(dm)
+                    else:
+                        print("The deck provided has no monsters.")
                 
                 self.InfoMessage("\nProcess completed, you may now exit or perform another search.")
                         

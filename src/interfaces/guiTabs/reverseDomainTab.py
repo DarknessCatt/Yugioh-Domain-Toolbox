@@ -28,6 +28,12 @@ class ReverseDomainGUI:
                     if(not data is None):
                         desired.append(Card(data))
             
+            if(len(desired) == 0):
+                ydkeText.set("")
+                message.delete("1.0", END)
+                message.insert(INSERT, "The deck provided has no monsters.")
+                return
+
             candidates : list[set] = []
             for card in desired:
                 candidates.append(set(Lookup.FilterMonster(card)))
