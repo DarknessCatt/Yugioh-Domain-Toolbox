@@ -9,6 +9,7 @@ class DownloadManager:
     FILES_BASE_FOLDER = "references"
     CARD_INFO_FOLDER = "cardinfo"
     CDB_FOLDER = "CDBs"
+    LOOKUP_FOLDER = "Lookup"
 
     DOWNLOAD_INFO_FILENAME = "downData"
     ATTR_RACES_FILENAME = "attrRaces.txt"
@@ -41,6 +42,10 @@ class DownloadManager:
     # Returns the path to the folder with the cdbs.
     def GetCdbFolder() -> str:
         return os.path.join(DownloadManager.FILES_BASE_FOLDER, DownloadManager.CDB_FOLDER)
+
+    @staticmethod
+    def GetLookupFolder() -> str:
+        return os.path.join(DownloadManager.FILES_BASE_FOLDER, DownloadManager.LOOKUP_FOLDER)
 
     # Returns the path to the merged CDB file.
     @staticmethod

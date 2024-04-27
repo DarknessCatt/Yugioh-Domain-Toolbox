@@ -25,7 +25,7 @@ class DomainExporter:
             text.append(DomainExporter.LFLIST_LINE.format(card.id, card.name))
 
         # Removes all now alphabetic characters from the filename to prevent errors.
-        filename = re.sub("\W", "", title) + ".lflist.conf"
+        filename = re.sub("\\W", "", title) + ".lflist.conf"
 
         if os.path.exists(filename):
             os.remove(filename)
@@ -87,7 +87,7 @@ class DomainExporter:
         for card in domain.cards:
             data.append(DomainExporter.cardToCSVLine(card, pattern))
         
-        filename = "[Domain]" + re.sub("\W", "", domain.DM.name) + ".csv"
+        filename = "[Domain]" + re.sub("\\W", "", domain.DM.name) + ".csv"
 
         if os.path.exists(filename):
             os.remove(filename)

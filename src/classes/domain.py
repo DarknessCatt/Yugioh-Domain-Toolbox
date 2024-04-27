@@ -82,10 +82,6 @@ class Domain:
         cleaned = re.sub(regex, sub, text, flags=re.IGNORECASE)
         return matches, cleaned
 
-    # Helper method to extract the base archetype of an archetype.
-    def GetBaseArch(self, arch : int) -> int:
-        return arch & Card.HEX_BASE_SETCODE
-
     # Retrieves the domain information from the DM's description.
     def GetCardDomainFromDesc(self) -> None:
         # Amazing regex done by @Zefile8 and @EokLennon
@@ -94,7 +90,7 @@ class Domain:
 
         # Remove the "this card is not treated as ..."
         # Since we already retrieve the information from the DB, this is not useful for us.
-        NOT_TREATED_AS = "\(This card is not treated as an? (\".*?\") card.\)"
+        NOT_TREATED_AS = "\\(This card is not treated as an? (\".*?\") card.\\)"
         # Find cards with quotes in their names.
         # This is important since the next search would bug and split the quotes.
         QUOTE_CARDS = "\"({})\"".format("|".join(self.QUOTE_CARDS))
@@ -102,10 +98,10 @@ class Domain:
         MENTIONED_QUOTES = "\"(.*?)\""
         # Used to remove tokens description from cards.
         # This is important in order to avoid problens in the next two searchs
-        TOKENS = "(\(.*?\))"
+        TOKENS = "(\\(.*?\\))"
         # Find exact battle stats mentions on the card, like the Monarch's Squires.
         # Cases (in order): X ATK/X DEF, X ATK and X DEF, X ATK and/or DEF, with X ATK/DEF
-        BATTLE_STATS = "with ([0-9]{1,4} ATK\/[0-9]{1,4} DEF|[0-9]{1,4} ATK and [0-9]{1,4} DEF|[0-9]{1,4} ATK and\/or DEF|[0-9]{1,4} ATK\/DEF)"
+        BATTLE_STATS = "with ([0-9]{1,4} ATK\\/[0-9]{1,4} DEF|[0-9]{1,4} ATK and [0-9]{1,4} DEF|[0-9]{1,4} ATK and\\/or DEF|[0-9]{1,4} ATK\\/DEF)"
         # Find all the races (types) mentioned in the desc
         # The list is manually typed because in the ref file they are named "beastwarrior" / "divine" and so on, which would provide no matches.
         RACES = "(aqua|beast-warrior|beast|cyberse|dinosaur|divine-beast|dragon|fairy|fiend|fish|insect|machine|plant|psychic|pyro|reptile|rock|sea serpent|spellcaster|thunder|warrior|winged beast|wyrm|zombie)"
@@ -144,18 +140,18 @@ class Domain:
 
         # Retrieve the battle stats (ATK/DEF) mentioned and convert them to ints.
         for stats in battleStats:
-            r = re.match("\D*([0-9]{1,4})\D+([0-9]{1,4})\D*", stats)
+            r = re.match("\\D*([0-9]{1,4})\\D+([0-9]{1,4})\\D*", stats)
             if(not r is None):
                 self.battleStats.add(tuple([int(r.group(1)), int(r.group(2))]))
             else:
                 # "X ATK and/or DEF" or "X ATK/DEF" case
-                r = re.match("\D*([0-9]{1,4})\D*", stats)
+                r = re.match("\\D*([0-9]{1,4})\\D*", stats)
                 self.battleStats.add(tuple([int(r.group(1)), int(r.group(1))]))
 
         # Add the HEXCODE of the attributes.
         for race in races:
             #remove non character so beast-warrior -> beastwarrior, winged beast -> wingedbeast and so on.
-            key = re.sub("\W", "", race)
+            key = re.sub("\\W", "", race)
             if(key == "divinebeast"):
                 # They are written "Divine-Beast" in card text
                 # but named "divine" in the AttributesAndRaces reference.
@@ -193,7 +189,7 @@ class Domain:
         # Replace all sub-archetypes with their base archetypes,
         # allowing, for example, a "Black Luster Soldier" ritual monster to
         # include all "Chaos" monsters like "Chaos Valkyria."
-        self.setcodes = set(map(lambda arch : self.GetBaseArch(arch), self.setcodes))
+        self.setcodes = set(map(lambda arch : Card.GetBaseArchetype(arch), self.setcodes))
 
         self.cards = []
 
@@ -236,7 +232,7 @@ class Domain:
             # Since all setcodes in the domain are already their base version
             # (It's converted in the constructor)
             # We only have to compare it with the base archetype of the current card.
-            cardBaseSetcode = self.GetBaseArch(cardSetcode)
+            cardBaseSetcode = Card.GetBaseArchetype(cardSetcode)
 
             for domainSetcode in self.setcodes:
                 if(cardBaseSetcode == domainSetcode):

@@ -11,7 +11,7 @@ class Archetypes:
     PRE_ARCHETYPE_HEADER = "#Pre-release archetypes\n"
 
     # The line that describes the format of each archetype entry in the section.
-    ARCHETYPE_LINE = "!setname (\S+) (.*)"
+    ARCHETYPE_LINE = "!setname (\\S+) (.*)"
 
     # A dictionary with the archetypes name as key and the HEXCODE as value.
     archetypes = {}
@@ -86,12 +86,12 @@ class AttributesAndRaces:
     # The header of the section containing the attributes.
     ATTRIBUTES_HEADER = "//Attributes\n"
     # The line that describes the format of each attribute entry in the section.
-    ATTRIBUTES_LINE = "#define ATTRIBUTE_([\w]+)\s+(\S+)"
+    ATTRIBUTES_LINE = "#define ATTRIBUTE_([\\w]+)\\s+(\\S+)"
 
     # The header of the section containing the types.
     RACES_HEADER = "//Races\n"
     # The line that describes the format of each type entry in the section.
-    RACES_LINE = "#define RACE_([\w]+)\s+(\S+)"
+    RACES_LINE = "#define RACE_([\\w]+)\\s+(\\S+)"
 
     # A dictionary with the attributes name as key and the HEXCODE as value.
     attributes = {}
