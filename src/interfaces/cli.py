@@ -9,7 +9,7 @@ from classes.ydke import YDKE
 from classes.domainExporter import DomainExporter
 
 from classes.deckChecker import DeckChecker
-from classes.lookup import Lookup
+from classes.lookup import DomainLookup
 
 # Class that handles the CLI interface of the program
 class CommandLineInterface:
@@ -204,7 +204,7 @@ class CommandLineInterface:
                     if(len(desired) > 0):
                         candidates : list[set] = []
                         for card in desired:
-                            candidates.append(set(Lookup.FilterMonster(card)))
+                            candidates.append(set(DomainLookup.FilterMonster(card)))
 
                         validDMs : set = candidates[0]
                         for candidate in candidates:

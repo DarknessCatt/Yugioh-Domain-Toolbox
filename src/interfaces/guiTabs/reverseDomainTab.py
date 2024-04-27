@@ -6,7 +6,7 @@ from classes.ydke import YDKE
 from classes.card import Card
 from classes.sql import CardsCDB
 
-from classes.lookup import Lookup
+from classes.lookup import DomainLookup
 
 # Creates the GUI for the Deck Checker tool.
 class ReverseDomainGUI:
@@ -36,7 +36,7 @@ class ReverseDomainGUI:
 
             candidates : list[set] = []
             for card in desired:
-                candidates.append(set(Lookup.FilterMonster(card)))
+                candidates.append(set(DomainLookup.FilterMonster(card)))
 
             validDMs : set = candidates[0]
             for candidate in candidates:

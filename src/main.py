@@ -8,7 +8,7 @@ from constants.hexCodesReference import AttributesAndRaces, Archetypes
 from classes.downloadManager import DownloadManager
 
 from classes.sql import CardsCDB
-from classes.lookup import Lookup
+from classes.lookup import DomainLookup
 
 # Main function. Runs when main.py is called.
 def main():
@@ -19,7 +19,7 @@ def main():
     Archetypes.Setup()
     AttributesAndRaces.Setup()
     CardsCDB.Setup()
-    Lookup.Setup()
+    DomainLookup.Setup()
     print("")
 
     if("--cli" in sys.argv):

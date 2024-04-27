@@ -11,7 +11,9 @@ from constants.hexCodesReference import AttributesAndRaces, Archetypes
 from classes.card import Card
 from classes.domain import Domain
 
-class Lookup:
+# Holds all domains' information.
+# Used by the Reverse Searcher to quick lookup domains.
+class DomainLookup:
     
     LOOKUP_FILE = "lookup.sqlite3"
 
@@ -32,40 +34,42 @@ class Lookup:
         if(not os.path.exists(lookupFolder)):
            os.mkdir(lookupFolder)
 
-        lookupPath = os.path.join(lookupFolder, Lookup.LOOKUP_FILE)
+        lookupPath = os.path.join(lookupFolder, DomainLookup.LOOKUP_FILE)
         if(not os.path.exists(lookupPath)):
-            Lookup.CreateDB(lookupPath)
+            DomainLookup.CreateDB(lookupPath)
 
-        Lookup.db = sqlite3.connect(lookupPath)
-        Lookup.UpdateDB()
+        DomainLookup.db = sqlite3.connect(lookupPath)
+        DomainLookup.UpdateDB()
         print("Done.\n")
 
     @staticmethod
     def CreateDB(path : str) -> None:
-        Lookup.db = sqlite3.connect(path)
+        DomainLookup.db = sqlite3.connect(path)
 
-        Lookup.CreateTables()
-        Lookup.CreateRelations()
+        DomainLookup.CreateTables()
+        DomainLookup.CreateRelations()
 
-        Lookup.db.commit()
-        Lookup.db.close()
+        DomainLookup.db.commit()
+        DomainLookup.db.close()
 
+    # Creates the basic "DM" table.
     @staticmethod
     def CreateTables() -> None:
-        cursor = Lookup.db.cursor()
+        cursor = DomainLookup.db.cursor()
 
         create_masters = """
         CREATE TABLE IF NOT EXISTS '{}' (
                 'id' INT PRIMARY KEY
             );
-        """.format(Lookup.DM_TABLE)
+        """.format(DomainLookup.DM_TABLE)
         cursor.execute(create_masters)
 
         cursor.close()
     
+    # Creates all the relation tables (DM & attribute, DM & type...)
     @staticmethod
     def CreateRelations() -> None:
-        cursor = Lookup.db.cursor()
+        cursor = DomainLookup.db.cursor()
 
         create_master_relation = """
             CREATE TABLE IF NOT EXISTS '{relation}' (
@@ -76,8 +80,8 @@ class Lookup:
             );
         """
 
-        for table in [Lookup.ATTR_TABLE, Lookup.RACE_TABLE, Lookup.ARCH_TABLE]:
-            cursor.execute(create_master_relation.format(master=Lookup.DM_TABLE, relation=table))
+        for table in [DomainLookup.ATTR_TABLE, DomainLookup.RACE_TABLE, DomainLookup.ARCH_TABLE]:
+            cursor.execute(create_master_relation.format(master=DomainLookup.DM_TABLE, relation=table))
         
         create_master_stat = """
             CREATE TABLE IF NOT EXISTS '{stat}' (
@@ -87,7 +91,7 @@ class Lookup:
                 PRIMARY KEY('{master}','atk','def'),
                 FOREIGN KEY('{master}') REFERENCES '{master}'('id')
             );
-        """.format(master=Lookup.DM_TABLE, stat=Lookup.STAT_TABLE)
+        """.format(master=DomainLookup.DM_TABLE, stat=DomainLookup.STAT_TABLE)
         cursor.execute(create_master_stat)
 
         create_master_mention = """
@@ -97,14 +101,18 @@ class Lookup:
                 PRIMARY KEY('{mention}','{master}'),
                 FOREIGN KEY('{master}') REFERENCES '{master}'('id')
             );
-        """.format(master=Lookup.DM_TABLE, mention=Lookup.QUOT_TABLE)
+        """.format(master=DomainLookup.DM_TABLE, mention=DomainLookup.QUOT_TABLE)
         cursor.execute(create_master_mention)
 
         cursor.close()
 
+    # Generates the domain for a list of cards in the given interval.
+    # Called by "UpdateDB" in a multiprocesses.
     @staticmethod
     def ProcessDomainsJob(data: list, allDMs: list, start: int, end: int):
         sys.stdout = open(os.devnull, 'w')
+
+        # Jobs don't share the same static variables, so we need to setup these again.
         Archetypes.Setup()
         AttributesAndRaces.Setup()
         CardsCDB.Setup()
@@ -114,11 +122,15 @@ class Lookup:
             dm = Domain(card)
             allDMs.append(dm)
 
+    # Updates the DB by adding missing DMs' information.
     @staticmethod
     def UpdateDB() -> None:
         all_monsters = set(CardsCDB.GetAllMonsterIds())
-        cursor = Lookup.db.cursor()
-        lookup_monsters = set(cursor.execute("Select id FROM {}".format(Lookup.DM_TABLE)).fetchall())
+        cursor = DomainLookup.db.cursor()
+        lookup_monsters = set(cursor.execute("Select id FROM {}".format(DomainLookup.DM_TABLE)).fetchall())
+
+        # Here we compare all the DMs in the CardCDB with all the DMs in the Lookup.
+        # If both tables are up to date, missing monsters should be empty.
         missing_monsters = all_monsters - lookup_monsters
 
         if(len(missing_monsters) > 0):
@@ -130,11 +142,14 @@ class Lookup:
 
             processes : list[Process] = []
             n = 0
+
+            # division by 8 so it splits into 8 processes (most pcs have 4 multicores, so thats why)
+            # but if there are less than 8 monsters to insert, use one instead (otherwise the indexes get bad)
             step = len(data) // (8 if len(data) > 7 else 1)
 
             while(n < len(data)):
                 endIndex = min(n + step, len(data))
-                processes.append(Process(target=Lookup.ProcessDomainsJob, args=(data, allDMs, n, endIndex)))
+                processes.append(Process(target=DomainLookup.ProcessDomainsJob, args=(data, allDMs, n, endIndex)))
                 n = endIndex
 
             for p in processes:
@@ -143,40 +158,41 @@ class Lookup:
             for p in processes:
                 p.join()
 
-            Lookup.AddDomain(allDMs)
+            DomainLookup.AddDomain(allDMs)
 
+    # Adds a new domain to the database.
     @staticmethod
     def AddDomain(domains : list[Domain]) -> None:
-        insert_master = "INSERT OR IGNORE INTO {}(id) VALUES (?);".format(Lookup.DM_TABLE)
+        insert_master = "INSERT OR IGNORE INTO {}(id) VALUES (?);".format(DomainLookup.DM_TABLE)
         insert_relation = "INSERT OR IGNORE INTO {relation} ({master}, {relation}) VALUES (?,?);"
         insert_stats = "INSERT OR IGNORE INTO {stat}({master}, atk, def) VALUES (?, ?, ?)"
 
-        cursor = Lookup.db.cursor()
+        cursor = DomainLookup.db.cursor()
         for domain in domains:
             cursor.execute(insert_master, (domain.DM.id,))
 
             for attr in domain.attributes:
-                cursor.execute(insert_relation.format(master=Lookup.DM_TABLE, relation=Lookup.ATTR_TABLE), (domain.DM.id, attr,))
+                cursor.execute(insert_relation.format(master=DomainLookup.DM_TABLE, relation=DomainLookup.ATTR_TABLE), (domain.DM.id, attr,))
 
             for race in domain.races:
-                cursor.execute(insert_relation.format(master=Lookup.DM_TABLE, relation=Lookup.RACE_TABLE), (domain.DM.id, race,))
+                cursor.execute(insert_relation.format(master=DomainLookup.DM_TABLE, relation=DomainLookup.RACE_TABLE), (domain.DM.id, race,))
             
             for arch in domain.setcodes:
-                cursor.execute(insert_relation.format(master=Lookup.DM_TABLE, relation=Lookup.ARCH_TABLE), (domain.DM.id, arch,))
+                cursor.execute(insert_relation.format(master=DomainLookup.DM_TABLE, relation=DomainLookup.ARCH_TABLE), (domain.DM.id, arch,))
             
             for mention in domain.namedCards:
-                cursor.execute(insert_relation.format(master=Lookup.DM_TABLE, relation=Lookup.QUOT_TABLE), (domain.DM.id, mention,))
+                cursor.execute(insert_relation.format(master=DomainLookup.DM_TABLE, relation=DomainLookup.QUOT_TABLE), (domain.DM.id, mention,))
             
             for stat in domain.battleStats:
-                cursor.execute(insert_stats.format(master=Lookup.DM_TABLE, stat=Lookup.STAT_TABLE), (domain.DM.id, stat[0], stat[1]))
+                cursor.execute(insert_stats.format(master=DomainLookup.DM_TABLE, stat=DomainLookup.STAT_TABLE), (domain.DM.id, stat[0], stat[1]))
 
         cursor.close()
-        Lookup.db.commit()
+        DomainLookup.db.commit()
 
+    # Returns all DMs that have the given monster card in their domain.
     @staticmethod
     def FilterMonster(monster : Card):
-
-        filter = Lookup.db.cursor()
+        filter = DomainLookup.db.cursor()
         
         select = """
             SELECT id from {master}
@@ -185,16 +201,16 @@ class Lookup:
                 OR EXISTS (SELECT {master} FROM {race} WHERE {master}.id = {master} AND {race} = ?)
                 OR EXISTS (SELECT {master} FROM {mention} WHERE {master}.id = {master} AND {mention} = ?)
                 OR EXISTS (SELECT {master} FROM {stat} WHERE {master}.id = {master} AND atk = ? AND def = ?)
-        """.format(master=Lookup.DM_TABLE,
-                    attr=Lookup.ATTR_TABLE, 
-                    race=Lookup.RACE_TABLE, 
-                    mention=Lookup.QUOT_TABLE, 
-                    stat=Lookup.STAT_TABLE)
+        """.format(master=DomainLookup.DM_TABLE,
+                    attr=DomainLookup.ATTR_TABLE, 
+                    race=DomainLookup.RACE_TABLE, 
+                    mention=DomainLookup.QUOT_TABLE, 
+                    stat=DomainLookup.STAT_TABLE)
         
         args = [monster.attribute, monster.race, monster.name.lower(), monster.attack, monster.defense]
 
         for arch in monster.setcodes:
-            select += " OR EXISTS (SELECT {master} FROM {arch} WHERE {master}.id = {master} AND {arch} = ?)".format(master=Lookup.DM_TABLE, arch=Lookup.ARCH_TABLE)
+            select += " OR EXISTS (SELECT {master} FROM {arch} WHERE {master}.id = {master} AND {arch} = ?)".format(master=DomainLookup.DM_TABLE, arch=DomainLookup.ARCH_TABLE)
             args.append(Card.GetBaseArchetype(arch))
 
         return filter.execute(select, tuple(args)).fetchall()
