@@ -69,7 +69,11 @@ class DownloadManager:
     @staticmethod
     def CheckIfFileWasUpdatedFromURL(URL : str, last_update : datetime) -> bool:
         fileInfo = requests.get(URL).json()
-        
+
+        if(fileInfo is None or len(fileInfo) == 0):
+            print("Couldn't download file from " + URL + ".")
+            return False
+
         # If it contains "message", it means it returned this:
             # {'message': "API rate limit exceeded for IP. 
             # (But here's the good news: Authenticated requests get a higher rate limit. Check out the documentation for more details.)",
