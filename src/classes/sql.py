@@ -65,6 +65,10 @@ class CardsCDB:
                 # Delete CDB after it has been merged
                 os.remove(os.path.join(DownloadManager.GetCdbFolder(), file))
         
+        # For some reason, alt arts have no setcode. This small code updates them accordingly.
+        updateAltArts = "UPDATE datas SET setcode = (SELECT setcode FROM datas as d2 WHERE datas.alias = d2.id) WHERE datas.alias != 0 AND datas.setcode = 0"
+        cursor.execute(updateAltArts)
+
         # Commiting save this to the current file (cards.cdb)
         db.commit()
         db.close()
