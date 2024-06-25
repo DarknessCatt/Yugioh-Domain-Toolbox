@@ -6,7 +6,8 @@ from multiprocessing import Process, Manager
 
 from classes.downloadManager import DownloadManager
 from classes.sql import CardsCDB
-from constants.hexCodesReference import AttributesAndRaces, Archetypes
+from classes.textParsers.archetypes import Archetypes
+from constants.hexCodesReference import AttributesAndRaces
 
 from classes.card import Card
 from classes.domain import Domain
@@ -113,7 +114,6 @@ class DomainLookup:
         sys.stdout = open(os.devnull, 'w')
 
         # Jobs don't share the same static variables, so we need to setup these again.
-        Archetypes.Setup()
         AttributesAndRaces.Setup()
         CardsCDB.Setup()
 
@@ -211,7 +211,7 @@ class DomainLookup:
 
         for arch in monster.setcodes:
             select += " OR EXISTS (SELECT {master} FROM {arch} WHERE {master}.id = {master} AND {arch} = ?)".format(master=DomainLookup.DM_TABLE, arch=DomainLookup.ARCH_TABLE)
-            args.append(Card.GetBaseArchetype(arch))
+            args.append(Archetypes.Instance().GetBaseArchetype(arch))
 
         return filter.execute(select, tuple(args)).fetchall()
             

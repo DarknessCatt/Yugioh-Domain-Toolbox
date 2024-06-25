@@ -1,8 +1,9 @@
 import re
-
-from constants.hexCodesReference import AttributesAndRaces, Archetypes
-from classes.card import Card
 import classes
+
+from classes.textParsers.archetypes import Archetypes
+from classes.card import Card
+from constants.hexCodesReference import AttributesAndRaces
 
 # A Deck masters domain, including information as well as the cards themselves.
 class Domain:
@@ -124,9 +125,9 @@ class Domain:
         # Mentions is straightfoward: it's either an archetype or an card name.
         # (not always true about the card name, but doesn't lead to problems since it has to be an exact match anyway)
         for mention in mentions:
-            if(mention in Archetypes.archetypes):
+            if(mention in Archetypes.Instance().nameHex):
                 # Add the HEXCODE of the archetypes.
-                self.setcodes.add(Archetypes.archetypes[mention])
+                self.setcodes.add(Archetypes.Instance().nameHex[mention])
             else:
                 self.namedCards.add(mention)
 
@@ -166,19 +167,14 @@ class Domain:
     def __init__(self, DM: Card) -> None:
         self.DM = DM
         # All these refer to attributes, races... belonging in the domain.
-        self.attributes = set()
-        self.races = set()
+        self.attributes = set([DM.attribute])
+        self.races = set([DM.race])
         self.setcodes = set(DM.setcodes)
         self.battleStats = set()
         self.namedCards = set()
 
-        self.attributes.add(DM.attribute)
-        # Don't forget the DIVINE attribute
+        # Don't forget the DIVINES attribute
         self.attributes.add(AttributesAndRaces.attributes[AttributesAndRaces.DIVINE])
-        
-        self.races.add(DM.race)
-        # Theoretically not necessary, since all divine-beasts are already divine attribute,
-        # but better safe than sorry.
         self.races.add(AttributesAndRaces.races[AttributesAndRaces.DIVINE])
 
         # This checks if the monster is a normal ("vanilla") monster.
@@ -189,7 +185,12 @@ class Domain:
         # Replace all sub-archetypes with their base archetypes,
         # allowing, for example, a "Black Luster Soldier" ritual monster to
         # include all "Chaos" monsters like "Chaos Valkyria."
-        self.setcodes = set(map(lambda arch : Card.GetBaseArchetype(arch), self.setcodes))
+        baseSetcodes = set()
+        for arch in self.setcodes:
+            baseCode = Archetypes.Instance().GetBaseArchetype(arch)
+            if(not baseCode is None):
+                baseSetcodes.add(baseCode)
+        self.setcodes = baseSetcodes
 
         self.cards = []
 
@@ -198,7 +199,7 @@ class Domain:
             self.DM.name,
             "Attributes: " + str([AttributesAndRaces.reverseAttr[code] for code in self.attributes]),
             "Types: " + str([AttributesAndRaces.reverseRace[code] for code in self.races]),
-            "Archetypes: " + str([Archetypes.reverseArch[code] for code in self.setcodes]),
+            "Archetypes: " + str([Archetypes.Instance().hexName[code] for code in self.setcodes]),
             "ATK/DEF: " + (str(self.battleStats) if len(self.battleStats) > 0 else "{}"),
             "Named Cards: " + (str(self.namedCards) if len(self.namedCards) > 0 else "{}")
         ])
@@ -232,7 +233,7 @@ class Domain:
             # Since all setcodes in the domain are already their base version
             # (It's converted in the constructor)
             # We only have to compare it with the base archetype of the current card.
-            cardBaseSetcode = Card.GetBaseArchetype(cardSetcode)
+            cardBaseSetcode = Archetypes.Instance().GetBaseArchetype(cardSetcode)
 
             for domainSetcode in self.setcodes:
                 if(cardBaseSetcode == domainSetcode):
