@@ -5,7 +5,7 @@ class TextParser:
     # Text: the entire text to be parsed
     # Header: the start of the section to be parsed
     # Line: The regex to use when parsing
-    # Dic: Where to store the information 
+    # Dic: Where to store the information ordered by {first column : second column}
     # ReverseDic: same as dic, but reversed
     def ParseSection(self, text: str, header: str, line: str, dic: dict, reverseDic: dict) -> None:
         # First, retrive the entire section of the file.
@@ -20,5 +20,5 @@ class TextParser:
         # For each entry in the section, retrieve the archetype's name and hexcode.
         for entry in list.split("\n"):
             info = re.search(line, entry)
-            dic[info.group(2).lower()] = int(info.group(1), 0)
-            reverseDic[int(info.group(1), 0)] = info.group(2).lower()
+            dic[info.group(1)] = info.group(2)
+            reverseDic[info.group(2)] = info.group(1)

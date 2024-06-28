@@ -7,7 +7,6 @@ from multiprocessing import Process, Manager
 from classes.downloadManager import DownloadManager
 from classes.sql import CardsCDB
 from classes.textParsers.archetypes import Archetypes
-from constants.hexCodesReference import AttributesAndRaces
 
 from classes.card import Card
 from classes.domain import Domain
@@ -114,7 +113,6 @@ class DomainLookup:
         sys.stdout = open(os.devnull, 'w')
 
         # Jobs don't share the same static variables, so we need to setup these again.
-        AttributesAndRaces.Setup()
         CardsCDB.Setup()
 
         for i in range(start, end):

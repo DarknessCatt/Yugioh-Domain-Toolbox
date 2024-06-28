@@ -4,8 +4,9 @@ from multiprocessing import freeze_support
 from interfaces.cli import CommandLineInterface
 from interfaces.gui import GraphicalUserInterface
 
-from constants.hexCodesReference import AttributesAndRaces
 from classes.textParsers.archetypes import Archetypes
+from classes.textParsers.attributes import Attributes
+from classes.textParsers.races import Races
 from classes.downloadManager import DownloadManager
 
 from classes.sql import CardsCDB
@@ -18,7 +19,8 @@ def main():
     # Setup
     DownloadManager.DownloadFiles()
     Archetypes.Instance()
-    AttributesAndRaces.Setup()
+    Attributes.Instance()
+    Races.Instance()
     CardsCDB.Setup()
     DomainLookup.Setup()
     print("")

@@ -42,7 +42,6 @@ class Archetypes(TextParser):
         # white forest?
     ]
 
-    # TODO add hex codes
     EXTRA_CASES = {
         "true draco": int('0xf9', 0),
         "true king": int('0xf9', 0),
@@ -72,8 +71,8 @@ class Archetypes(TextParser):
                 text,
                 Archetypes.HEADER,
                 Archetypes.PARSE_LINE,
-                self.nameHex,
-                self.hexName
+                self.hexName,
+                self.nameHex
             )
         
         with open(os.path.join(DownloadManager.GetCardInfoFolder(), DownloadManager.PRE_ARCHETYPES_FILENAME), "r", encoding="utf8") as f:
@@ -84,16 +83,19 @@ class Archetypes(TextParser):
                 text,
                 Archetypes.PRE_HEADER,
                 Archetypes.PARSE_LINE,
-                self.nameHex,
-                self.hexName
+                self.hexName,
+                self.nameHex
             )
             self.ParseSection(
                 text,
                 Archetypes.PRE_ARCHETYPE_HEADER,
                 Archetypes.PARSE_LINE,
-                self.nameHex,
-                self.hexName
+                self.hexName,
+                self.nameHex
             )
+
+        self.hexName = {int(k, 0):v.lower() for k,v in self.hexName.items()}
+        self.nameHex = {k.lower():int(v, 0) for k,v in self.nameHex.items()}
 
         for item in Archetypes.IGNORE_LIST:
             if(item in self.nameHex):

@@ -2,8 +2,9 @@ import re
 import classes
 
 from classes.textParsers.archetypes import Archetypes
+from classes.textParsers.attributes import Attributes
+from classes.textParsers.races import Races
 from classes.card import Card
-from constants.hexCodesReference import AttributesAndRaces
 
 # A Deck masters domain, including information as well as the cards themselves.
 class Domain:
@@ -107,7 +108,7 @@ class Domain:
         # The list is manually typed because in the ref file they are named "beastwarrior" / "divine" and so on, which would provide no matches.
         RACES = "(aqua|beast-warrior|beast|cyberse|dinosaur|divine-beast|dragon|fairy|fiend|fish|insect|machine|plant|psychic|pyro|reptile|rock|sea serpent|spellcaster|thunder|warrior|winged beast|wyrm|zombie)"
         # Find all the attributes mentioned in the desc 
-        ATTRIBUTES = "({})".format("|".join(AttributesAndRaces.attributes.keys()))
+        ATTRIBUTES = "({})".format("|".join(Attributes.Instance().nameHex.keys()))
         
         text = self.DM.desc
         _, text = Domain.CleanDesc(text, NOT_TREATED_AS)
@@ -157,11 +158,11 @@ class Domain:
                 # They are written "Divine-Beast" in card text
                 # but named "divine" in the AttributesAndRaces reference.
                 key = "divine"
-            self.races.add(AttributesAndRaces.races[key])
+            self.races.add(Races.Instance().nameHex[key])
 
         # Add the HEXCODE of the races.
         for attribute in attributes:
-            self.attributes.add(AttributesAndRaces.attributes[attribute])
+            self.attributes.add(Attributes.Instance().nameHex[attribute])
 
     # Creates a new Domain for the given deck master.
     def __init__(self, DM: Card) -> None:
@@ -174,8 +175,8 @@ class Domain:
         self.namedCards = set()
 
         # Don't forget the DIVINES attribute
-        self.attributes.add(AttributesAndRaces.attributes[AttributesAndRaces.DIVINE])
-        self.races.add(AttributesAndRaces.races[AttributesAndRaces.DIVINE])
+        self.attributes.add(Attributes.Instance().nameHex[Attributes.DIVINE])
+        self.races.add(Races.Instance().nameHex[Races.DIVINE])
 
         # This checks if the monster is a normal ("vanilla") monster.
         # Flavor text is ignored for domain, so we don't check the description in these cases.
@@ -197,8 +198,8 @@ class Domain:
     def __str__(self) -> str:
         return "\n".join([
             self.DM.name,
-            "Attributes: " + str([AttributesAndRaces.reverseAttr[code] for code in self.attributes]),
-            "Types: " + str([AttributesAndRaces.reverseRace[code] for code in self.races]),
+            "Attributes: " + str([Attributes.Instance().hexName[code] for code in self.attributes]),
+            "Types: " + str([Races.Instance().hexName[code] for code in self.races]),
             "Archetypes: " + str([Archetypes.Instance().hexName[code] for code in self.setcodes]),
             "ATK/DEF: " + (str(self.battleStats) if len(self.battleStats) > 0 else "{}"),
             "Named Cards: " + (str(self.namedCards) if len(self.namedCards) > 0 else "{}")
