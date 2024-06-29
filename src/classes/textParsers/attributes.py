@@ -13,16 +13,21 @@ class Attributes(TextParser):
     # The line that describes the format of each attribute entry in the section.
     PARSE_LINE = "#define ATTRIBUTE_([\\w]+)\\s+(\\S+)"
 
-    instance = None
+    _instance = None
 
     @staticmethod
     def Instance():
-        if(Attributes.instance is None):
-            Attributes.instance = Attributes()
+        if(Attributes._instance is None):
+            Attributes()
 
-        return Attributes.instance
+        return Attributes._instance
     
     def __init__(self) -> None:
+        if(not Attributes._instance is None):
+            raise Warning("This class is a Singleton!")
+
+        Attributes._instance = self
+
         self.hexName = {}
         self.nameHex = {}
 

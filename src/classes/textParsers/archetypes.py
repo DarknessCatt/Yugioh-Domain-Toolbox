@@ -49,16 +49,21 @@ class Archetypes(TextParser):
     # Hex value for the base archetype bits of a setcode.
     HEX_BASE_SETCODE = int('0xfff', 0)
 
-    instance = None
+    _instance = None
 
     @staticmethod
     def Instance():
-        if(Archetypes.instance is None):
-            Archetypes.instance = Archetypes()
+        if(Archetypes._instance is None):
+            Archetypes()
 
-        return Archetypes.instance
+        return Archetypes._instance
     
     def __init__(self) -> None:
+        if(not Archetypes._instance is None):
+            raise Warning("This class is a Singleton!")
+        
+        Archetypes._instance = self
+
         self.hexName = {}
         self.nameHex = {}
 

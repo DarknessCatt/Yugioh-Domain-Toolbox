@@ -13,16 +13,21 @@ class Races(TextParser):
     # The line that describes the format of each type entry in the section.
     PARSE_LINE = "#define RACE_([\\w]+)\\s+(\\S+)"
 
-    instance = None
+    _instance = None
 
     @staticmethod
     def Instance():
-        if(Races.instance is None):
-            Races.instance = Races()
+        if(Races._instance is None):
+            Races()
 
-        return Races.instance
+        return Races._instance
     
     def __init__(self) -> None:
+        if(not Races._instance is None):
+            raise Warning("This class is a Singleton!")
+        
+        Races._instance = self
+
         self.hexName = {}
         self.nameHex = {}
 
