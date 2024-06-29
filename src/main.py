@@ -9,8 +9,8 @@ from classes.textParsers.attributes import Attributes
 from classes.textParsers.races import Races
 from classes.downloadManager import DownloadManager
 
-from classes.sql import CardsCDB
-from classes.lookup import DomainLookup
+from classes.databases.cardsDB import CardsDB
+from classes.databases.domainLookup import DomainLookup
 
 # Main function. Runs when main.py is called.
 def main():
@@ -21,7 +21,7 @@ def main():
     Archetypes.Instance()
     Attributes.Instance()
     Races.Instance()
-    CardsCDB.Setup()
+    CardsDB.Setup()
     DomainLookup.Setup()
     print("")
 

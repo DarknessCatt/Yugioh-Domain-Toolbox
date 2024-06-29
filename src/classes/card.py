@@ -3,9 +3,6 @@ class Card:
     # The hex value for a single setcode (archetype) belonging to a card.
     HEX_SETCODE = int('0xffff', 0)
 
-    # Data which should be retrieved from the sqlite query.
-    QUERY_VALUES = "datas.id, setcode, atk, def, race, attribute, name, desc, type from datas NATURAL JOIN texts"
-
     # Creates a new card from the data retrieved from the DB.
     def __init__(self, data) -> None:
         # Order of values depend on the values retrieve, so any changes here

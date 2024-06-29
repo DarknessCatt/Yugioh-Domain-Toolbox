@@ -5,7 +5,7 @@ import sqlite3
 from multiprocessing import Process, Manager
 
 from classes.downloadManager import DownloadManager
-from classes.sql import CardsCDB
+from classes.databases.cardsDB import CardsDB
 from classes.textParsers.archetypes import Archetypes
 
 from classes.card import Card
@@ -113,17 +113,17 @@ class DomainLookup:
         sys.stdout = open(os.devnull, 'w')
 
         # Jobs don't share the same static variables, so we need to setup these again.
-        CardsCDB.Setup()
+        CardsDB.Setup()
 
         for i in range(start, end):
-            card = Card(CardsCDB.GetMonsterById(data[i][0]))
+            card = Card(CardsDB.GetMonsterById(data[i][0]))
             dm = Domain(card)
             allDMs.append(dm)
 
     # Updates the DB by adding missing DMs' information.
     @staticmethod
     def UpdateDB() -> None:
-        all_monsters = set(CardsCDB.GetAllMonsterIds())
+        all_monsters = set(CardsDB.GetAllMonsterIds())
         cursor = DomainLookup.db.cursor()
         lookup_monsters = set(cursor.execute("Select id FROM {}".format(DomainLookup.DM_TABLE)).fetchall())
 

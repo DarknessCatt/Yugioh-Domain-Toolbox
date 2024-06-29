@@ -30,7 +30,6 @@ class Archetypes(TextParser):
         "spiritual beast tamer",
         "entity",
         "supreme king",
-        "True Draco|True King",
         "spiritual art",
         "of the forest",
         "byssted",
@@ -108,7 +107,6 @@ class Archetypes(TextParser):
         
         for name, hex in Archetypes.EXTRA_CASES.items():
             self.nameHex[name] = hex
-            self.hexName[hex] = name
 
         print("Done.\n")
     

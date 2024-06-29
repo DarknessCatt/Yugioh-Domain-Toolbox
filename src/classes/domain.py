@@ -1,10 +1,11 @@
 import re
-import classes
 
 from classes.textParsers.archetypes import Archetypes
 from classes.textParsers.attributes import Attributes
 from classes.textParsers.races import Races
+
 from classes.card import Card
+from classes.databases.cardsDB import CardsDB
 
 # A Deck masters domain, including information as well as the cards themselves.
 class Domain:
@@ -135,7 +136,7 @@ class Domain:
         # Add archetype of named cards.
         for name in self.namedCards:
             # Have to do to avoid a circular import.
-            data = classes.sql.CardsCDB.GetMonsterByName(name)
+            data = CardsDB.GetMonsterByName(name)
             if(not data is None):
                 card = Card(data)
                 self.setcodes.update(card.setcodes)
