@@ -37,7 +37,7 @@ class DeckChecker:
         if(len(duplicates) > 0):
             error = ["Duplicates found: "]
             for duplicate in duplicates:
-                error.append(CardsDB.GetNameById(duplicate))
+                error.append(CardsDB.Instance().GetNameById(duplicate))
             message = "\n".join(error)
             return message
 
@@ -46,7 +46,7 @@ class DeckChecker:
     # Checks if the DM is a monster card and if all other cards are within its domain.
     @staticmethod
     def CheckValidDomain(decks : list[array]) -> str:
-        dmData = CardsDB.GetMonsterById(decks[2][0])
+        dmData = CardsDB.Instance().GetMonsterById(decks[2][0])
         if dmData is None:
             return "DeckMaster is not a monster card."
 
@@ -58,7 +58,7 @@ class DeckChecker:
         # Check main and extra deck
         for i in range(0, 1):
             for passcode in decks[i]:
-                data = CardsDB.GetMonsterById(passcode)
+                data = CardsDB.Instance().GetMonsterById(passcode)
 
                 # if data is None, it's a spell and trap and it's fine.
                 # Domain restrictions only applies to monsters.

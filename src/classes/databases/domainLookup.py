@@ -112,18 +112,15 @@ class DomainLookup:
     def ProcessDomainsJob(data: list, allDMs: list, start: int, end: int):
         sys.stdout = open(os.devnull, 'w')
 
-        # Jobs don't share the same static variables, so we need to setup these again.
-        CardsDB.Setup()
-
         for i in range(start, end):
-            card = Card(CardsDB.GetMonsterById(data[i][0]))
+            card = Card(CardsDB.Instance().GetMonsterById(data[i][0]))
             dm = Domain(card)
             allDMs.append(dm)
 
     # Updates the DB by adding missing DMs' information.
     @staticmethod
     def UpdateDB() -> None:
-        all_monsters = set(CardsDB.GetAllMonsterIds())
+        all_monsters = set(CardsDB.Instance().GetAllMonsterIds())
         cursor = DomainLookup.db.cursor()
         lookup_monsters = set(cursor.execute("Select id FROM {}".format(DomainLookup.DM_TABLE)).fetchall())
 

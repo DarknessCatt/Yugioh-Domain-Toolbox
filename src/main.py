@@ -21,7 +21,7 @@ def main():
     Archetypes.Instance()
     Attributes.Instance()
     Races.Instance()
-    CardsDB.Setup()
+    CardsDB.Instance()
     DomainLookup.Setup()
     print("")
 

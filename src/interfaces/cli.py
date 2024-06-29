@@ -81,7 +81,7 @@ class CommandLineInterface:
                 continue
             
             else:
-                dm = CardsDB.GetMonsterById(answer)
+                dm = CardsDB.Instance().GetMonsterById(answer)
                 if(dm is None):
                     self.InfoMessage("Sorry, I could not find card with id: [{}]\nAre you sure this is the correct id?\nRemember only monster cards can be Deck Masters.".format(answer))
                     continue
@@ -97,12 +97,12 @@ class CommandLineInterface:
     def GetDomainCards(self, domain: Domain) -> None:
         print("Retrieving monsters in this domain...")
 
-        data = CardsDB.GetMonstersByAttributeAndRace(domain.attributes, domain.races)
+        data = CardsDB.Instance().GetMonstersByAttributeAndRace(domain.attributes, domain.races)
         for row in data:
             card = Card(row)
             domain.AddCardToDomain(card)
 
-        data = CardsDB.GetMonstersExcludingAttributeAndRace(domain.attributes, domain.races)
+        data = CardsDB.Instance().GetMonstersExcludingAttributeAndRace(domain.attributes, domain.races)
         for row in data:
             card = Card(row)
             domain.CheckAndAddCardToDomain(card)
@@ -118,7 +118,7 @@ class CommandLineInterface:
                 continue
 
             elif(answer == '1'):
-                data = CardsDB.GetAllSpellsAndTraps()
+                data = CardsDB.Instance().GetAllSpellsAndTraps()
                 for row in data:
                     card = Card(row)
                     domain.AddCardToDomain(card)
@@ -197,7 +197,7 @@ class CommandLineInterface:
                     desired : list[Card] = []
                     for deck in decks:
                         for passcode in deck:
-                            data = CardsDB.GetMonsterById(passcode)
+                            data = CardsDB.Instance().GetMonsterById(passcode)
                             if(not data is None):
                                 desired.append(Card(data))
                     
@@ -213,7 +213,7 @@ class CommandLineInterface:
                         # TODO: Process this in some way (banlist?)
                         dmList = []
                         for dm in validDMs:
-                            dmList.append(CardsDB.GetNameById(dm[0]))
+                            dmList.append(CardsDB.Instance().GetNameById(dm[0]))
                         
                         dmList.sort()
 

@@ -136,7 +136,7 @@ class Domain:
         # Add archetype of named cards.
         for name in self.namedCards:
             # Have to do to avoid a circular import.
-            data = CardsDB.GetMonsterByName(name)
+            data = CardsDB.Instance().GetMonsterByName(name)
             if(not data is None):
                 card = Card(data)
                 self.setcodes.update(card.setcodes)

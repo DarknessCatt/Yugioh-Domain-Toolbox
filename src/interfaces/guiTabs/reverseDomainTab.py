@@ -24,7 +24,7 @@ class ReverseDomainGUI:
             desired : list[Card] = []
             for deck in decks:
                 for passcode in deck:
-                    data = CardsDB.GetMonsterById(passcode)
+                    data = CardsDB.Instance().GetMonsterById(passcode)
                     if(not data is None):
                         desired.append(Card(data))
             
@@ -45,7 +45,7 @@ class ReverseDomainGUI:
             # TODO: Process this in some way (banlist?)
             dmList = []
             for dm in validDMs:
-                dmList.append(CardsDB.GetNameById(dm[0]))
+                dmList.append(CardsDB.Instance().GetNameById(dm[0]))
             
             dmList.sort()
 
