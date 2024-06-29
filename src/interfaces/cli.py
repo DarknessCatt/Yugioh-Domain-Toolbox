@@ -88,7 +88,8 @@ class CommandLineInterface:
 
                 else:
                     card = Card(dm)
-                    domain = Domain(card)
+                    data = DomainLookup.Instance().GetDomain(card)
+                    domain = Domain.GenerateFromData(card, data)
                     print(domain)
                     print("")
                     return domain
@@ -204,7 +205,7 @@ class CommandLineInterface:
                     if(len(desired) > 0):
                         candidates : list[set] = []
                         for card in desired:
-                            candidates.append(set(DomainLookup.FilterMonster(card)))
+                            candidates.append(set(DomainLookup.Instance().FilterMonster(card)))
 
                         validDMs : set = candidates[0]
                         for candidate in candidates:

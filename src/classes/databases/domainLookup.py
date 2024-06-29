@@ -24,12 +24,22 @@ class DomainLookup:
     QUOT_TABLE = "mention"
     DM_TABLE = "master"
 
-    db = None
+    _instance = None
 
     @staticmethod
-    def Setup() -> None:
-        print("Setting up lookup database.")
+    def Instance():
+        if(DomainLookup._instance is None):
+            DomainLookup()
 
+        return DomainLookup._instance
+
+    def __init__(self) -> None:
+        if(not DomainLookup._instance is None):
+            raise Warning("This class is a Singleton!")
+
+        DomainLookup._instance = self
+
+        print("Setting up lookup database.")
         lookupFolder = DownloadManager.GetLookupFolder()
         if(not os.path.exists(lookupFolder)):
            os.mkdir(lookupFolder)
@@ -38,24 +48,24 @@ class DomainLookup:
         if(not os.path.exists(lookupPath)):
             DomainLookup.CreateDB(lookupPath)
 
-        DomainLookup.db = sqlite3.connect(lookupPath)
-        DomainLookup.UpdateDB()
+        self.db = sqlite3.connect(lookupPath)
+        self.UpdateDB()
         print("Done.\n")
 
     @staticmethod
     def CreateDB(path : str) -> None:
-        DomainLookup.db = sqlite3.connect(path)
+        db = sqlite3.connect(path)
 
-        DomainLookup.CreateTables()
-        DomainLookup.CreateRelations()
+        DomainLookup.CreateTables(db)
+        DomainLookup.CreateRelations(db)
 
-        DomainLookup.db.commit()
-        DomainLookup.db.close()
+        db.commit()
+        db.close()
 
     # Creates the basic "DM" table.
     @staticmethod
-    def CreateTables() -> None:
-        cursor = DomainLookup.db.cursor()
+    def CreateTables(db: sqlite3.Connection) -> None:
+        cursor = db.cursor()
 
         create_masters = """
         CREATE TABLE IF NOT EXISTS '{}' (
@@ -68,8 +78,8 @@ class DomainLookup:
     
     # Creates all the relation tables (DM & attribute, DM & type...)
     @staticmethod
-    def CreateRelations() -> None:
-        cursor = DomainLookup.db.cursor()
+    def CreateRelations(db: sqlite3.Connection) -> None:
+        cursor = db.cursor()
 
         create_master_relation = """
             CREATE TABLE IF NOT EXISTS '{relation}' (
@@ -114,14 +124,13 @@ class DomainLookup:
 
         for i in range(start, end):
             card = Card(CardsDB.Instance().GetMonsterById(data[i][0]))
-            dm = Domain(card)
+            dm = Domain.GenerateFromCard(card)
             allDMs.append(dm)
 
     # Updates the DB by adding missing DMs' information.
-    @staticmethod
-    def UpdateDB() -> None:
+    def UpdateDB(self) -> None:
         all_monsters = set(CardsDB.Instance().GetAllMonsterIds())
-        cursor = DomainLookup.db.cursor()
+        cursor = self.db.cursor()
         lookup_monsters = set(cursor.execute("Select id FROM {}".format(DomainLookup.DM_TABLE)).fetchall())
 
         # Here we compare all the DMs in the CardCDB with all the DMs in the Lookup.
@@ -153,16 +162,15 @@ class DomainLookup:
             for p in processes:
                 p.join()
 
-            DomainLookup.AddDomain(allDMs)
+            self.AddDomains(allDMs)
 
     # Adds a new domain to the database.
-    @staticmethod
-    def AddDomain(domains : list[Domain]) -> None:
+    def AddDomains(self, domains : list[Domain]) -> None:
         insert_master = "INSERT OR IGNORE INTO {}(id) VALUES (?);".format(DomainLookup.DM_TABLE)
         insert_relation = "INSERT OR IGNORE INTO {relation} ({master}, {relation}) VALUES (?,?);"
         insert_stats = "INSERT OR IGNORE INTO {stat}({master}, atk, def) VALUES (?, ?, ?)"
 
-        cursor = DomainLookup.db.cursor()
+        cursor = self.db.cursor()
         for domain in domains:
             cursor.execute(insert_master, (domain.DM.id,))
 
@@ -182,12 +190,11 @@ class DomainLookup:
                 cursor.execute(insert_stats.format(master=DomainLookup.DM_TABLE, stat=DomainLookup.STAT_TABLE), (domain.DM.id, stat[0], stat[1]))
 
         cursor.close()
-        DomainLookup.db.commit()
+        self.db.commit()
 
     # Returns all DMs that have the given monster card in their domain.
-    @staticmethod
-    def FilterMonster(monster : Card):
-        filter = DomainLookup.db.cursor()
+    def FilterMonster(self, monster : Card):
+        filter = self.db.cursor()
         
         select = """
             SELECT id from {master}
@@ -209,4 +216,26 @@ class DomainLookup:
             args.append(Archetypes.Instance().GetBaseArchetype(arch))
 
         return filter.execute(select, tuple(args)).fetchall()
-            
+    
+    # Retrieves all data from the given monster card
+    # Make sure the data retrieve matches Domain's "GenerateFromLookup" method.
+    def GetDomain(self, monster : Card) -> list:
+        cursor = self.db.cursor()
+
+        generic_query = "Select {table} from {table} where {master} = ?"
+
+        data = []
+        arg = tuple([monster.id])
+
+        for table in [DomainLookup.ATTR_TABLE, DomainLookup.RACE_TABLE, DomainLookup.ARCH_TABLE, DomainLookup.STAT_TABLE, DomainLookup.QUOT_TABLE]:
+            if(table != DomainLookup.STAT_TABLE):
+                query = generic_query.format(master=DomainLookup.DM_TABLE, table=table)
+                data.append(cursor.execute(query, arg).fetchall())
+
+            else:
+                query = "Select atk, def from {table} where {master} = ?".format(master=DomainLookup.DM_TABLE, table=table)
+                data.append(cursor.execute(query, arg).fetchall())
+        
+        cursor.close()
+
+        return data

@@ -6,6 +6,8 @@ import tkinter.scrolledtext
 from classes.card import Card
 from classes.domain import Domain
 from classes.databases.cardsDB import CardsDB
+from classes.databases.domainLookup import DomainLookup
+
 from classes.domainExporter import DomainExporter
 
 # Creates the GUI for the Domain Generator tool.
@@ -29,7 +31,8 @@ class DomainGeneratorGUI:
         dm = CardsDB.Instance().GetMonsterById(answer)
         if(not dm is None):
             card = Card(dm)
-            domain = Domain(card)
+            data = DomainLookup.Instance().GetDomain(card)
+            domain = Domain.GenerateFromData(card, data)
             return domain
         
         return None

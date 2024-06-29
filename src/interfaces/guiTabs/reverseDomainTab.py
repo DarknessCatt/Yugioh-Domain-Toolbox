@@ -36,7 +36,7 @@ class ReverseDomainGUI:
 
             candidates : list[set] = []
             for card in desired:
-                candidates.append(set(DomainLookup.FilterMonster(card)))
+                candidates.append(set(DomainLookup.Instance().FilterMonster(card)))
 
             validDMs : set = candidates[0]
             for candidate in candidates:

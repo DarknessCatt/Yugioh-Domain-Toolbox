@@ -166,33 +166,14 @@ class Domain:
             self.attributes.add(Attributes.Instance().nameHex[attribute])
 
     # Creates a new Domain for the given deck master.
-    def __init__(self, DM: Card) -> None:
-        self.DM = DM
+    def __init__(self) -> None:
+        self.DM: Card = None
         # All these refer to attributes, races... belonging in the domain.
-        self.attributes = set([DM.attribute])
-        self.races = set([DM.race])
-        self.setcodes = set(DM.setcodes)
-        self.battleStats = set()
-        self.namedCards = set()
-
-        # Don't forget the DIVINES attribute
-        self.attributes.add(Attributes.Instance().nameHex[Attributes.DIVINE])
-        self.races.add(Races.Instance().nameHex[Races.DIVINE])
-
-        # This checks if the monster is a normal ("vanilla") monster.
-        # Flavor text is ignored for domain, so we don't check the description in these cases.
-        if(self.DM.type & 16 == 0):
-            self.GetCardDomainFromDesc()
-
-        # Replace all sub-archetypes with their base archetypes,
-        # allowing, for example, a "Black Luster Soldier" ritual monster to
-        # include all "Chaos" monsters like "Chaos Valkyria."
-        baseSetcodes = set()
-        for arch in self.setcodes:
-            baseCode = Archetypes.Instance().GetBaseArchetype(arch)
-            if(not baseCode is None):
-                baseSetcodes.add(baseCode)
-        self.setcodes = baseSetcodes
+        self.attributes: set = None
+        self.races: set = None
+        self.setcodes: set = None
+        self.battleStats: set = None
+        self.namedCards: set = None
 
         self.cards = []
 
@@ -205,6 +186,55 @@ class Domain:
             "ATK/DEF: " + (str(self.battleStats) if len(self.battleStats) > 0 else "{}"),
             "Named Cards: " + (str(self.namedCards) if len(self.namedCards) > 0 else "{}")
         ])
+
+    # Creates a new Domain by parsing the DM's card text for information.
+    # Mainly used by DomainLookup to add entries to the DB.
+    @staticmethod
+    def GenerateFromCard(DM: Card):
+        domain = Domain()
+
+        domain.DM = DM
+        domain.attributes = set([DM.attribute])
+        domain.races = set([DM.race])
+        domain.setcodes = set(DM.setcodes)
+        domain.battleStats = set()
+        domain.namedCards = set()
+
+        # Don't forget the DIVINES attribute
+        domain.attributes.add(Attributes.Instance().nameHex[Attributes.DIVINE])
+        domain.races.add(Races.Instance().nameHex[Races.DIVINE])
+
+        # This checks if the monster is a normal ("vanilla") monster.
+        # Flavor text is ignored for domain, so we don't check the description in these cases.
+        if(domain.DM.type & 16 == 0):
+            domain.GetCardDomainFromDesc()
+
+        # Replace all sub-archetypes with their base archetypes,
+        # allowing, for example, a "Black Luster Soldier" ritual monster to
+        # include all "Chaos" monsters like "Chaos Valkyria."
+        baseSetcodes = set()
+        for arch in domain.setcodes:
+            baseCode = Archetypes.Instance().GetBaseArchetype(arch)
+            if(not baseCode is None):
+                baseSetcodes.add(baseCode)
+        domain.setcodes = baseSetcodes
+
+        return domain
+
+    # Creates a new Domain from data.
+    # Mainly used from data retrieved from DomainLookup.GetDomain, but could also be used for testing.
+    @staticmethod
+    def GenerateFromData(DM: Card, data: list):
+        domain = Domain()
+
+        domain.DM = DM
+        domain.attributes = set(v[0] for v in data[0])
+        domain.races = set(v[0] for v in data[1])
+        domain.setcodes = set(v[0] for v in data[2])
+        domain.battleStats = set(v for v in data[3])
+        domain.namedCards = set(v[0] for v in data[4])
+
+        return domain
 
     # Adds a card to this domain, no questions asked.
     # Used mostly for cards with an attribute or race in the domain,

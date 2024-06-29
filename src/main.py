@@ -22,7 +22,7 @@ def main():
     Attributes.Instance()
     Races.Instance()
     CardsDB.Instance()
-    DomainLookup.Setup()
+    DomainLookup.Instance()
     print("")
 
     if("--cli" in sys.argv):

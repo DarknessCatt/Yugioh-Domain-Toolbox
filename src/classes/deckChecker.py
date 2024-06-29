@@ -1,5 +1,8 @@
 from array import array
+
 from classes.databases.cardsDB import CardsDB
+from classes.databases.domainLookup import DomainLookup
+
 from classes.card import Card
 from classes.domain import Domain
 from classes.ydke import YDKE
@@ -50,7 +53,9 @@ class DeckChecker:
         if dmData is None:
             return "DeckMaster is not a monster card."
 
-        domain = Domain(Card(dmData))
+        dmCard = Card(dmData)
+        data = DomainLookup.Instance().GetDomain(dmCard)
+        domain = Domain.GenerateFromData(dmCard, data)
         print(domain)
         print()
 
