@@ -35,8 +35,7 @@ class CardsDB:
         print("Setting up card database.")
 
         mergedCdbPath = DownloadManager.GetMergedCDBPath()
-        if(not os.path.exists(mergedCdbPath)):
-            CardsDB.MergeCDBs()
+        CardsDB.MergeCDBs()
 
         self.db = sqlite3.connect(mergedCdbPath)
         self.cursor = self.db.cursor()
@@ -51,7 +50,13 @@ class CardsDB:
         print("Merging all CDBs into a single file.")
 
         # Since the cards.cdb is always the biggest, we will use it as a base
-        merge_db = sqlite3.connect(os.path.join(DownloadManager.GetCdbFolder(), DownloadManager.CARDS_CDB))
+        initial_db_file = DownloadManager.CARDS_CDB
+
+        # However, if merged_cards.cdb already exists, use it instead
+        if(os.path.isfile(DownloadManager.GetMergedCDBPath())):
+                initial_db_file = DownloadManager.MERGED_CDB_PREFIX + DownloadManager.CARDS_CDB
+
+        merge_db = sqlite3.connect(os.path.join(DownloadManager.GetCdbFolder(), initial_db_file))
         merge_cursor = merge_db.cursor()
 
         # Retrieve all tables and columns from the CDB
@@ -69,7 +74,7 @@ class CardsDB:
 
         for file in os.listdir(DownloadManager.GetCdbFolder()):
             # For each CDB file other than cards.cdb
-            if(file != DownloadManager.CARDS_CDB and file.endswith(".cdb")):
+            if(file != initial_db_file and file.endswith(".cdb")):
                 # Create a temp database connection
                 tempDB = sqlite3.connect(os.path.join(DownloadManager.GetCdbFolder(), file))
                 tempCursor = tempDB.cursor()
@@ -98,10 +103,11 @@ class CardsDB:
         merge_db.close()
 
         # Rename cards.cdb into merged_cards.cdb
-        os.rename(
-            os.path.join(DownloadManager.GetCdbFolder(), DownloadManager.CARDS_CDB),
-            DownloadManager.GetMergedCDBPath()
-        )
+        if(initial_db_file == DownloadManager.CARDS_CDB):
+            os.rename(
+                os.path.join(DownloadManager.GetCdbFolder(), DownloadManager.CARDS_CDB),
+                DownloadManager.GetMergedCDBPath()
+            )
 
     # Closes the db, if any.
     def CloseDB(self) -> None:
