@@ -31,19 +31,28 @@ class Races(TextParser):
         self.hexName = {}
         self.nameHex = {}
 
+        self.Update()
+
+    def Update(self) -> None:
         print("Setting up Types Reference.")
         
+        updateNameHex = {}
+        updateHexName = {}
+
         with open(os.path.join(DownloadManager.GetCardInfoFolder(), DownloadManager.ATTR_RACES_FILENAME), "r", encoding="utf8") as f:
             text = f.read()
             self.ParseSection(
                 text,
                 Races.HEADER,
                 Races.PARSE_LINE,
-                self.nameHex,
-                self.hexName
+                updateNameHex,
+                updateHexName
             )
         
-        self.nameHex = {k.lower():int(v, 0) for k,v in self.nameHex.items()}
-        self.hexName = {int(k, 0):v.lower() for k,v in self.hexName.items()}
+        updateNameHex = {k.lower():int(v, 0) for k,v in updateNameHex.items()}
+        updateHexName = {int(k, 0):v.lower() for k,v in updateHexName.items()}
 
+        self.hexName = updateHexName
+        self.nameHex = updateNameHex
+        
         print("Done.\n")

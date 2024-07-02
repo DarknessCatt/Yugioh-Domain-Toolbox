@@ -67,6 +67,12 @@ class Archetypes(TextParser):
         self.hexName = {}
         self.nameHex = {}
 
+        self.Update()
+    
+    def Update(self) -> None:
+        updateHexName = {}
+        updateNameHex = {}
+
         print("Setting up Archetype Reference.")
 
         with open(os.path.join(DownloadManager.GetCardInfoFolder(), DownloadManager.ARCHETYPES_FILENAME), "r", encoding="utf8") as f:
@@ -75,8 +81,8 @@ class Archetypes(TextParser):
                 text,
                 Archetypes.HEADER,
                 Archetypes.PARSE_LINE,
-                self.hexName,
-                self.nameHex
+                updateHexName,
+                updateNameHex
             )
         
         with open(os.path.join(DownloadManager.GetCardInfoFolder(), DownloadManager.PRE_ARCHETYPES_FILENAME), "r", encoding="utf8") as f:
@@ -87,34 +93,37 @@ class Archetypes(TextParser):
                 text,
                 Archetypes.PRE_HEADER,
                 Archetypes.PARSE_LINE,
-                self.hexName,
-                self.nameHex
+                updateHexName,
+                updateNameHex
             )
             self.ParseSection(
                 text,
                 Archetypes.PRE_ARCHETYPE_HEADER,
                 Archetypes.PARSE_LINE,
-                self.hexName,
-                self.nameHex
+                updateHexName,
+                updateNameHex
             )
 
-        self.hexName = {int(k, 0):v.lower() for k,v in self.hexName.items()}
-        self.nameHex = {k.lower():int(v, 0) for k,v in self.nameHex.items()}
+        updateHexName = {int(k, 0):v.lower() for k,v in updateHexName.items()}
+        updateNameHex = {k.lower():int(v, 0) for k,v in updateNameHex.items()}
 
         for item in Archetypes.IGNORE_LIST:
-            if(item in self.nameHex):
-                hexCode =  self.nameHex.pop(item)
+            if(item in updateNameHex):
+                hexCode =  updateNameHex.pop(item)
 
                 # Some hexCodes are shared across multiple names, (like both bystial and byssed are the same)
                 # So we need to make sure only delete those that are in the IGNORE_LIST
-                if(hexCode in self.hexName and self.hexName[hexCode] == item):
-                    del self.hexName[hexCode]
+                if(hexCode in updateHexName and updateHexName[hexCode] == item):
+                    del updateHexName[hexCode]
         
         for name, hex in Archetypes.EXTRA_CASES.items():
-            self.nameHex[name] = hex
+            updateNameHex[name] = hex
+
+        self.hexName = updateHexName
+        self.nameHex = updateNameHex
 
         print("Done.\n")
-    
+
     # Helper method to extract the base and valid code of an archetype.
     def GetBaseArchetype(self, hexCode: int) -> int:
         baseCode = hexCode & Archetypes.HEX_BASE_SETCODE

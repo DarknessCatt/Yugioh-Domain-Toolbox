@@ -35,7 +35,7 @@ class CardsDB:
         print("Setting up card database.")
 
         mergedCdbPath = DownloadManager.GetMergedCDBPath()
-        CardsDB.MergeCDBs()
+        CardsDB.UpdateDBs()
 
         self.db = sqlite3.connect(mergedCdbPath)
         self.cursor = self.db.cursor()
@@ -46,7 +46,7 @@ class CardsDB:
     # Merges all CDB files into a single database.
     # Used since some pre-release cards are in separate files.
     @staticmethod
-    def MergeCDBs() -> None:
+    def UpdateDBs() -> None:
         print("Merging all CDBs into a single file.")
 
         # Since the cards.cdb is always the biggest, we will use it as a base
