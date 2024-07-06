@@ -213,7 +213,7 @@ class DomainLookup:
 
         for arch in monster.setcodes:
             select += " OR EXISTS (SELECT {master} FROM {arch} WHERE {master}.id = {master} AND {arch} = ?)".format(master=DomainLookup.DM_TABLE, arch=DomainLookup.ARCH_TABLE)
-            args.append(Archetypes.Instance().GetBaseArchetype(arch))
+            args += Archetypes.Instance().GetBaseArchetype(arch)
 
         return filter.execute(select, tuple(args)).fetchall()
     

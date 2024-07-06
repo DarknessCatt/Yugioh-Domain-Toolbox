@@ -214,9 +214,9 @@ class Domain:
         # include all "Chaos" monsters like "Chaos Valkyria."
         baseSetcodes = set()
         for arch in domain.setcodes:
-            baseCode = Archetypes.Instance().GetBaseArchetype(arch)
-            if(not baseCode is None):
-                baseSetcodes.add(baseCode)
+            baseCodes = Archetypes.Instance().GetBaseArchetype(arch)
+            if(not baseCodes is None):
+                baseSetcodes = baseSetcodes.union(set(baseCodes))
         domain.setcodes = baseSetcodes
 
         return domain
@@ -265,11 +265,13 @@ class Domain:
             # Since all setcodes in the domain are already their base version
             # (It's converted in the constructor)
             # We only have to compare it with the base archetype of the current card.
-            cardBaseSetcode = Archetypes.Instance().GetBaseArchetype(cardSetcode)
+            cardBaseSetcodes = Archetypes.Instance().GetBaseArchetype(cardSetcode)
 
-            for domainSetcode in self.setcodes:
-                if(cardBaseSetcode == domainSetcode):
-                    return True
+            if(not cardBaseSetcodes is None):
+                for domainSetcode in self.setcodes:
+                    for cardBaseSetcode in cardBaseSetcodes:
+                        if(cardBaseSetcode == domainSetcode):
+                            return True
 
         return False
 

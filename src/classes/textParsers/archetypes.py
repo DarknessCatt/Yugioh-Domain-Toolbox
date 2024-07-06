@@ -49,6 +49,16 @@ class Archetypes(TextParser):
     # Hex value for the base archetype bits of a setcode.
     HEX_BASE_SETCODE = int('0xfff', 0)
 
+    BASE_ARCH_EXCEPTIONS = {
+        int('0x10a2', 0): [int('0x10a2', 0)], # Dark Magician is the base archetype, not magician.
+        int('0x20a2', 0): [int('0x20a2', 0)], # Magician Girl is the base archetype, not magician.
+        int('0x30a2', 0): [int('0x10a2', 0), int('0x20a2', 0)], # Dark Magician Girl is both a dark magician and a magician girl.
+        int('0x1048', 0): [int('0x48', 0), int('0xcf', 0)], # Number C is both a Number and a Chaos.
+        int('0x5048', 0): [int('0x48', 0), int('0xcf', 0)], # Number C39 is both a Number and a Chaos.
+        int('0x1073', 0): [int('0xcf', 0), int('0x73', 0)], # CXyz is both a Chaos and a XYZ.
+        int('0x307b', 0): [int('0x7b', 0), int('0x1ab', 0)],# Galaxy-Eyes Tachyon Dragon is both a Galaxy and Tachyon.
+    }
+
     _instance = None
 
     @staticmethod
@@ -121,22 +131,27 @@ class Archetypes(TextParser):
 
         self.hexName = updateHexName
         self.nameHex = updateNameHex
-
         print("Done.\n")
 
     # Helper method to extract the base and valid code of an archetype.
-    def GetBaseArchetype(self, hexCode: int) -> int:
+    def GetBaseArchetype(self, hexCode: int) -> list[int]:
+
+        # Some archetypes that are incorrected classified
+        # get special treatment.
+        if(hexCode in Archetypes.BASE_ARCH_EXCEPTIONS):
+            return Archetypes.BASE_ARCH_EXCEPTIONS[hexCode]
+
         baseCode = hexCode & Archetypes.HEX_BASE_SETCODE
 
         # While "Genex Ally" is not an archetype,
         # Just "Genex" is (and it's marked as a sub-archetype).
         if(baseCode in self.hexName):
-            return baseCode
+            return [baseCode]
 
         # "Supreme King Gate" and "Supreme King Dragon", for example,
         # don't have a base hexCode, but are still valid archetypes.
         if(hexCode in self.hexName):
-            return hexCode
+            return [hexCode]
         
         # Probably something from the IGNORE_LIST, so just ignore.
         return None
