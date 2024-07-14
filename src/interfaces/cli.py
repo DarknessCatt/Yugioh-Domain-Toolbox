@@ -4,12 +4,12 @@ from constants.programInfo import ProgramInfo
 
 from classes.card import Card
 from classes.domain import Domain
-from classes.sql import CardsCDB
+from classes.databases.cardsDB import CardsDB
 from classes.ydke import YDKE
 from classes.domainExporter import DomainExporter
 
 from classes.deckChecker import DeckChecker
-from classes.lookup import DomainLookup
+from classes.databases.domainLookup import DomainLookup
 
 # Class that handles the CLI interface of the program
 class CommandLineInterface:
@@ -81,14 +81,15 @@ class CommandLineInterface:
                 continue
             
             else:
-                dm = CardsCDB.GetMonsterById(answer)
+                dm = CardsDB.Instance().GetMonsterById(answer)
                 if(dm is None):
                     self.InfoMessage("Sorry, I could not find card with id: [{}]\nAre you sure this is the correct id?\nRemember only monster cards can be Deck Masters.".format(answer))
                     continue
 
                 else:
                     card = Card(dm)
-                    domain = Domain(card)
+                    data = DomainLookup.Instance().GetDomain(card)
+                    domain = Domain.GenerateFromData(card, data)
                     print(domain)
                     print("")
                     return domain
@@ -97,12 +98,12 @@ class CommandLineInterface:
     def GetDomainCards(self, domain: Domain) -> None:
         print("Retrieving monsters in this domain...")
 
-        data = CardsCDB.GetMonstersByAttributeAndRace(domain)
+        data = CardsDB.Instance().GetMonstersByAttributeAndRace(domain.attributes, domain.races)
         for row in data:
             card = Card(row)
             domain.AddCardToDomain(card)
 
-        data = CardsCDB.GetMonstersExcludingAttributeAndRace(domain)
+        data = CardsDB.Instance().GetMonstersExcludingAttributeAndRace(domain.attributes, domain.races)
         for row in data:
             card = Card(row)
             domain.CheckAndAddCardToDomain(card)
@@ -118,7 +119,7 @@ class CommandLineInterface:
                 continue
 
             elif(answer == '1'):
-                data = CardsCDB.GetAllSpellsAndTraps()
+                data = CardsDB.Instance().GetAllSpellsAndTraps()
                 for row in data:
                     card = Card(row)
                     domain.AddCardToDomain(card)
@@ -197,14 +198,14 @@ class CommandLineInterface:
                     desired : list[Card] = []
                     for deck in decks:
                         for passcode in deck:
-                            data = CardsCDB.GetMonsterById(passcode)
+                            data = CardsDB.Instance().GetMonsterById(passcode)
                             if(not data is None):
                                 desired.append(Card(data))
                     
                     if(len(desired) > 0):
                         candidates : list[set] = []
                         for card in desired:
-                            candidates.append(set(DomainLookup.FilterMonster(card)))
+                            candidates.append(set(DomainLookup.Instance().FilterMonster(card)))
 
                         validDMs : set = candidates[0]
                         for candidate in candidates:
@@ -213,7 +214,7 @@ class CommandLineInterface:
                         # TODO: Process this in some way (banlist?)
                         dmList = []
                         for dm in validDMs:
-                            dmList.append(CardsCDB.GetNameById(dm[0]))
+                            dmList.append(CardsDB.Instance().GetNameById(dm[0]))
                         
                         dmList.sort()
 

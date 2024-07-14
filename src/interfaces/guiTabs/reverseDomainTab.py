@@ -4,9 +4,9 @@ import tkinter.scrolledtext
 
 from classes.ydke import YDKE
 from classes.card import Card
-from classes.sql import CardsCDB
+from classes.databases.cardsDB import CardsDB
 
-from classes.lookup import DomainLookup
+from classes.databases.domainLookup import DomainLookup
 
 # Creates the GUI for the Deck Checker tool.
 class ReverseDomainGUI:
@@ -24,7 +24,7 @@ class ReverseDomainGUI:
             desired : list[Card] = []
             for deck in decks:
                 for passcode in deck:
-                    data = CardsCDB.GetMonsterById(passcode)
+                    data = CardsDB.Instance().GetMonsterById(passcode)
                     if(not data is None):
                         desired.append(Card(data))
             
@@ -36,7 +36,7 @@ class ReverseDomainGUI:
 
             candidates : list[set] = []
             for card in desired:
-                candidates.append(set(DomainLookup.FilterMonster(card)))
+                candidates.append(set(DomainLookup.Instance().FilterMonster(card)))
 
             validDMs : set = candidates[0]
             for candidate in candidates:
@@ -45,7 +45,7 @@ class ReverseDomainGUI:
             # TODO: Process this in some way (banlist?)
             dmList = []
             for dm in validDMs:
-                dmList.append(CardsCDB.GetNameById(dm[0]))
+                dmList.append(CardsDB.Instance().GetNameById(dm[0]))
             
             dmList.sort()
 

@@ -1,5 +1,8 @@
 from array import array
-from classes.sql import CardsCDB
+
+from classes.databases.cardsDB import CardsDB
+from classes.databases.domainLookup import DomainLookup
+
 from classes.card import Card
 from classes.domain import Domain
 from classes.ydke import YDKE
@@ -37,7 +40,7 @@ class DeckChecker:
         if(len(duplicates) > 0):
             error = ["Duplicates found: "]
             for duplicate in duplicates:
-                error.append(CardsCDB.GetNameById(duplicate))
+                error.append(CardsDB.Instance().GetNameById(duplicate))
             message = "\n".join(error)
             return message
 
@@ -46,11 +49,13 @@ class DeckChecker:
     # Checks if the DM is a monster card and if all other cards are within its domain.
     @staticmethod
     def CheckValidDomain(decks : list[array]) -> str:
-        dmData = CardsCDB.GetMonsterById(decks[2][0])
+        dmData = CardsDB.Instance().GetMonsterById(decks[2][0])
         if dmData is None:
             return "DeckMaster is not a monster card."
 
-        domain = Domain(Card(dmData))
+        dmCard = Card(dmData)
+        data = DomainLookup.Instance().GetDomain(dmCard)
+        domain = Domain.GenerateFromData(dmCard, data)
         print(domain)
         print()
 
@@ -58,7 +63,7 @@ class DeckChecker:
         # Check main and extra deck
         for i in range(0, 1):
             for passcode in decks[i]:
-                data = CardsCDB.GetMonsterById(passcode)
+                data = CardsDB.Instance().GetMonsterById(passcode)
 
                 # if data is None, it's a spell and trap and it's fine.
                 # Domain restrictions only applies to monsters.
