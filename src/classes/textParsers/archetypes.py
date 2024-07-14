@@ -37,8 +37,13 @@ class Archetypes(TextParser):
         "purery",
         "earthbound servant",
         "infernoble",
-        "helios",
-        # white forest?
+        "helios"
+    ]
+
+    # Hexes that are duplicated for one reason or the other
+    DUPLICATED_HEXES = [
+        int('0xa2', 0), # Magician
+        int('0x16c', 0), # "Number" Spell/Trap archetype
     ]
 
     EXTRA_CASES = {
@@ -117,6 +122,10 @@ class Archetypes(TextParser):
         updateHexName = {int(k, 0):v.lower() for k,v in updateHexName.items()}
         updateNameHex = {k.lower():int(v, 0) for k,v in updateNameHex.items()}
 
+        for hex in Archetypes.DUPLICATED_HEXES:
+            if(hex in updateHexName):
+                updateHexName.pop(hex)
+
         for item in Archetypes.IGNORE_LIST:
             if(item in updateNameHex):
                 hexCode =  updateNameHex.pop(item)
@@ -131,6 +140,7 @@ class Archetypes(TextParser):
 
         self.hexName = updateHexName
         self.nameHex = updateNameHex
+
         print("Done.\n")
 
     # Helper method to extract the base and valid code of an archetype.
