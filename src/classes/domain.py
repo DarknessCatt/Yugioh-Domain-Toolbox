@@ -107,7 +107,7 @@ class Domain:
         BATTLE_STATS = "with ([0-9]{1,4} ATK\\/[0-9]{1,4} DEF|[0-9]{1,4} ATK and [0-9]{1,4} DEF|[0-9]{1,4} ATK and\\/or DEF|[0-9]{1,4} ATK\\/DEF)"
         # Find all the races (types) mentioned in the desc
         # The list is manually typed because in the ref file they are named "beastwarrior" / "divine" and so on, which would provide no matches.
-        RACES = "(aqua|beast-warrior|beast|cyberse|dinosaur|divine-beast|dragon|fairy|fiend|fish|insect|machine|plant|psychic|pyro|reptile|rock|sea serpent|spellcaster|thunder|warrior|winged beast|wyrm|zombie)"
+        RACES = "(aqua|beast-warrior|beast|cyberse|dinosaur|divine-beast|dragon|fairy|fiend|fish|illusion|insect|machine|plant|psychic|pyro|reptile|rock|sea serpent|spellcaster|thunder|warrior|winged beast|wyrm|zombie)"
         # Find all the attributes mentioned in the desc 
         ATTRIBUTES = "({})".format("|".join(Attributes.Instance().nameHex.keys()))
         
