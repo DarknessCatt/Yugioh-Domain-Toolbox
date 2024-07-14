@@ -1,8 +1,11 @@
 import re
 
-from constants.hexCodesReference import AttributesAndRaces, Archetypes
+from classes.textParsers.archetypes import Archetypes
+from classes.textParsers.attributes import Attributes
+from classes.textParsers.races import Races
+
 from classes.card import Card
-import classes
+from classes.databases.cardsDB import CardsDB
 
 # A Deck masters domain, including information as well as the cards themselves.
 class Domain:
@@ -104,9 +107,9 @@ class Domain:
         BATTLE_STATS = "with ([0-9]{1,4} ATK\\/[0-9]{1,4} DEF|[0-9]{1,4} ATK and [0-9]{1,4} DEF|[0-9]{1,4} ATK and\\/or DEF|[0-9]{1,4} ATK\\/DEF)"
         # Find all the races (types) mentioned in the desc
         # The list is manually typed because in the ref file they are named "beastwarrior" / "divine" and so on, which would provide no matches.
-        RACES = "(aqua|beast-warrior|beast|cyberse|dinosaur|divine-beast|dragon|fairy|fiend|fish|insect|machine|plant|psychic|pyro|reptile|rock|sea serpent|spellcaster|thunder|warrior|winged beast|wyrm|zombie)"
+        RACES = "(aqua|beast-warrior|beast|cyberse|dinosaur|divine-beast|dragon|fairy|fiend|fish|illusion|insect|machine|plant|psychic|pyro|reptile|rock|sea serpent|spellcaster|thunder|warrior|winged beast|wyrm|zombie)"
         # Find all the attributes mentioned in the desc 
-        ATTRIBUTES = "({})".format("|".join(AttributesAndRaces.attributes.keys()))
+        ATTRIBUTES = "({})".format("|".join(Attributes.Instance().nameHex.keys()))
         
         text = self.DM.desc
         _, text = Domain.CleanDesc(text, NOT_TREATED_AS)
@@ -124,16 +127,16 @@ class Domain:
         # Mentions is straightfoward: it's either an archetype or an card name.
         # (not always true about the card name, but doesn't lead to problems since it has to be an exact match anyway)
         for mention in mentions:
-            if(mention in Archetypes.archetypes):
+            if(mention in Archetypes.Instance().nameHex):
                 # Add the HEXCODE of the archetypes.
-                self.setcodes.add(Archetypes.archetypes[mention])
+                self.setcodes.add(Archetypes.Instance().nameHex[mention])
             else:
                 self.namedCards.add(mention)
 
         # Add archetype of named cards.
         for name in self.namedCards:
             # Have to do to avoid a circular import.
-            data = classes.sql.CardsCDB.GetMonsterByName(name)
+            data = CardsDB.Instance().GetMonsterByName(name)
             if(not data is None):
                 card = Card(data)
                 self.setcodes.update(card.setcodes)
@@ -156,52 +159,82 @@ class Domain:
                 # They are written "Divine-Beast" in card text
                 # but named "divine" in the AttributesAndRaces reference.
                 key = "divine"
-            self.races.add(AttributesAndRaces.races[key])
+            self.races.add(Races.Instance().nameHex[key])
 
         # Add the HEXCODE of the races.
         for attribute in attributes:
-            self.attributes.add(AttributesAndRaces.attributes[attribute])
+            self.attributes.add(Attributes.Instance().nameHex[attribute])
 
     # Creates a new Domain for the given deck master.
-    def __init__(self, DM: Card) -> None:
-        self.DM = DM
+    def __init__(self) -> None:
+        self.DM: Card = None
         # All these refer to attributes, races... belonging in the domain.
-        self.attributes = set()
-        self.races = set()
-        self.setcodes = set(DM.setcodes)
-        self.battleStats = set()
-        self.namedCards = set()
-
-        self.attributes.add(DM.attribute)
-        # Don't forget the DIVINE attribute
-        self.attributes.add(AttributesAndRaces.attributes[AttributesAndRaces.DIVINE])
-        
-        self.races.add(DM.race)
-        # Theoretically not necessary, since all divine-beasts are already divine attribute,
-        # but better safe than sorry.
-        self.races.add(AttributesAndRaces.races[AttributesAndRaces.DIVINE])
-
-        # This checks if the monster is a normal ("vanilla") monster.
-        # Flavor text is ignored for domain, so we don't check the description in these cases.
-        if(self.DM.type & 16 == 0):
-            self.GetCardDomainFromDesc()
-
-        # Replace all sub-archetypes with their base archetypes,
-        # allowing, for example, a "Black Luster Soldier" ritual monster to
-        # include all "Chaos" monsters like "Chaos Valkyria."
-        self.setcodes = set(map(lambda arch : Card.GetBaseArchetype(arch), self.setcodes))
+        self.attributes: set = None
+        self.races: set = None
+        self.setcodes: set = None
+        self.battleStats: set = None
+        self.namedCards: set = None
 
         self.cards = []
 
     def __str__(self) -> str:
         return "\n".join([
             self.DM.name,
-            "Attributes: " + str([AttributesAndRaces.reverseAttr[code] for code in self.attributes]),
-            "Types: " + str([AttributesAndRaces.reverseRace[code] for code in self.races]),
-            "Archetypes: " + str([Archetypes.reverseArch[code] for code in self.setcodes]),
+            "Attributes: " + str([Attributes.Instance().hexName[code] for code in self.attributes]),
+            "Types: " + str([Races.Instance().hexName[code] for code in self.races]),
+            "Archetypes: " + str([Archetypes.Instance().hexName[code] for code in self.setcodes]),
             "ATK/DEF: " + (str(self.battleStats) if len(self.battleStats) > 0 else "{}"),
             "Named Cards: " + (str(self.namedCards) if len(self.namedCards) > 0 else "{}")
         ])
+
+    # Creates a new Domain by parsing the DM's card text for information.
+    # Mainly used by DomainLookup to add entries to the DB.
+    @staticmethod
+    def GenerateFromCard(DM: Card):
+        domain = Domain()
+
+        domain.DM = DM
+        domain.attributes = set([DM.attribute])
+        domain.races = set([DM.race])
+        domain.setcodes = set(DM.setcodes)
+        domain.battleStats = set()
+        domain.namedCards = set()
+
+        # Don't forget the DIVINES attribute
+        domain.attributes.add(Attributes.Instance().nameHex[Attributes.DIVINE])
+        domain.races.add(Races.Instance().nameHex[Races.DIVINE])
+
+        # This checks if the monster is a normal ("vanilla") monster.
+        # Flavor text is ignored for domain, so we don't check the description in these cases.
+        if(domain.DM.type & 16 == 0):
+            domain.GetCardDomainFromDesc()
+
+        # Replace all sub-archetypes with their base archetypes,
+        # allowing, for example, a "Black Luster Soldier" ritual monster to
+        # include all "Chaos" monsters like "Chaos Valkyria."
+        baseSetcodes = set()
+        for arch in domain.setcodes:
+            baseCodes = Archetypes.Instance().GetBaseArchetype(arch)
+            if(not baseCodes is None):
+                baseSetcodes = baseSetcodes.union(set(baseCodes))
+        domain.setcodes = baseSetcodes
+
+        return domain
+
+    # Creates a new Domain from data.
+    # Mainly used from data retrieved from DomainLookup.GetDomain, but could also be used for testing.
+    @staticmethod
+    def GenerateFromData(DM: Card, data: list):
+        domain = Domain()
+
+        domain.DM = DM
+        domain.attributes = set(v[0] for v in data[0])
+        domain.races = set(v[0] for v in data[1])
+        domain.setcodes = set(v[0] for v in data[2])
+        domain.battleStats = set(v for v in data[3])
+        domain.namedCards = set(v[0] for v in data[4])
+
+        return domain
 
     # Adds a card to this domain, no questions asked.
     # Used mostly for cards with an attribute or race in the domain,
@@ -232,11 +265,13 @@ class Domain:
             # Since all setcodes in the domain are already their base version
             # (It's converted in the constructor)
             # We only have to compare it with the base archetype of the current card.
-            cardBaseSetcode = Card.GetBaseArchetype(cardSetcode)
+            cardBaseSetcodes = Archetypes.Instance().GetBaseArchetype(cardSetcode)
 
-            for domainSetcode in self.setcodes:
-                if(cardBaseSetcode == domainSetcode):
-                    return True
+            if(not cardBaseSetcodes is None):
+                for domainSetcode in self.setcodes:
+                    for cardBaseSetcode in cardBaseSetcodes:
+                        if(cardBaseSetcode == domainSetcode):
+                            return True
 
         return False
 

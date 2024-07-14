@@ -5,7 +5,9 @@ import tkinter.scrolledtext
 
 from classes.card import Card
 from classes.domain import Domain
-from classes.sql import CardsCDB
+from classes.databases.cardsDB import CardsDB
+from classes.databases.domainLookup import DomainLookup
+
 from classes.domainExporter import DomainExporter
 
 # Creates the GUI for the Domain Generator tool.
@@ -26,10 +28,11 @@ class DomainGeneratorGUI:
 
     # Gets the deck master and it's domain.
     def GetDeckMasterAndDomain(self, answer: str) -> Domain:
-        dm = CardsCDB.GetMonsterById(answer)
+        dm = CardsDB.Instance().GetMonsterById(answer)
         if(not dm is None):
             card = Card(dm)
-            domain = Domain(card)
+            data = DomainLookup.Instance().GetDomain(card)
+            domain = Domain.GenerateFromData(card, data)
             return domain
         
         return None
@@ -39,18 +42,18 @@ class DomainGeneratorGUI:
         # Remove all cards before adding new ones.
         domain.RemoveAllCards()
 
-        data = CardsCDB.GetMonstersByAttributeAndRace(domain)
+        data = CardsDB.Instance().GetMonstersByAttributeAndRace(domain.attributes, domain.races)
         for row in data:
             card = Card(row)
             domain.AddCardToDomain(card)
 
-        data = CardsCDB.GetMonstersExcludingAttributeAndRace(domain)
+        data = CardsDB.Instance().GetMonstersExcludingAttributeAndRace(domain.attributes, domain.races)
         for row in data:
             card = Card(row)
             domain.CheckAndAddCardToDomain(card)
         
         if(spelltrap == self.SPELL_OPT_ADD_SPELLS):
-            data = CardsCDB.GetAllSpellsAndTraps()
+            data = CardsDB.Instance().GetAllSpellsAndTraps()
             for row in data:
                 card = Card(row)
                 domain.AddCardToDomain(card)

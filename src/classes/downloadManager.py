@@ -165,9 +165,6 @@ class DownloadManager:
             updated = True
             print("Updating cards database.")
 
-            if(os.path.isfile(mergedCDBPath)):
-                os.remove(mergedCDBPath)
-
             for file in DownloadManager.GetCdbsForDownload():
                 with open(os.path.join(cdbFolder, file[0]), "wb") as f:
                     r = requests.get(file[1])

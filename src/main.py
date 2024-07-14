@@ -4,11 +4,13 @@ from multiprocessing import freeze_support
 from interfaces.cli import CommandLineInterface
 from interfaces.gui import GraphicalUserInterface
 
-from constants.hexCodesReference import AttributesAndRaces, Archetypes
+from classes.textParsers.archetypes import Archetypes
+from classes.textParsers.attributes import Attributes
+from classes.textParsers.races import Races
 from classes.downloadManager import DownloadManager
 
-from classes.sql import CardsCDB
-from classes.lookup import DomainLookup
+from classes.databases.cardsDB import CardsDB
+from classes.databases.domainLookup import DomainLookup
 
 # Main function. Runs when main.py is called.
 def main():
@@ -16,10 +18,11 @@ def main():
 
     # Setup
     DownloadManager.DownloadFiles()
-    Archetypes.Setup()
-    AttributesAndRaces.Setup()
-    CardsCDB.Setup()
-    DomainLookup.Setup()
+    Archetypes.Instance()
+    Attributes.Instance()
+    Races.Instance()
+    CardsDB.Instance()
+    DomainLookup.Instance()
     print("")
 
     if("--cli" in sys.argv):

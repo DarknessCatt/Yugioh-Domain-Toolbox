@@ -1,0 +1,107 @@
+!system 99 Activate using a generic effect
+!system 225 Added to the hand by a currently resolving effect
+!system 534 Select the card(s) to keep on the field
+!system 578 Select the card(s) to attach as material
+!system 579 Select the card(s) to return to the GY
+!system 1045 Illusion
+!system 1046 Cyborg
+!system 1047 Magical Knight
+!system 1048 High Dragon
+!system 1049 Omega Psychic
+!system 1292 Chain: OFF
+!system 1293 Always pause
+!system 1294 Chain: ON
+!system 2500 Celestial Warrior
+!system 2501 Galaxy
+!system 2532 Yokai
+!system 12120 Copy launch arguments
+!system 12121 Parameters copied to the clipboard
+!system 12122 Failed to launch windbot
+
+#Counters from Official cards
+!counter 0x29 Counter ("Balloon Lizard")
+!counter 0x20b Counter ("Forge a New Future")
+!counter 0x20c G Golem Counter
+!counter 0x20d Counter ("Gunkan Suship Catch-of-the-Day")
+!counter 0x20e Counter ("Combat Wheel")
+!counter 0x20f Counter ("Totem Pole")
+!counter 0x210 Counter ("Veda Upanishad")
+!counter 0x211 Resonance Counter
+!counter 0x212 Access Counter
+!counter 0x1208 Bunny Ear Counter
+!counter 0x1209 Deranged Counter
+
+#Official archetypes
+!setname 0x3 Horus
+!setname 0x1003 Horus the Black Flame Dragon
+!setname 0x21 Earthbound
+!setname 0x1021 Earthbound Immortal
+!setname 0x2021 Earthbound Servant
+!setname 0x4073 Armored Xyz
+!setname 0x407a Infernoble
+!setname 0x507a Infernoble Knight
+!setname 0x607a Infernoble Arms
+!setname 0x10ac Goblin Biker
+!setname 0x174 Exosister
+!setname 0x189 Bystial
+!setname 0x18a Kashtira
+!setname 0x18d Purrely
+!setname 0x18f Aquamirror
+!setname 0x1164 GranSolfachord
+!setname 0x190 Firewall
+!setname 0x191 Mannadium
+!setname 0x192 Nemleria
+!setname 0x193 Gold Pride
+!setname 0x67 Koala
+!setname 0x68 Kangaroo
+!setname 0x1052 Gate Guardian
+!setname 0x194 Labyrinth Wall
+!setname 0x195 Favorite
+!setname 0x196 Vanquish Soul
+!setname 0x197 Nouvelles
+!setname 0x198 Recipe
+!setname 0x6c Helios
+!setname 0x199 Visas
+!setname 0x19a Memento
+!setname 0x19b Centur-Ion
+!setname 0x19c Vaalmonica
+!setname 0x19d Yubel
+!setname 0x19e Voiceless Voice
+!setname 0x2052 Skull Guardian
+!setname 0x19f White
+!setname 0x119f White Aura
+!setname 0x200 Counter
+!setname 0x201 Battlin' Boxing
+!setname 0x202 Veda
+!setname 0x203 Diabellstar
+!setname 0x204 Sinful Spoils
+!setname 0x205 Snake-Eye
+!setname 0x206 Patissciel
+!setname 0x207 Heart
+!setname 0x208 Tistina
+
+#Pre-release archetypes
+!setname 0x1a0 Toy
+!setname 0x1a1 Tenpai Dragon
+!setname 0x1a2 Sangen
+!setname 0x1a3 Ragnaraika
+!setname 0x1a4 Salamandra
+!setname 0x1a5 Ashened
+!setname 0x1a6 Millennium
+!setname 0x1a7 Exodo
+!setname 0x1a8 Fiendsmith
+!setname 0x1a9 Blue Tears
+!setname 0x1aa White Forest
+!setname 0x1ab Tachyon
+!setname 0x1ac Mulcharmy
+!setname 0x1ad Emblema
+!setname 0x1ae Shark
+!setname 0x11ae Shark Drake
+!setname 0x1af Wedju
+!setname 0x1b0 Primoredial
+!setname 0x1b1 Six Strike
+!setname 0x1b2 Metalmorph
+!setname 0x1b3 Morganite
+!setname 0x1b4 Azamina
+!setname 0x1b5 Mimighoul
+!setname 0x1b6 Raizeol
