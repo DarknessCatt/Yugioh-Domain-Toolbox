@@ -13,6 +13,9 @@ class Archetypes(TextParser):
     # The line that describes the format of each archetype entry in the section.
     PARSE_LINE = "!setname (\\S+) (.*)"
 
+    # Hex value for the base archetype bits of a setcode.
+    HEX_BASE_SETCODE = int('0xfff', 0)
+
     # List of archetypes in edo to ignore.
     # Mostly series that are miss categorized as archetypes.
     IGNORE_LIST = [
@@ -49,10 +52,8 @@ class Archetypes(TextParser):
     EXTRA_CASES = {
         "true draco": int('0xf9', 0),
         "true king": int('0xf9', 0),
+        "magician": int('0x98', 0), # Magician is getting the hex 0xa2, this overrides it
     }
-
-    # Hex value for the base archetype bits of a setcode.
-    HEX_BASE_SETCODE = int('0xfff', 0)
 
     BASE_ARCH_EXCEPTIONS = {
         int('0x10a2', 0): [int('0x10a2', 0)], # Dark Magician is the base archetype, not magician.
