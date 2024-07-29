@@ -155,8 +155,13 @@ class CardsDB:
         return self.cursor.execute(query)
 
     # Gets all monsters' ids.
-    def GetAllMonsterIds(self) -> sqlite3.Cursor:
+    def GetAllMonsterIds(self) -> list:
         query = "SELECT id from datas WHERE datas.type & 1 = 1 AND datas.type & 16384 = 0"
+        return self.cursor.execute(query).fetchall()
+
+    # Get all monsters' names.
+    def GetAllMonsterNames(self) -> list:
+        query = "SELECT DISTINCT name FROM texts NATURAL JOIN datas WHERE datas.type & 1 = 1 AND datas.type & 16384 = 0 ORDER BY name"
         return self.cursor.execute(query).fetchall()
 
     # Gets all the cards which are not monsters (nor tokens), so should be only spell and trap cards.

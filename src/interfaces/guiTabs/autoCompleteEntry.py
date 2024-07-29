@@ -1,5 +1,8 @@
 """
-Source: https://gist.github.com/uroshekic/11078820
+Based on: https://gist.github.com/uroshekic/11078820
+Changes:
+    * Can click directly to itens in the list
+    * Needs to double click to "confirm"
 """
 
 from tkinter import Entry, StringVar, Listbox, ACTIVE, END
@@ -30,13 +33,14 @@ class AutoCompleteEntry(Entry):
         self.focus()
 
         self.autocompleteList = autocompleteList
-        
-        self.var = self["textvariable"]
-        if self.var == '':
+
+        self.var = kwargs["textvariable"]
+        if(self.var is None):
             self.var = self["textvariable"] = StringVar()
 
         self.var.trace_add('write', self.changed)
         self.bind("<Right>", self.selection)
+        self.bind("<Return>", self.selection)
         self.bind("<Up>", self.moveUp)
         self.bind("<Down>", self.moveDown)
         
@@ -59,7 +63,7 @@ class AutoCompleteEntry(Entry):
                     self.listbox = Listbox(width=int(self["width"] * 1.25), height=self.listboxLength)
                     self.listbox.bind("<<ListboxSelect>>", self.click)
                     self.listbox.bind("<Right>", self.selection)
-                    self.listbox.place(x=self.winfo_x(), y=self.winfo_y() + self.winfo_height() * 2)
+                    self.listbox.place(in_=self, y=self.winfo_height())
                     self.listboxUp = True
                 
                 self.listbox.delete(0, END)
