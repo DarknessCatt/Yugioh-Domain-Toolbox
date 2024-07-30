@@ -10,10 +10,11 @@ from classes.databases.domainLookup import DomainLookup
 
 from classes.domainExporter import DomainExporter
 
+from interfaces.guiTabs.autoCompleteEntry import AutoCompleteEntry
+
 # Creates the GUI for the Domain Generator tool.
 class DomainGeneratorGUI:
-    MSG_WAITING_ID = "Waiting for valid monster ID..."
-    MSG_ID_MUST_NUMBER = "ID must be a number!"
+    MSG_WAITING_ID = "\n\nWaiting for monster's name...\n\n\n"
 
     EXPORT_OPT_YGOPRO_CSV = "YGOPRODeck Collection's CSV."
     EXPORT_OPT_SIMULATOR_BANLIST = "EDOPro / YGO Omega Banlist."
@@ -28,7 +29,13 @@ class DomainGeneratorGUI:
 
     # Gets the deck master and it's domain.
     def GetDeckMasterAndDomain(self, answer: str) -> Domain:
-        dm = CardsDB.Instance().GetMonsterById(answer)
+        dm = None
+
+        if(answer.isnumeric()):
+            dm = CardsDB.Instance().GetMonsterById(answer)
+        else:
+            dm = CardsDB.Instance().GetMonsterByName(answer)
+
         if(not dm is None):
             card = Card(dm)
             data = DomainLookup.Instance().GetDomain(card)
@@ -84,20 +91,19 @@ class DomainGeneratorGUI:
         generatedText = StringVar()
         generatedText.set("")
 
+        monsterNames = [name[0] for name in CardsDB.Instance().GetAllMonsterNames()]      
+
         # Interface Callbacks
         def OnIdChanged(*args):
             button["state"] = "disabled"
             answer = idtext.get().strip()
-
-            if not answer.isnumeric():
-                domainText.set(self.MSG_ID_MUST_NUMBER)
-                return
 
             nonlocal domain 
             domain = self.GetDeckMasterAndDomain(answer)
 
             if domain != None:
                 print(domain)
+                print()
                 domainText.set(str(domain))
                 button["state"] = "normal"
             else:
@@ -114,16 +120,26 @@ class DomainGeneratorGUI:
             success.insert(INSERT, domain.DM.name + self.EXPORT_SUCCESS + "\n")
 
         # DeckMaster's ID and input
-        idlabel = tkinter.Label(domainGeneratorTab, text = "Deck Master's id:", font=("Arial", 12))
+        infoFrame = ttk.Frame(domainGeneratorTab, )
+
+        # Left side of the info
+        leftside = ttk.Frame(infoFrame)
+
+        idlabel = tkinter.Label(leftside, text = "Deck Master's Name:", font=("Arial", 12))
         idlabel.pack()
 
         idtext = StringVar()
         idtext.trace_add("write", OnIdChanged)
-        id = tkinter.Entry(domainGeneratorTab, textvariable=idtext, width=30)
+        id = AutoCompleteEntry(monsterNames, leftside, textvariable=idtext, width=30)
         id.pack()
 
-        idconfirm = tkinter.Label(domainGeneratorTab, textvariable=domainText, font=("Arial", 12), justify="left")
-        idconfirm.pack(pady= 15)
+        leftside.pack(side=tkinter.LEFT, padx=15)
+
+        # Right side of the info
+        idconfirm = tkinter.Label(infoFrame, textvariable=domainText, font=("Arial", 12), justify="left", width=100, wraplength=350)
+        idconfirm.pack(side=tkinter.RIGHT)
+
+        infoFrame.pack(pady= 15)
 
         # Export To
         exportlabel = tkinter.Label(domainGeneratorTab, text = "Export to:", font=("Arial", 12))

@@ -47,7 +47,7 @@ class CommandLineInterface:
 
     # The program's intro, which gives the user the option to update files before continuing.
     def IntroInput(self) -> None:
-        print("Welcome to Domain Generator! Version {}\n".format(ProgramInfo.VERSION))
+        print("Welcome to Domain Toolbox! Version {}\n".format(ProgramInfo.VERSION))
     
     def DecideTool(self) -> int:
         while(True):

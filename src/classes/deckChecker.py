@@ -32,7 +32,12 @@ class DeckChecker:
 
         for deck in decks:
             for passcode in deck:
-                if passcode in cards:
+                
+                alias = CardsDB.Instance().GetAliasById(passcode)
+                if(alias != 0):
+                    passcode = alias
+
+                if(passcode in cards):
                     duplicates.add(passcode)
                 else:
                     cards.add(passcode)
