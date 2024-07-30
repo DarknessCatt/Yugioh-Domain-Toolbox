@@ -122,13 +122,20 @@ class CardsDB:
         parameters = (id,)
         return self.cursor.execute(query, parameters).fetchone()[0]
 
+    # Returns the alias of a card, or 0 if there's none.
+    # "Alias" refers to the "original name" of the card, like each harpy lady being "Harpy Lady"
+    def GetAliasById(self, id: int) -> any:
+        query = "SELECT alias FROM datas WHERE datas.id = ?"
+        parameters = (id,)
+        return self.cursor.execute(query, parameters).fetchone()[0]
+
     # Gets a single monster through it's id (passcode)
     def GetMonsterById(self, id: int) -> any:
         query = "SELECT {} WHERE datas.type & 1 = 1 AND datas.type & 16384 = 0 AND datas.id = ?"
         query = query.format(CardsDB.CARD_QUERY)
         parameters = (id,)
         return self.cursor.execute(query, parameters).fetchone()
-    
+
     # Gets a single monster through it's name
     # Ideally called by the Domain class when finding cards referenced in the text.
     def GetMonsterByName(self, name: str) -> any:
