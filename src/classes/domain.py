@@ -183,8 +183,8 @@ class Domain:
             "Attributes: " + str([Attributes.Instance().hexName[code] for code in self.attributes]),
             "Types: " + str([Races.Instance().hexName[code] for code in self.races]),
             "Archetypes: " + str([Archetypes.Instance().hexName[code] for code in self.setcodes]),
-            "ATK/DEF: " + (str(self.battleStats) if len(self.battleStats) > 0 else "{}"),
-            "Named Cards: " + (str(self.namedCards) if len(self.namedCards) > 0 else "{}")
+            "Named Cards: " + (str(self.namedCards) if len(self.namedCards) > 0 else "{}"),
+            "ATK/DEF: " + (str(self.battleStats) if len(self.battleStats) > 0 else "{}")
         ])
 
     # Creates a new Domain by parsing the DM's card text for information.

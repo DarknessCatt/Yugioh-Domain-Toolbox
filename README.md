@@ -1,4 +1,4 @@
-# YGODomainGenerator
+# Yugioh Domain Toolbox
 ## User Guide
 [Check out this repositories wiki for information about the usage of the program.](https://github.com/DarknessCatt/YGODomainGenerator/wiki)
 

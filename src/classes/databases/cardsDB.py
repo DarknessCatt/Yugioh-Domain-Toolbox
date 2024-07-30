@@ -122,13 +122,20 @@ class CardsDB:
         parameters = (id,)
         return self.cursor.execute(query, parameters).fetchone()[0]
 
+    # Returns the alias of a card, or 0 if there's none.
+    # "Alias" refers to the "original name" of the card, like each harpy lady being "Harpy Lady"
+    def GetAliasById(self, id: int) -> any:
+        query = "SELECT alias FROM datas WHERE datas.id = ?"
+        parameters = (id,)
+        return self.cursor.execute(query, parameters).fetchone()[0]
+
     # Gets a single monster through it's id (passcode)
     def GetMonsterById(self, id: int) -> any:
         query = "SELECT {} WHERE datas.type & 1 = 1 AND datas.type & 16384 = 0 AND datas.id = ?"
         query = query.format(CardsDB.CARD_QUERY)
         parameters = (id,)
         return self.cursor.execute(query, parameters).fetchone()
-    
+
     # Gets a single monster through it's name
     # Ideally called by the Domain class when finding cards referenced in the text.
     def GetMonsterByName(self, name: str) -> any:
@@ -155,8 +162,13 @@ class CardsDB:
         return self.cursor.execute(query)
 
     # Gets all monsters' ids.
-    def GetAllMonsterIds(self) -> sqlite3.Cursor:
+    def GetAllMonsterIds(self) -> list:
         query = "SELECT id from datas WHERE datas.type & 1 = 1 AND datas.type & 16384 = 0"
+        return self.cursor.execute(query).fetchall()
+
+    # Get all monsters' names.
+    def GetAllMonsterNames(self) -> list:
+        query = "SELECT DISTINCT name FROM texts NATURAL JOIN datas WHERE datas.type & 1 = 1 AND datas.type & 16384 = 0 ORDER BY name"
         return self.cursor.execute(query).fetchall()
 
     # Gets all the cards which are not monsters (nor tokens), so should be only spell and trap cards.

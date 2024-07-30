@@ -11,13 +11,13 @@ from interfaces.guiTabs.reverseDomainTab import ReverseDomainGUI
 # Class that handles the CLI interface of the program
 class GraphicalUserInterface:
 
-    TITLE = "Yugioh Domain Generator ({})"
+    TITLE = "Yugioh Domain Toolbox ({})"
 
     # The main interface loop.
     def StartInterface(self) -> None:            
         # TKinter setup.
         frame = tkinter.Tk()
-        frame.geometry("500x450+700+300")
+        frame.geometry("600x450+700+300")
         frame.title(self.TITLE.format(ProgramInfo.VERSION))
 
         # Tab setup
