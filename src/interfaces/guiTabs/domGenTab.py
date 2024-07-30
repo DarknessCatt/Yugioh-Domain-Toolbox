@@ -29,7 +29,13 @@ class DomainGeneratorGUI:
 
     # Gets the deck master and it's domain.
     def GetDeckMasterAndDomain(self, answer: str) -> Domain:
-        dm = CardsDB.Instance().GetMonsterByName(answer)
+        dm = None
+
+        if(answer.isnumeric()):
+            dm = CardsDB.Instance().GetMonsterById(answer)
+        else:
+            dm = CardsDB.Instance().GetMonsterByName(answer)
+
         if(not dm is None):
             card = Card(dm)
             data = DomainLookup.Instance().GetDomain(card)
@@ -91,10 +97,6 @@ class DomainGeneratorGUI:
         def OnIdChanged(*args):
             button["state"] = "disabled"
             answer = idtext.get().strip()
-
-            # if not answer.isnumeric():
-            #     domainText.set(self.MSG_ID_MUST_NUMBER)
-            #     return
 
             nonlocal domain 
             domain = self.GetDeckMasterAndDomain(answer)
