@@ -120,9 +120,6 @@ class DomainGeneratorGUI:
             success.insert(INSERT, domain.DM.name + self.EXPORT_SUCCESS + "\n")
 
         # DeckMaster's ID and input
-        #autoComplete = AutoCompleteEntry(monsterNames, domainGeneratorTab, width=30)
-        #autoComplete.pack()
-
         infoFrame = ttk.Frame(domainGeneratorTab, )
 
         # Left side of the info
