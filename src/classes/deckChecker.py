@@ -66,7 +66,7 @@ class DeckChecker:
 
         invalidCards: list[Card] = []
         # Check main and extra deck
-        for i in range(0, 1):
+        for i in range(0, 2):
             for passcode in decks[i]:
                 data = CardsDB.Instance().GetMonsterById(passcode)
 

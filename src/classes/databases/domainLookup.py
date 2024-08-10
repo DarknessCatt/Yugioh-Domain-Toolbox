@@ -202,18 +202,20 @@ class DomainLookup:
                 EXISTS (SELECT {master} FROM {attr} WHERE {master}.id = {master} AND {attr} = ?)
                 OR EXISTS (SELECT {master} FROM {race} WHERE {master}.id = {master} AND {race} = ?)
                 OR EXISTS (SELECT {master} FROM {mention} WHERE {master}.id = {master} AND {mention} = ?)
-                OR EXISTS (SELECT {master} FROM {stat} WHERE {master}.id = {master} AND atk = ? AND def = ?)
-        """.format(master=DomainLookup.DM_TABLE,
+                OR EXISTS (SELECT {master} FROM {stat} WHERE {master}.id = {master} AND atk = ? AND def = ?)""".format(
+                    master=DomainLookup.DM_TABLE,
                     attr=DomainLookup.ATTR_TABLE, 
                     race=DomainLookup.RACE_TABLE, 
                     mention=DomainLookup.QUOT_TABLE, 
-                    stat=DomainLookup.STAT_TABLE)
+                    stat=DomainLookup.STAT_TABLE
+            )
         
         args = [monster.attribute, monster.race, monster.name.lower(), monster.attack, monster.defense]
 
         for arch in monster.setcodes:
-            select += " OR EXISTS (SELECT {master} FROM {arch} WHERE {master}.id = {master} AND {arch} = ?)".format(master=DomainLookup.DM_TABLE, arch=DomainLookup.ARCH_TABLE)
-            args += Archetypes.Instance().GetBaseArchetype(arch)
+            for base_arch in Archetypes.Instance().GetBaseArchetype(arch):
+                select += "\n                OR EXISTS (SELECT {master} FROM {arch} WHERE {master}.id = {master} AND {arch} = ?)".format(master=DomainLookup.DM_TABLE, arch=DomainLookup.ARCH_TABLE)
+                args.append(base_arch)
 
         return filter.execute(select, tuple(args)).fetchall()
     
