@@ -18,6 +18,8 @@
 !system 12121 Parameters copied to the clipboard
 !system 12122 Failed to launch windbot
 
+!victory 0x59 Victory by the effect of "Slapdash Summer Schoolwork Success"
+
 #Counters from Official cards
 !counter 0x29 Counter ("Balloon Lizard")
 !counter 0x20b Counter ("Forge a New Future")
@@ -28,6 +30,7 @@
 !counter 0x210 Counter ("Veda Upanishad")
 !counter 0x211 Resonance Counter
 !counter 0x212 Access Counter
+!counter 0x213 Success Counter
 !counter 0x1208 Bunny Ear Counter
 !counter 0x1209 Deranged Counter
 
@@ -88,7 +91,7 @@
 !setname 0x1a4 Salamandra
 !setname 0x1a5 Ashened
 !setname 0x1a6 Millennium
-!setname 0x1a7 Exodo
+!setname 0x1a7 Exodd|Obliterate!!!
 !setname 0x1a8 Fiendsmith
 !setname 0x1a9 Blue Tears
 !setname 0x1aa White Forest
@@ -105,3 +108,5 @@
 !setname 0x1b4 Azamina
 !setname 0x1b5 Mimighoul
 !setname 0x1b6 Raizeol
+!setname 0x1b7 Schoolwork Success
+!setname 0x1b8 Apodrakosis
