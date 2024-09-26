@@ -137,9 +137,15 @@ class CardsDB:
         return self.cursor.execute(query, parameters).fetchone()
 
     # Gets a single monster through it's name
-    # Ideally called by the Domain class when finding cards referenced in the text.
     def GetMonsterByName(self, name: str) -> any:
         query = "SELECT {} WHERE datas.type & 1 = 1 AND datas.type & 16384 = 0 AND texts.name = ? COLLATE NOCASE"
+        query = query.format(CardsDB.CARD_QUERY)
+        parameters = (name,)
+        return self.cursor.execute(query, parameters).fetchone()
+
+    # Gets a single card through it's name
+    def GetCardByName(self, name: str) -> any:
+        query = "SELECT {} WHERE texts.name = ? COLLATE NOCASE"
         query = query.format(CardsDB.CARD_QUERY)
         parameters = (name,)
         return self.cursor.execute(query, parameters).fetchone()
