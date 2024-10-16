@@ -99,12 +99,6 @@ class Domain:
         QUOTE_CARDS = "\"({})\"".format("|".join(self.QUOTE_CARDS))
         # Finds all direct mentions (words between quotes), which can be either card names or archetypes
         MENTIONED_QUOTES = "\"(.*?)\""
-        # Used to remove tokens description from cards.
-        # This is important in order to avoid problens in the next two searchs
-        TOKENS = "(\\(.*?\\))"
-        # Find exact battle stats mentions on the card, like the Monarch's Squires.
-        # Cases (in order): X ATK/X DEF, X ATK and X DEF, X ATK and/or DEF, with X ATK/DEF
-        BATTLE_STATS = "with ([0-9]{1,4} ATK\\/[0-9]{1,4} DEF|[0-9]{1,4} ATK and [0-9]{1,4} DEF|[0-9]{1,4} ATK and\\/or DEF|[0-9]{1,4} ATK\\/DEF)"
         # Find all the races (types) mentioned in the desc
         # The list is manually typed because in the ref file they are named "beastwarrior" / "divine" and so on, which would provide no matches.
         RACES = "(aqua|beast-warrior|beast|cyberse|dinosaur|divine-beast|dragon|fairy|fiend|fish|illusion|insect|machine|plant|psychic|pyro|reptile|rock|sea serpent|spellcaster|thunder|warrior|winged beast|wyrm|zombie)"
@@ -115,8 +109,6 @@ class Domain:
         _, text = Domain.CleanDesc(text, NOT_TREATED_AS)
         quotes, text = Domain.CleanDesc(text, QUOTE_CARDS)
         mentions, text = Domain.CleanDesc(text, MENTIONED_QUOTES)
-        _, text = Domain.CleanDesc(text, TOKENS)
-        battleStats, text = Domain.CleanDesc(text, BATTLE_STATS)
         races, text = Domain.CleanDesc(text, RACES)
         attributes, text = Domain.CleanDesc(text, ATTRIBUTES)
 
@@ -141,16 +133,6 @@ class Domain:
                 card = Card(data)
                 self.setcodes.update(card.setcodes)
 
-        # Retrieve the battle stats (ATK/DEF) mentioned and convert them to ints.
-        for stats in battleStats:
-            r = re.match("\\D*([0-9]{1,4})\\D+([0-9]{1,4})\\D*", stats)
-            if(not r is None):
-                self.battleStats.add(tuple([int(r.group(1)), int(r.group(2))]))
-            else:
-                # "X ATK and/or DEF" or "X ATK/DEF" case
-                r = re.match("\\D*([0-9]{1,4})\\D*", stats)
-                self.battleStats.add(tuple([int(r.group(1)), int(r.group(1))]))
-
         # Add the HEXCODE of the attributes.
         for race in races:
             #remove non character so beast-warrior -> beastwarrior, winged beast -> wingedbeast and so on.
@@ -172,7 +154,6 @@ class Domain:
         self.attributes: set = None
         self.races: set = None
         self.setcodes: set = None
-        self.battleStats: set = None
         self.namedCards: set = None
 
         self.cards = []
@@ -184,7 +165,6 @@ class Domain:
             "Types: " + str([Races.Instance().hexName[code] for code in self.races]),
             "Archetypes: " + str([Archetypes.Instance().hexName[code] for code in self.setcodes]),
             "Named Cards: " + (str(self.namedCards) if len(self.namedCards) > 0 else "{}"),
-            "ATK/DEF: " + (str(self.battleStats) if len(self.battleStats) > 0 else "{}")
         ])
 
     # Creates a new Domain by parsing the DM's card text for information.
@@ -197,7 +177,6 @@ class Domain:
         domain.attributes = set([DM.attribute])
         domain.races = set([DM.race])
         domain.setcodes = set(DM.setcodes)
-        domain.battleStats = set()
         domain.namedCards = set()
 
         # Don't forget the DIVINES attribute
@@ -231,8 +210,7 @@ class Domain:
         domain.attributes = set(v[0] for v in data[0])
         domain.races = set(v[0] for v in data[1])
         domain.setcodes = set(v[0] for v in data[2])
-        domain.battleStats = set(v for v in data[3])
-        domain.namedCards = set(v[0] for v in data[4])
+        domain.namedCards = set(v[0] for v in data[3])
 
         return domain
 
@@ -255,10 +233,6 @@ class Domain:
                 return True
 
         if(card.name.lower() in self.namedCards):
-            return True
-
-        atkAndDef = tuple([card.attack, card.defense])
-        if(atkAndDef in self.battleStats):
             return True
 
         for cardSetcode in card.setcodes:
