@@ -20,7 +20,6 @@ class DomainLookup:
     ATTR_TABLE = "attribute"
     RACE_TABLE = "race"
     ARCH_TABLE = "archetype"
-    STAT_TABLE = "stat"
     QUOT_TABLE = "mention"
     DM_TABLE = "master"
 
@@ -92,17 +91,6 @@ class DomainLookup:
 
         for table in [DomainLookup.ATTR_TABLE, DomainLookup.RACE_TABLE, DomainLookup.ARCH_TABLE]:
             cursor.execute(create_master_relation.format(master=DomainLookup.DM_TABLE, relation=table))
-        
-        create_master_stat = """
-            CREATE TABLE IF NOT EXISTS '{stat}' (
-                '{master}'	INTEGER,
-                'atk'	INTEGER,
-                'def'	INTEGER,
-                PRIMARY KEY('{master}','atk','def'),
-                FOREIGN KEY('{master}') REFERENCES '{master}'('id')
-            );
-        """.format(master=DomainLookup.DM_TABLE, stat=DomainLookup.STAT_TABLE)
-        cursor.execute(create_master_stat)
 
         create_master_mention = """
             CREATE TABLE IF NOT EXISTS '{mention}' (
@@ -168,7 +156,6 @@ class DomainLookup:
     def AddDomains(self, domains : list[Domain]) -> None:
         insert_master = "INSERT OR IGNORE INTO {}(id) VALUES (?);".format(DomainLookup.DM_TABLE)
         insert_relation = "INSERT OR IGNORE INTO {relation} ({master}, {relation}) VALUES (?,?);"
-        insert_stats = "INSERT OR IGNORE INTO {stat}({master}, atk, def) VALUES (?, ?, ?)"
 
         cursor = self.db.cursor()
         for domain in domains:
@@ -186,9 +173,6 @@ class DomainLookup:
             for mention in domain.namedCards:
                 cursor.execute(insert_relation.format(master=DomainLookup.DM_TABLE, relation=DomainLookup.QUOT_TABLE), (domain.DM.id, mention,))
             
-            for stat in domain.battleStats:
-                cursor.execute(insert_stats.format(master=DomainLookup.DM_TABLE, stat=DomainLookup.STAT_TABLE), (domain.DM.id, stat[0], stat[1]))
-
         cursor.close()
         self.db.commit()
 
@@ -201,16 +185,14 @@ class DomainLookup:
             WHERE
                 EXISTS (SELECT {master} FROM {attr} WHERE {master}.id = {master} AND {attr} = ?)
                 OR EXISTS (SELECT {master} FROM {race} WHERE {master}.id = {master} AND {race} = ?)
-                OR EXISTS (SELECT {master} FROM {mention} WHERE {master}.id = {master} AND {mention} = ?)
-                OR EXISTS (SELECT {master} FROM {stat} WHERE {master}.id = {master} AND atk = ? AND def = ?)""".format(
+                OR EXISTS (SELECT {master} FROM {mention} WHERE {master}.id = {master} AND {mention} = ?)""".format(
                     master=DomainLookup.DM_TABLE,
                     attr=DomainLookup.ATTR_TABLE, 
                     race=DomainLookup.RACE_TABLE, 
-                    mention=DomainLookup.QUOT_TABLE, 
-                    stat=DomainLookup.STAT_TABLE
+                    mention=DomainLookup.QUOT_TABLE
             )
         
-        args = [monster.attribute, monster.race, monster.name.lower(), monster.attack, monster.defense]
+        args = [monster.attribute, monster.race, monster.name.lower()]
 
         for arch in monster.setcodes:
             for base_arch in Archetypes.Instance().GetBaseArchetype(arch):
@@ -229,14 +211,9 @@ class DomainLookup:
         data = []
         arg = tuple([monster.id])
 
-        for table in [DomainLookup.ATTR_TABLE, DomainLookup.RACE_TABLE, DomainLookup.ARCH_TABLE, DomainLookup.STAT_TABLE, DomainLookup.QUOT_TABLE]:
-            if(table != DomainLookup.STAT_TABLE):
-                query = generic_query.format(master=DomainLookup.DM_TABLE, table=table)
-                data.append(cursor.execute(query, arg).fetchall())
-
-            else:
-                query = "Select atk, def from {table} where {master} = ?".format(master=DomainLookup.DM_TABLE, table=table)
-                data.append(cursor.execute(query, arg).fetchall())
+        for table in [DomainLookup.ATTR_TABLE, DomainLookup.RACE_TABLE, DomainLookup.ARCH_TABLE, DomainLookup.QUOT_TABLE]:
+            query = generic_query.format(master=DomainLookup.DM_TABLE, table=table)
+            data.append(cursor.execute(query, arg).fetchall())
         
         cursor.close()
 
