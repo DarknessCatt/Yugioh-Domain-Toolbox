@@ -6,6 +6,7 @@ from classes.textParsers.races import Races
 
 from classes.card import Card
 from classes.databases.cardsDB import CardsDB
+from classes.databases.databaseExceptions import CardNameNotFoundError
 
 # A Deck masters domain, including information as well as the cards themselves.
 class Domain:
@@ -127,11 +128,12 @@ class Domain:
 
         # Add archetype of named cards.
         for name in self.namedCards:
-            # Have to do to avoid a circular import.
-            data = CardsDB.Instance().GetCardByName(name)
-            if(not data is None):
+            try:
+                data = CardsDB.Instance().GetCardByName(name)
                 card = Card(data)
                 self.setcodes.update(card.setcodes)
+            except CardNameNotFoundError as error:
+                print(f"Could not find card named [{error.args[0]}] in [{self.DM.name}] domain.")
 
         # Add the HEXCODE of the attributes.
         for race in races:

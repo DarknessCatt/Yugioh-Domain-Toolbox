@@ -3,6 +3,7 @@ from tkinter import *
 import tkinter.scrolledtext
 
 from classes.deckChecker import DeckChecker
+from classes.databases.databaseExceptions import CardIdNotFoundError
 
 # Creates the GUI for the Deck Checker tool.
 class DeckCheckerGUI:
@@ -10,7 +11,11 @@ class DeckCheckerGUI:
     def Tab(self, deckCheckerTab : Frame) -> None:
 
         def OnValidate():
-            validation = DeckChecker.CheckDeck(ydkeText.get().strip())
+            try:
+                validation = DeckChecker.CheckDeck(ydkeText.get().strip())
+            except CardIdNotFoundError as error:
+                validation = f"Couldn't process card with id [{error.args[0]}]. Keep in mind pre-release cards are not supported."
+
             ydkeText.set("")
             message.delete("1.0", END)
             message.insert(INSERT, validation)

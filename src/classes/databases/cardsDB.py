@@ -131,7 +131,20 @@ class CardsDB:
     def GetAliasById(self, id: int) -> any:
         query = "SELECT alias FROM datas WHERE datas.id = ?"
         parameters = (id,)
-        return self.cursor.execute(query, parameters).fetchone()[0]
+        data = self.cursor.execute(query, parameters).fetchone()
+        if data is None:
+            raise CardIdNotFoundError(str(id))
+        return data[0]
+
+    # Gets a single card through it's id (passcode)
+    def GetCardById(self, id: int) -> any:
+        query = "SELECT {} WHERE datas.id = ?"
+        query = query.format(CardsDB.CARD_QUERY)
+        parameters = (id,)
+        data = self.cursor.execute(query, parameters).fetchone()
+        if data is None:
+            raise CardIdNotFoundError(str(id))
+        return data
 
     # Gets a single monster through it's id (passcode)
     def GetMonsterById(self, id: int) -> any:

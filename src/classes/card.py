@@ -31,3 +31,8 @@ class Card:
             setcode = (self.setcodesHex >> i) & self.HEX_SETCODE
             if(setcode > 0):
                 self.setcodes.append(setcode)
+    
+    # Returns if this card is a (non-token) monster
+    def IsMonster(self) -> bool:
+        # & 1 means it's a monster and & 16384 a token.
+        return self.type & 1 == 1 and self.type & 16384 == 0

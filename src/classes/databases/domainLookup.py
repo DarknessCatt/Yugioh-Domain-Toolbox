@@ -6,6 +6,7 @@ from multiprocessing import Process, Manager
 
 from classes.downloadManager import DownloadManager
 from classes.databases.cardsDB import CardsDB
+from classes.databases.databaseExceptions import CardIdNotFoundError, CardNameNotFoundError
 from classes.textParsers.archetypes import Archetypes
 
 from classes.card import Card
@@ -111,9 +112,12 @@ class DomainLookup:
         sys.stdout = open(os.devnull, 'w')
 
         for i in range(start, end):
-            card = Card(CardsDB.Instance().GetMonsterById(data[i][0]))
-            dm = Domain.GenerateFromCard(card)
-            allDMs.append(dm)
+            try:
+                card = Card(CardsDB.Instance().GetMonsterById(data[i][0]))
+                dm = Domain.GenerateFromCard(card)
+                allDMs.append(dm)
+            except CardIdNotFoundError as error:
+                print(f"Could not find card with id [{error.args[0]}]")
 
     # Updates the DB by adding missing DMs' information.
     def UpdateDB(self) -> None:

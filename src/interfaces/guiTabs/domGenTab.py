@@ -6,6 +6,7 @@ import tkinter.scrolledtext
 from classes.card import Card
 from classes.domain import Domain
 from classes.databases.cardsDB import CardsDB
+from classes.databases.databaseExceptions import CardIdNotFoundError, CardNameNotFoundError
 from classes.databases.domainLookup import DomainLookup
 
 from classes.domainExporter import DomainExporter
@@ -31,18 +32,20 @@ class DomainGeneratorGUI:
     def GetDeckMasterAndDomain(self, answer: str) -> Domain:
         dm = None
 
-        if(answer.isnumeric()):
-            dm = CardsDB.Instance().GetMonsterById(answer)
-        else:
-            dm = CardsDB.Instance().GetMonsterByName(answer)
-
-        if(not dm is None):
+        try:
+            if(answer.isnumeric()):
+                dm = CardsDB.Instance().GetMonsterById(answer)
+            else:
+                dm = CardsDB.Instance().GetMonsterByName(answer)
+    
             card = Card(dm)
             data = DomainLookup.Instance().GetDomain(card)
             domain = Domain.GenerateFromData(card, data)
             return domain
         
-        return None
+        except (CardIdNotFoundError, CardNameNotFoundError):
+            # If they are none, it was just not found, it is okay.
+            return None
     
     # Adds cards to a deckmaster's domain.
     def GetDomainCards(self, domain: Domain, spelltrap: str) -> None:

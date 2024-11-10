@@ -5,6 +5,7 @@ from constants.programInfo import ProgramInfo
 from classes.card import Card
 from classes.domain import Domain
 from classes.databases.cardsDB import CardsDB
+from classes.databases.databaseExceptions import CardIdNotFoundError, CardNameNotFoundError
 from classes.ydke import YDKE
 from classes.domainExporter import DomainExporter
 
@@ -81,18 +82,17 @@ class CommandLineInterface:
                 continue
             
             else:
-                dm = CardsDB.Instance().GetMonsterById(answer)
-                if(dm is None):
-                    self.InfoMessage("Sorry, I could not find card with id: [{}]\nAre you sure this is the correct id?\nRemember only monster cards can be Deck Masters.".format(answer))
-                    continue
-
-                else:
-                    card = Card(dm)
+                try:
+                    card = Card(CardsDB.Instance().GetMonsterById(answer))
                     data = DomainLookup.Instance().GetDomain(card)
                     domain = Domain.GenerateFromData(card, data)
                     print(domain)
                     print("")
                     return domain
+                except CardIdNotFoundError as error:
+                    self.InfoMessage("Sorry, I could not find card with id: [{}]\nAre you sure this is the correct id?\nRemember only monster cards can be Deck Masters.".format(error.args[0]))
+                    continue
+                    
     
     # Prompt that adds cards to a deckmaster's domain.
     def GetDomainCards(self, domain: Domain) -> None:
@@ -184,7 +184,10 @@ class CommandLineInterface:
         elif tool == 2:
             while(True):
                 answer = self.RequestInput("Please, provide the YDKE url.")
-                print(DeckChecker.CheckDeck(answer))
+                try:
+                    print(DeckChecker.CheckDeck(answer))
+                except CardIdNotFoundError as error:
+                    print(f"Couldn't process card with id [{error.args[0]}]. Keep in mind pre-release cards are not supported.")
                 self.InfoMessage("\nProcess completed, you may now exit or check another deck.")
         
         elif tool == 3:            
@@ -198,9 +201,16 @@ class CommandLineInterface:
                     desired : list[Card] = []
                     for deck in decks:
                         for passcode in deck:
-                            data = CardsDB.Instance().GetMonsterById(passcode)
-                            if(not data is None):
-                                desired.append(Card(data))
+                            try:
+                                data = CardsDB.Instance().GetCardById(passcode)
+                                card = Card(data)
+                                if card.IsMonster():
+                                    desired.append(card)
+                            
+                            except CardIdNotFoundError as error:
+                                print(f"Couldn't process card with id [{error.args[0]}]. Keep in mind pre-release cards are not supported.")
+                                self.InfoMessage("\nProcess completed, you may now exit or perform another search.")
+                                return
                     
                     if(len(desired) > 0):
                         candidates : list[set] = []
