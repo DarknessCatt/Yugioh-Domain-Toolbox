@@ -132,8 +132,11 @@ class Domain:
                 data = CardsDB.Instance().GetCardByName(name)
                 card = Card(data)
                 self.setcodes.update(card.setcodes)
-            except CardNameNotFoundError as error:
-                print(f"Could not find card named [{error.args[0]}] in [{self.DM.name}] domain.")
+            except CardNameNotFoundError:
+                # Trying to print something here crashes the threads,
+                # and most of the times it is not relevant since it is just something in quotes
+                # that is not a card, so just continue.
+                continue
 
         # Add the HEXCODE of the attributes.
         for race in races:
