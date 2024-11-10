@@ -34,17 +34,21 @@ class DomainGeneratorGUI:
 
         try:
             if(answer.isnumeric()):
-                dm = CardsDB.Instance().GetMonsterById(answer)
+                dm = CardsDB.Instance().GetCardById(answer)
             else:
-                dm = CardsDB.Instance().GetMonsterByName(answer)
+                dm = CardsDB.Instance().GetCardByName(answer)
     
             card = Card(dm)
+            if(not card.IsMonster()):
+                return None
+
             data = DomainLookup.Instance().GetDomain(card)
             domain = Domain.GenerateFromData(card, data)
             return domain
         
         except (CardIdNotFoundError, CardNameNotFoundError):
-            # If they are none, it was just not found, it is okay.
+            # Printing messages here spams the console.
+            # Most of the time, it's just that the user is mid typing.
             return None
     
     # Adds cards to a deckmaster's domain.

@@ -14,7 +14,7 @@ class DeckCheckerGUI:
             try:
                 validation = DeckChecker.CheckDeck(ydkeText.get().strip())
             except CardIdNotFoundError as error:
-                validation = f"Couldn't process card with id [{error.args[0]}]. Keep in mind pre-release cards are not supported."
+                validation = f"Couldn't process card with id [{error.args[0]}].\nKeep in mind pre-release cards are not supported."
 
             ydkeText.set("")
             message.delete("1.0", END)

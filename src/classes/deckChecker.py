@@ -59,11 +59,11 @@ class DeckChecker:
     # Checks if the DM is a monster card and if all other cards are within its domain.
     @staticmethod
     def CheckValidDomain(decks : list[array]) -> str:
-        dmData = CardsDB.Instance().GetMonsterById(decks[2][0])
-        if dmData is None:
+        dmData = CardsDB.Instance().GetCardById(decks[2][0])
+        dmCard = Card(dmData)
+        if not dmCard.IsMonster():
             return "DeckMaster is not a monster card."
 
-        dmCard = Card(dmData)
         data = DomainLookup.Instance().GetDomain(dmCard)
         domain = Domain.GenerateFromData(dmCard, data)
         print(domain)

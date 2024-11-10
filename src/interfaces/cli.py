@@ -83,14 +83,17 @@ class CommandLineInterface:
             
             else:
                 try:
-                    card = Card(CardsDB.Instance().GetMonsterById(answer))
+                    card = Card(CardsDB.Instance().GetCardById(answer))
+                    if(not card.IsMonster()):
+                        self.InfoMessage(f"Sorry, the card with id [{error.args[0]}] is not a monster.\nAre you sure this is the correct id?")
+
                     data = DomainLookup.Instance().GetDomain(card)
                     domain = Domain.GenerateFromData(card, data)
                     print(domain)
                     print("")
                     return domain
                 except CardIdNotFoundError as error:
-                    self.InfoMessage("Sorry, I could not find card with id: [{}]\nAre you sure this is the correct id?\nRemember only monster cards can be Deck Masters.".format(error.args[0]))
+                    self.InfoMessage(f"Sorry, I could not find card with id: [{error.args[0]}]\nKeep in mind pre-release cards are not supported.")
                     continue
                     
     

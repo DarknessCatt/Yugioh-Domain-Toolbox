@@ -51,14 +51,14 @@ class ReverseDomainGUI:
                     dmList.append(CardsDB.Instance().GetNameById(dm[0]))
 
                 dmList.sort()
-                message = "\n".join(dmList)
+                answer = "\n".join(dmList)
 
             except (CardIdNotFoundError, CardNameNotFoundError) as error:
-                message = f"Couldn't process card [{error.args[0]}].\nKeep in mind pre-released cards are not supported."
+                answer = f"Couldn't process card [{error.args[0]}].\nKeep in mind pre-released cards are not supported."
 
             ydkeText.set("")
             message.delete("1.0", END)
-            message.insert(INSERT, message)
+            message.insert(INSERT, answer)
             
 
         # YDKE URL entry
