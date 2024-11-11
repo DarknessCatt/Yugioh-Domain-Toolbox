@@ -2,6 +2,7 @@ from array import array
 
 from classes.databases.cardsDB import CardsDB
 from classes.databases.domainLookup import DomainLookup
+from classes.databases.databaseExceptions import CardIdNotFoundError, CardNameNotFoundError
 
 from classes.card import Card
 from classes.domain import Domain
@@ -45,7 +46,11 @@ class DeckChecker:
         if(len(duplicates) > 0):
             error = ["Duplicates found: "]
             for duplicate in duplicates:
-                error.append(CardsDB.Instance().GetNameById(duplicate))
+                try:
+                    error.append(CardsDB.Instance().GetNameById(duplicate))
+                except CardIdNotFoundError as idNotFound:
+                    error.append(f"Card with id [{idNotFound.args[0]}]")
+
             message = "\n".join(error)
             return message
 
@@ -54,11 +59,11 @@ class DeckChecker:
     # Checks if the DM is a monster card and if all other cards are within its domain.
     @staticmethod
     def CheckValidDomain(decks : list[array]) -> str:
-        dmData = CardsDB.Instance().GetMonsterById(decks[2][0])
-        if dmData is None:
+        dmData = CardsDB.Instance().GetCardById(decks[2][0])
+        dmCard = Card(dmData)
+        if not dmCard.IsMonster():
             return "DeckMaster is not a monster card."
 
-        dmCard = Card(dmData)
         data = DomainLookup.Instance().GetDomain(dmCard)
         domain = Domain.GenerateFromData(dmCard, data)
         print(domain)
@@ -68,14 +73,11 @@ class DeckChecker:
         # Check main and extra deck
         for i in range(0, 2):
             for passcode in decks[i]:
-                data = CardsDB.Instance().GetMonsterById(passcode)
-
-                # if data is None, it's a spell and trap and it's fine.
-                # Domain restrictions only applies to monsters.
-                if(not data is None):
-                    card = Card(data)
-                    if(not domain.CheckIfCardInDomain(card)):
-                        invalidCards.append(card)
+                data = CardsDB.Instance().GetCardById(passcode)
+                card = Card(data)
+                # Checks if the card is a monster and is within the domain
+                if(card.IsMonster() and not domain.CheckIfCardInDomain(card)):
+                    invalidCards.append(card)
 
         if(len(invalidCards) > 0):
             error = ["Monsters outside of Domain found:"]

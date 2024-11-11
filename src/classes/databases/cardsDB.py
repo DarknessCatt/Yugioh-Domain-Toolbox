@@ -2,6 +2,7 @@ import os
 import sqlite3
 
 from classes.downloadManager import DownloadManager
+from classes.databases.databaseExceptions import CardIdNotFoundError, CardNameNotFoundError
 
 # Handles all the sqlite3 queries. 
 class CardsDB:
@@ -120,35 +121,60 @@ class CardsDB:
     def GetNameById(self, id: int) -> str:
         query = "SELECT name FROM texts WHERE id = ?"
         parameters = (id,)
-        return self.cursor.execute(query, parameters).fetchone()[0]
+        data = self.cursor.execute(query, parameters).fetchone()[0]
+        if data is None:
+            raise CardIdNotFoundError(str(id))
+        return data
 
     # Returns the alias of a card, or 0 if there's none.
     # "Alias" refers to the "original name" of the card, like each harpy lady being "Harpy Lady"
     def GetAliasById(self, id: int) -> any:
         query = "SELECT alias FROM datas WHERE datas.id = ?"
         parameters = (id,)
-        return self.cursor.execute(query, parameters).fetchone()[0]
+        data = self.cursor.execute(query, parameters).fetchone()
+        if data is None:
+            raise CardIdNotFoundError(str(id))
+        return data[0]
+
+    # Gets a single card through it's id (passcode)
+    def GetCardById(self, id: int) -> any:
+        query = "SELECT {} WHERE datas.id = ?"
+        query = query.format(CardsDB.CARD_QUERY)
+        parameters = (id,)
+        data = self.cursor.execute(query, parameters).fetchone()
+        if data is None:
+            raise CardIdNotFoundError(str(id))
+        return data
 
     # Gets a single monster through it's id (passcode)
     def GetMonsterById(self, id: int) -> any:
         query = "SELECT {} WHERE datas.type & 1 = 1 AND datas.type & 16384 = 0 AND datas.id = ?"
         query = query.format(CardsDB.CARD_QUERY)
         parameters = (id,)
-        return self.cursor.execute(query, parameters).fetchone()
+        data = self.cursor.execute(query, parameters).fetchone()
+        if data is None:
+            raise CardIdNotFoundError(str(id))
+        return data
 
     # Gets a single monster through it's name
     def GetMonsterByName(self, name: str) -> any:
         query = "SELECT {} WHERE datas.type & 1 = 1 AND datas.type & 16384 = 0 AND texts.name = ? COLLATE NOCASE"
         query = query.format(CardsDB.CARD_QUERY)
         parameters = (name,)
-        return self.cursor.execute(query, parameters).fetchone()
+        data = self.cursor.execute(query, parameters).fetchone()
+        if data is None:
+            raise CardNameNotFoundError(name)
+        return data
 
     # Gets a single card through it's name
     def GetCardByName(self, name: str) -> any:
         query = "SELECT {} WHERE texts.name = ? COLLATE NOCASE"
         query = query.format(CardsDB.CARD_QUERY)
         parameters = (name,)
-        return self.cursor.execute(query, parameters).fetchone()
+        data = self.cursor.execute(query, parameters).fetchone()
+        if data is None:
+            raise CardNameNotFoundError(name)
+        return data
 
     # Gets all monsters within the domain's race and attributes
     def GetMonstersByAttributeAndRace(self, attributes: list[int], races: list[int]) -> sqlite3.Cursor:
