@@ -43,11 +43,12 @@ class Archetypes(TextParser):
         "helios"
     ]
 
-    # Hexes that are duplicated for one reason or the other
-    DUPLICATED_HEXES = [
-        int('0xa2', 0), # Magician
-        int('0x16c', 0), # "Number" Spell/Trap archetype
-    ]
+    # Hexes that need to be manually replaced cause
+    # they appear more than once in the same list in an incorrect order
+    ARCH_REPLACES = {
+        int('0xa2', 0) : int('0x98', 0), # Magician
+        int('0x16c', 0): int('0x48', 0), # Number
+    }
 
     EXTRA_CASES = {
         "true draco": int('0xf9', 0),
@@ -100,7 +101,7 @@ class Archetypes(TextParser):
                 updateHexName,
                 updateNameHex
             )
-        
+
         with open(os.path.join(DownloadManager.GetCardInfoFolder(), DownloadManager.PRE_ARCHETYPES_FILENAME), "r", encoding="utf8") as f:
             text = f.read()
             
@@ -123,9 +124,12 @@ class Archetypes(TextParser):
         updateHexName = {int(k, 0):v.lower() for k,v in updateHexName.items()}
         updateNameHex = {k.lower():int(v, 0) for k,v in updateNameHex.items()}
 
-        for hex in Archetypes.DUPLICATED_HEXES:
-            if(hex in updateHexName):
-                updateHexName.pop(hex)
+        for original_hex, replacement in Archetypes.ARCH_REPLACES.items():
+            if(original_hex in updateHexName):
+                name = updateHexName[original_hex]
+                del updateHexName[original_hex]
+                updateHexName[replacement] = name
+                updateNameHex[name] = replacement
 
         for item in Archetypes.IGNORE_LIST:
             if(item in updateNameHex):

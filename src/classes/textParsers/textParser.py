@@ -20,5 +20,11 @@ class TextParser:
         # For each entry in the section, retrieve the archetype's name and hexcode.
         for entry in list.split("\n"):
             info = re.search(line, entry)
+
+            # if(info.group(1) in dic):
+            #     print(f"Replacing \t{info.group(1)}\t[{dic[info.group(1)]}] -> [{info.group(2)}]")
             dic[info.group(1)] = info.group(2)
+
+            # if(info.group(2) in reverseDic):
+            #     print(f"Replacing \t{info.group(2)}\t[{reverseDic[info.group(2)]}] -> [{info.group(1)}]")
             reverseDic[info.group(2)] = info.group(1)
