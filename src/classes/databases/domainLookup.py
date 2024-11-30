@@ -199,9 +199,11 @@ class DomainLookup:
         args = [monster.attribute, monster.race, monster.name.lower()]
 
         for arch in monster.setcodes:
-            for base_arch in Archetypes.Instance().GetBaseArchetype(arch):
-                select += "\n                OR EXISTS (SELECT {master} FROM {arch} WHERE {master}.id = {master} AND {arch} = ?)".format(master=DomainLookup.DM_TABLE, arch=DomainLookup.ARCH_TABLE)
-                args.append(base_arch)
+            base_archs = Archetypes.Instance().GetBaseArchetype(arch)
+            if base_archs is not None:
+                for base_arch in base_archs:
+                    select += "\n                OR EXISTS (SELECT {master} FROM {arch} WHERE {master}.id = {master} AND {arch} = ?)".format(master=DomainLookup.DM_TABLE, arch=DomainLookup.ARCH_TABLE)
+                    args.append(base_arch)
 
         return filter.execute(select, tuple(args)).fetchall()
     
