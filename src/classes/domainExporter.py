@@ -50,7 +50,7 @@ class DomainExporter:
     }
 
     # Headers used when generating the csv.
-    CSV_HEADERS = ["cardname", "cardq", "cardrarity", "card_edition", "cardset", "cardcode", "cardid"]
+    CSV_HEADERS = ["cardname", "cardq", "cardrarity", "card_edition", "cardset", "cardcode", "cardid", "print_id"]
 
     # Convertes the card information into a line for the csv.
     # Thanks @Zefile8 for the original code.
@@ -65,10 +65,11 @@ class DomainExporter:
         data.append("\"" + name + "\"") #cardname
         data.append("1") #cardq
         data.append(str(None)) #cardrarity
-        data.append(str(None)) #card_edition
+        data.append("Unlimited") #card_edition
         data.append(str(None)) #cardset
         data.append("DOMA-" + str(card.id)) #cardcode
         data.append(str(card.id)) #cardid
+        data.append(str(None)) #print_id
 
         return ",".join(data)
 
