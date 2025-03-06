@@ -57,6 +57,8 @@ class Archetypes(TextParser):
     }
 
     BASE_ARCH_EXCEPTIONS = {
+        int('0x507a', 0): [int('0x107a', 0)], # Infernoble Knight is a sub archetype of Noble Knight, yet Noble Knight is a sub archetype of "Noble" for edo.
+        int('0x607a', 0): [int('0x207a', 0)], # Infernoble Arms is a sub archetype of Noble Arms, yet Noble Arms is a sub archetype of "Noble" for edo.
         int('0x10a2', 0): [int('0x10a2', 0)], # Dark Magician is the base archetype, not magician.
         int('0x20a2', 0): [int('0x20a2', 0)], # Magician Girl is the base archetype, not magician.
         int('0x30a2', 0): [int('0x10a2', 0), int('0x20a2', 0)], # Dark Magician Girl is both a dark magician and a magician girl.
