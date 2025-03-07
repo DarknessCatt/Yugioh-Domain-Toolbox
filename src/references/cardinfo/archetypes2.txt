@@ -1,3 +1,5 @@
+!system 23 Attempting to end the Main Phase
+!system 29 Attempting to end the Battle Phase
 !system 99 Activate using a generic effect
 !system 225 Added to the hand by a currently resolving effect
 !system 534 Select the card(s) to keep on the field
@@ -118,3 +120,9 @@
 !setname 0x1bb Aqua Jet
 !setname 0x1bc Dragon Ruler
 !setname 0x1bd Mitsurugi
+!setname 0x1be Regenesis
+!setname 0x1bf Dominus
+!setname 0x1c0 Dragontail
+!setname 0x1c1 Yummy
+!setname 0x1c2 Apophis
+!setname 0x1c3 Serket
