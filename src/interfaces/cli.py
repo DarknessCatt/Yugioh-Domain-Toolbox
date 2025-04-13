@@ -6,8 +6,8 @@ from classes.card import Card
 from classes.domain import Domain
 from classes.databases.cardsDB import CardsDB
 from classes.databases.databaseExceptions import CardIdNotFoundError, CardNameNotFoundError
-from classes.ydke import YDKE
 from classes.domainExporter import DomainExporter
+from classes.formatter.deckFormatter import DeckFormatter
 
 from classes.deckChecker import DeckChecker
 from classes.databases.domainLookup import DomainLookup
@@ -196,24 +196,14 @@ class CommandLineInterface:
         elif tool == 3:            
             while(True):
                 answer = self.RequestInput("Please, provide the YDKE url.")
-                decks = YDKE.DecodeYDKE(answer)
+                decks = DeckFormatter.Instance().Decode(DeckFormatter.Format.YDKE, answer)
                 if(decks is None):
                     print("Could not process YDKE url.")
                 
                 else:
                     desired : list[Card] = []
                     for deck in decks:
-                        for passcode in deck:
-                            try:
-                                data = CardsDB.Instance().GetCardById(passcode)
-                                card = Card(data)
-                                if card.IsMonster():
-                                    desired.append(card)
-                            
-                            except CardIdNotFoundError as error:
-                                print(f"Couldn't process card with id [{error.args[0]}]. Keep in mind pre-release cards are not supported.")
-                                self.InfoMessage("\nProcess completed, you may now exit or perform another search.")
-                                return
+                        desired += [card for card in deck if card.IsMonster()]
                     
                     if(len(desired) > 0):
                         candidates : list[set] = []

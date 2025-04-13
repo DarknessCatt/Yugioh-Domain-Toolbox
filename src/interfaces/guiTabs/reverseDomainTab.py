@@ -2,10 +2,10 @@ import tkinter
 from tkinter import *
 import tkinter.scrolledtext
 
-from classes.ydke import YDKE
 from classes.card import Card
 from classes.databases.cardsDB import CardsDB
 from classes.databases.databaseExceptions import CardIdNotFoundError, CardNameNotFoundError
+from classes.formatter.deckFormatter import DeckFormatter
 
 from classes.databases.domainLookup import DomainLookup
 
@@ -16,7 +16,7 @@ class ReverseDomainGUI:
 
         def OnValidate():
             try:
-                decks = YDKE.DecodeYDKE(ydkeText.get().strip())
+                decks = DeckFormatter.Instance().Decode(DeckFormatter.Format.YDKE, ydkeText.get().strip())
                 if(decks is None):
                     ydkeText.set("")
                     message.delete("1.0", END)
@@ -25,11 +25,7 @@ class ReverseDomainGUI:
 
                 desired : list[Card] = []
                 for deck in decks:
-                    for passcode in deck:
-                        data = CardsDB.Instance().GetCardById(passcode)
-                        card = Card(data)
-                        if card.IsMonster():
-                            desired.append(card)
+                    desired += [card for card in deck if card.IsMonster()]
 
                 if(len(desired) == 0):
                     ydkeText.set("")
@@ -59,7 +55,6 @@ class ReverseDomainGUI:
             ydkeText.set("")
             message.delete("1.0", END)
             message.insert(INSERT, answer)
-            
 
         # YDKE URL entry
         urlLabel = tkinter.Label(deckCheckerTab, text = "YDKE URL:", font=("Arial", 12))

@@ -36,3 +36,6 @@ class Card:
     def IsMonster(self) -> bool:
         # & 1 means it's a monster and & 16384 a token.
         return self.type & 1 == 1 and self.type & 16384 == 0
+    
+    def __str__(self) -> str:
+        return f"Card({self.name})"
