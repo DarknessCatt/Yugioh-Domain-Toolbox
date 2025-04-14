@@ -33,7 +33,7 @@ class DeckFormatter:
             DeckFormatter.Format.YDKE : YDKE
         }
     
-    def Encode(self, format : Format, code : str) -> list[array]:
+    def Encode(self, format : Format, code : str):
         if(format not in self.formatters):
             raise Warning(f"Format [{format}] doesn't exist")
         
