@@ -2,6 +2,7 @@ from array import array
 from enum import Enum
 
 from classes.card import Card
+from classes.formatter.ydk import YDK
 from classes.formatter.ydke import YDKE
 
 # Exports an array of cards into a defined format
@@ -30,6 +31,7 @@ class DeckFormatter:
         DeckFormatter._instance = self
         
         self.formatters = {
+            DeckFormatter.Format.YDK : YDK,
             DeckFormatter.Format.YDKE : YDKE
         }
     

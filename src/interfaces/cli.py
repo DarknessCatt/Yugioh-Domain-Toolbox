@@ -264,8 +264,15 @@ class CommandLineInterface:
                 print("What is the format you are converting from?")
                 from_format = self.SelectDeckFormat()
 
-                print("Provide your deck in the selected format.")
-                encoded_deck = input().strip()
+                print("Provide your deck in the selected format.\n(Press enter twice more after pasting all lines)")
+                lines = []
+                while(True):
+                    line = input().strip()
+                    if line:
+                        lines.append(line)
+                    else:
+                        break
+                encoded_deck = "\n".join(lines)
 
                 deck = DeckFormatter.Instance().Decode(from_format, encoded_deck)
                 if deck is None:
