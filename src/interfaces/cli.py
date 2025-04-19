@@ -56,6 +56,7 @@ class CommandLineInterface:
             print("(1) Domain Generator.")
             print("(2) Deck Validator.")
             print("(3) Reverse Domain Searcher.")
+            print("(4) Deck Format Converter.")
             answer = self.RequestInput()
 
             if(not answer.isdigit()):
@@ -64,7 +65,7 @@ class CommandLineInterface:
             
             else:
                 option = int(answer)
-                if(option < 0 or option > 3):
+                if(option <= 0 or option > 4):
                     self.InfoMessage(self.INVALID_ANSWER)
                     continue
                 else:
@@ -95,7 +96,7 @@ class CommandLineInterface:
                 except CardIdNotFoundError as error:
                     self.InfoMessage(f"Sorry, I could not find card with id: [{error.args[0]}]\nKeep in mind pre-release cards are not supported.")
                     continue
-                    
+        
     
     # Prompt that adds cards to a deckmaster's domain.
     def GetDomainCards(self, domain: Domain) -> None:
@@ -165,6 +166,35 @@ class CommandLineInterface:
                 self.InfoMessage(self.INVALID_ANSWER)
                 continue
 
+    # Prompt to decide which format to use.
+    def SelectDeckFormat(self) -> DeckFormatter.Format:
+        options = [
+            DeckFormatter.Format.YGOPRODECK_CSV,
+            DeckFormatter.Format.YDK,
+            DeckFormatter.Format.YDKE,
+            DeckFormatter.Format.NAMES
+        ]
+
+        while(True):
+            print("(1) YGOProDeck CSV.")
+            print("(2) YDK.")
+            print("(3) YDKE.")
+            print("(4) List Name.")
+            answer = self.RequestInput()
+
+            if(not answer.isdigit()):
+                self.InfoMessage(self.NOT_DIGIT_ANSWER)
+                continue
+            
+            else:
+                option = int(answer)
+                if(option <= 0 or option > 4):
+                    self.InfoMessage(self.INVALID_ANSWER)
+                    continue
+                else:
+                    return options[option-1]
+
+
     # The main interface loop.
     def StartInterface(self) -> None:
         # Step 1) Intro Screen and decide tool
@@ -228,4 +258,26 @@ class CommandLineInterface:
                         print("The deck provided has no monsters.")
                 
                 self.InfoMessage("\nProcess completed, you may now exit or perform another search.")
+        
+        elif tool == 4:
+            while(True):
+                print("What is the format you are converting from?")
+                from_format = self.SelectDeckFormat()
+
+                print("Provide your deck in the selected format.")
+                encoded_deck = input().strip()
+
+                deck = DeckFormatter.Instance().Decode(from_format, encoded_deck)
+                if deck is None:
+                    print("Couldn't convert deck.\nMake sure you selected the correct format.")
+                    self.InfoMessage("\nProcess completed, you may now exit or perform another conversion.")
+
+                print("\nWhat is the format you want it to be?")
+                to_format = self.SelectDeckFormat()
+
+                converted_deck = DeckFormatter.Instance().Encode(to_format, deck)
+                print(converted_deck)
+
+                self.InfoMessage("\nProcess completed, you may now exit or perform another conversion.")
+
                         

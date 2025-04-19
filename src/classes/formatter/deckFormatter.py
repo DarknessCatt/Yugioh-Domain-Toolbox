@@ -9,7 +9,7 @@ class DeckFormatter:
     
     class Format(Enum):
         BANLIST = 0
-        YGOPRODECK = 1
+        YGOPRODECK_CSV = 1
         YDK = 2
         YDKE = 3
         NAMES = 4
@@ -33,13 +33,13 @@ class DeckFormatter:
             DeckFormatter.Format.YDKE : YDKE
         }
     
-    def Encode(self, format : Format, code : str):
+    def Encode(self, format: Format, decks: list[array]) -> str:
         if(format not in self.formatters):
             raise Warning(f"Format [{format}] doesn't exist")
         
-        return self.formatters[format].Encode(code)
+        return self.formatters[format].Encode(decks)
 
-    def Decode(self, format : Format, code : str) -> list[array]:
+    def Decode(self, format: Format, code: str) -> list[array]:
         if(format not in self.formatters):
             raise Warning(f"Format [{format}] doesn't exist")
         
