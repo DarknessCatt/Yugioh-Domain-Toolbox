@@ -5,6 +5,7 @@ from classes.card import Card
 from classes.formatter.ydk import YDK
 from classes.formatter.ydke import YDKE
 from classes.formatter.nameList import NameList
+from classes.formatter.untapDeck import UntapDeck
 
 # Exports an array of cards into a defined format
 class DeckFormatter:
@@ -15,6 +16,7 @@ class DeckFormatter:
         YDK = 2
         YDKE = 3
         NAMES = 4
+        UNTAP = 5
 
     _instance = None
 
@@ -34,7 +36,8 @@ class DeckFormatter:
         self.formatters = {
             DeckFormatter.Format.YDK : YDK,
             DeckFormatter.Format.YDKE : YDKE,
-            DeckFormatter.Format.NAMES : NameList
+            DeckFormatter.Format.NAMES : NameList,
+            DeckFormatter.Format.UNTAP : UntapDeck
         }
     
     def Encode(self, format: Format, decks: list[array]) -> str:

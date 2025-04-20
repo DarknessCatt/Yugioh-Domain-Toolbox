@@ -169,17 +169,17 @@ class CommandLineInterface:
     # Prompt to decide which format to use.
     def SelectDeckFormat(self) -> DeckFormatter.Format:
         options = [
-            DeckFormatter.Format.YGOPRODECK_CSV,
             DeckFormatter.Format.YDK,
             DeckFormatter.Format.YDKE,
-            DeckFormatter.Format.NAMES
+            DeckFormatter.Format.NAMES,
+            DeckFormatter.Format.UNTAP
         ]
 
         while(True):
-            print("(1) YGOProDeck CSV.")
-            print("(2) YDK.")
-            print("(3) YDKE.")
-            print("(4) List Name.")
+            print("(1) YDK.")
+            print("(2) YDKE.")
+            print("(3) List Name.")
+            print("(4) Untap Deck.")
             answer = self.RequestInput()
 
             if(not answer.isdigit()):
