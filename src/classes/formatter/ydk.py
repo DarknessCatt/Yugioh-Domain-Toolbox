@@ -5,13 +5,13 @@ from classes.card import Card
 from classes.databases.cardsDB import CardsDB
 from classes.databases.databaseExceptions import CardIdNotFoundError, CardNameNotFoundError
 
-# Handles YDKE URLs
+# Handles YDK lists
 class YDK:
     COMMENT = "#"
     SIDE_DECK = "!side"
 
-    # Decodes an YDKE, returning a 3 lists of passcodes: main, extra and side.
-    # If YDKE can't be processed, returns None instead.
+    # Decodes an YDK, returning a 3 lists of passcodes: main, extra and side.
+    # If a line can't be processed, skip it.
     @staticmethod
     def Decode(decklist : str) -> list[array]:
         decks = [[],[]] # [main/extra], [side]
@@ -64,7 +64,7 @@ class YDK:
         
         return [main, extra, side]
     
-    # Encodes a deck (3 arrays of Cards) into a ydke url
+    # Encodes a deck (3 arrays of Cards) into a ydk file
     @staticmethod
     def Encode(decks : list[array]) -> str:
         text = [

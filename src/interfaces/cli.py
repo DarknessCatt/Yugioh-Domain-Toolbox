@@ -274,6 +274,7 @@ class CommandLineInterface:
                         break
                 encoded_deck = "\n".join(lines)
 
+                print("Processing deck...")
                 deck = DeckFormatter.Instance().Decode(from_format, encoded_deck)
                 if deck is None:
                     print("Couldn't convert deck.\nMake sure you selected the correct format.")
