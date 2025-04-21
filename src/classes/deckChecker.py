@@ -6,7 +6,7 @@ from classes.databases.databaseExceptions import CardIdNotFoundError, CardNameNo
 
 from classes.card import Card
 from classes.domain import Domain
-from classes.ydke import YDKE
+from classes.formatter.deckFormatter import DeckFormatter
 
 # Provides methods for checking if a deck is valid for domain.
 class DeckChecker:
@@ -32,9 +32,10 @@ class DeckChecker:
         cards = set()
 
         for deck in decks:
-            for passcode in deck:
+            for card in deck:
+                passcode = card.id
                 
-                alias = CardsDB.Instance().GetAliasById(passcode)
+                alias = CardsDB.Instance().GetAliasById(card.id)
                 if(alias != 0):
                     passcode = alias
 
@@ -59,8 +60,7 @@ class DeckChecker:
     # Checks if the DM is a monster card and if all other cards are within its domain.
     @staticmethod
     def CheckValidDomain(decks : list[array]) -> str:
-        dmData = CardsDB.Instance().GetCardById(decks[2][0])
-        dmCard = Card(dmData)
+        dmCard = decks[2][0]
         if not dmCard.IsMonster():
             return "DeckMaster is not a monster card."
 
@@ -71,10 +71,8 @@ class DeckChecker:
 
         invalidCards: list[Card] = []
         # Check main and extra deck
-        for i in range(0, 2):
-            for passcode in decks[i]:
-                data = CardsDB.Instance().GetCardById(passcode)
-                card = Card(data)
+        for deck in decks:
+            for card in deck:
                 # Checks if the card is a monster and is within the domain
                 if(card.IsMonster() and not domain.CheckIfCardInDomain(card)):
                     invalidCards.append(card)
@@ -91,7 +89,7 @@ class DeckChecker:
     # Decodes the given ydke url and perform all deck checks.
     @staticmethod
     def CheckDeck(ydke : str) -> str:
-        decks = YDKE.DecodeYDKE(ydke)
+        decks = DeckFormatter.Instance().Decode(DeckFormatter.Format.YDKE, ydke)
         if(decks is None):
             return "Could not process YDKE url."
         
