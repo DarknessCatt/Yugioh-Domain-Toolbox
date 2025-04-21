@@ -33,6 +33,7 @@ class DeckChecker:
 
         for deck in decks:
             for card in deck:
+                passcode = card.id
                 
                 alias = CardsDB.Instance().GetAliasById(card.id)
                 if(alias != 0):
