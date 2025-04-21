@@ -11,12 +11,10 @@ from classes.formatter.untapDeck import UntapDeck
 class DeckFormatter:
     
     class Format(Enum):
-        BANLIST = 0
-        YGOPRODECK_CSV = 1
-        YDK = 2
-        YDKE = 3
-        NAMES = 4
-        UNTAP = 5
+        YDK = 1
+        YDKE = 2
+        NAMES = 3
+        UNTAP = 4
 
     _instance = None
 

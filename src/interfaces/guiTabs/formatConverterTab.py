@@ -62,7 +62,7 @@ class FormatConverterGUI:
         fromFormatFrame.pack(pady= 15)
 
         # From input field
-        fromText = tkinter.scrolledtext.ScrolledText(FormatConverterTab, height=5, font=("Arial", 12))
+        fromText = tkinter.scrolledtext.ScrolledText(FormatConverterTab, height=7, font=("Arial", 12))
         fromText.pack()
 
         # Select To Format
@@ -81,5 +81,5 @@ class FormatConverterGUI:
         button = tkinter.Button(FormatConverterTab, text = "Convert", command=OnConvert)
         button.pack(pady= 15)
 
-        message = tkinter.scrolledtext.ScrolledText(FormatConverterTab, height=5, font=("Arial", 12))
+        message = tkinter.scrolledtext.ScrolledText(FormatConverterTab, height=7, font=("Arial", 12))
         message.pack()
