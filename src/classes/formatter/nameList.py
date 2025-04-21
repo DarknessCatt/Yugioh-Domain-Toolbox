@@ -17,6 +17,11 @@ class NameList:
 
         lines = nameList.split("\n")
         for line in lines:
+            line = line.strip()
+
+            if not line: #empty line
+                continue
+
             try:
                 data = CardsDB.Instance().GetCardByName(line.strip())
                 card = Card(data)

@@ -79,19 +79,19 @@ class UntapDeck:
     def Encode(decks : list[array]) -> str:
         text = [UntapDeck.SIDE_DECK]
         counter = Counter(decks[2])
-        for card, amount in counter:
-            text.append(UntapDeck.UNTAP_FORMAT_LINE.format(amount, card))
+        for card, amount in counter.items():
+            text.append(UntapDeck.UNTAP_FORMAT_LINE.format(amount, card.name))
         
         text.append("")
         text.append(UntapDeck.MAIN_DECK)
         counter = Counter(decks[0])
-        for card, amount in counter:
-            text.append(UntapDeck.UNTAP_FORMAT_LINE.format(amount, card))
+        for card, amount in counter.items():
+            text.append(UntapDeck.UNTAP_FORMAT_LINE.format(amount, card.name))
         
         text.append("")
-        text.append(UntapDeck.SIDE_DECK)
+        text.append(UntapDeck.EXTRA_DECK)
         counter = Counter(decks[1])
-        for card, amount in counter:
-            text.append(UntapDeck.UNTAP_FORMAT_LINE.format(amount, card))
+        for card, amount in counter.items():
+            text.append(UntapDeck.UNTAP_FORMAT_LINE.format(amount, card.name))
 
         return "\n".join(text)

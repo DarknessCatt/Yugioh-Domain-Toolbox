@@ -7,6 +7,7 @@ from constants.programInfo import ProgramInfo
 from interfaces.guiTabs.domGenTab import DomainGeneratorGUI
 from interfaces.guiTabs.deckCheckerTab import DeckCheckerGUI
 from interfaces.guiTabs.reverseDomainTab import ReverseDomainGUI
+from interfaces.guiTabs.formatConverterTab import FormatConverterGUI
 
 # Class that handles the CLI interface of the program
 class GraphicalUserInterface:
@@ -25,10 +26,12 @@ class GraphicalUserInterface:
         domainGeneratorTab = ttk.Frame(tabControl)
         deckCheckerTab = ttk.Frame(tabControl)
         reverseDomainTab = ttk.Frame(tabControl) 
+        formatConverterTab = ttk.Frame(tabControl) 
 
         tabControl.add(domainGeneratorTab, text="Domain Generator")
         tabControl.add(deckCheckerTab, text="Deck Validator")
         tabControl.add(reverseDomainTab, text="Reverse Domain Searcher")
+        tabControl.add(formatConverterTab, text="Format Converter")
         tabControl.pack(expand = 1, fill ="both") 
 
         # Domain Generator
@@ -42,6 +45,10 @@ class GraphicalUserInterface:
         # Reverse Domain
         reverseDomainClass = ReverseDomainGUI()
         reverseDomainClass.Tab(reverseDomainTab)
+
+        # Format Converter
+        formatConverterClass = FormatConverterGUI()
+        formatConverterClass.Tab(formatConverterTab)
 
         frame.mainloop()
         

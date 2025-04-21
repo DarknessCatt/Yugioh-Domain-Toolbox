@@ -6,11 +6,11 @@ from classes.card import Card
 from classes.domain import Domain
 from classes.databases.cardsDB import CardsDB
 from classes.databases.databaseExceptions import CardIdNotFoundError, CardNameNotFoundError
+from classes.databases.domainLookup import DomainLookup
 from classes.domainExporter import DomainExporter
+from classes.deckChecker import DeckChecker
 from classes.formatter.deckFormatter import DeckFormatter
 
-from classes.deckChecker import DeckChecker
-from classes.databases.domainLookup import DomainLookup
 
 # Class that handles the CLI interface of the program
 class CommandLineInterface:
