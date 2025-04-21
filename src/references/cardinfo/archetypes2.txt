@@ -22,7 +22,7 @@
 
 !victory 0x59 Victory by the effect of "Summer Schoolwork Successful!"
 
-#Counters from Official cards
+#Official counters
 !counter 0x29 Counter ("Balloon Lizard")
 !counter 0x20b Counter ("Forge a New Future")
 !counter 0x20c G Golem Counter
@@ -35,6 +35,10 @@
 !counter 0x213 Schoolwork Counter
 !counter 0x1208 Bunny Ear Counter
 !counter 0x1209 Deranged Counter
+
+#Pre-release counters
+!counter 0x214 Season Counter
+!counter 0x1090 Maiden Counter
 
 #Official archetypes
 !setname 0x3 Horus
@@ -87,8 +91,6 @@
 !setname 0x206 Patissciel
 !setname 0x207 Heart
 !setname 0x208 Tistina
-
-#Pre-release archetypes
 !setname 0x1a0 Toy
 !setname 0x1a1 Tenpai Dragon
 !setname 0x1a2 Sangen
@@ -126,3 +128,9 @@
 !setname 0x1c1 Yummy
 !setname 0x1c2 Apophis
 !setname 0x1c3 Serket
+!setname 0x1c4 K9
+
+#Pre-release archetypes
+!setname 0x1c5 Teleport
+!setname 0x1c6 Imprisoned Deity
+!setname 0x1c7 Artmegia

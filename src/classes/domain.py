@@ -1,4 +1,5 @@
 import re
+from array import array
 
 from classes.textParsers.archetypes import Archetypes
 from classes.textParsers.attributes import Attributes
@@ -267,5 +268,16 @@ class Domain:
     # Removes all the spells and traps from the domain.
     def RemoveSpellsAndTraps(self):
         # if the first bit of type (card.type & 1) is 1, it means the card is a monster.
-        self.cards = [card for card in self.cards if card.type & 1 == 1]
-                
+        self.cards = [card for card in self.cards if card.type & Card.MONSTER == Card.MONSTER]
+
+    # Return a full deck (Main Deck, Extra Deck, Side Deck) using the cards in this domain
+    def AsDeck(self) -> list[array]:
+        decks = [[],[], [self.DM]]
+
+        for card in self.cards:
+            if card.IsExtraDeckMonster():
+                decks[1].append(card)
+            else:
+                decks[0].append(card)
+
+        return decks

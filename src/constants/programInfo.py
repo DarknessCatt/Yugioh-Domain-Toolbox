@@ -1,2 +1,2 @@
 class ProgramInfo:
-    VERSION = "1.7.4"
+    VERSION = "1.8.0"

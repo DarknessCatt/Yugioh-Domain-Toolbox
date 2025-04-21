@@ -3,6 +3,14 @@ class Card:
     # The hex value for a single setcode (archetype) belonging to a card.
     HEX_SETCODE = int('0xffff', 0)
 
+    # Type Flags
+    MONSTER = 1
+    FUSION = 64
+    SYNCHRO = 8192
+    TOKEN = 16384
+    XYZ = 8388608
+    LINK = 67108864
+
     # Creates a new card from the data retrieved from the DB.
     def __init__(self, data) -> None:
         # Order of values depend on the values retrieve, so any changes here
@@ -34,5 +42,10 @@ class Card:
     
     # Returns if this card is a (non-token) monster
     def IsMonster(self) -> bool:
-        # & 1 means it's a monster and & 16384 a token.
-        return self.type & 1 == 1 and self.type & 16384 == 0
+        return self.type & Card.MONSTER == Card.MONSTER and self.type & Card.TOKEN == 0
+    
+    def IsExtraDeckMonster(self) -> bool:
+        return self.type & Card.MONSTER == Card.MONSTER and self.type & (Card.FUSION | Card.SYNCHRO | Card.XYZ | Card.LINK) != 0
+
+    def __str__(self) -> str:
+        return f"Card({self.name})"
