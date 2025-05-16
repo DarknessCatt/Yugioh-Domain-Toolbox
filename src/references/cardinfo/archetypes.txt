@@ -728,6 +728,7 @@ any line that doesn't start with the above keywords is ignored
 !system 12122 Failed to launch windbot
 !system 12123 Save card names in deck files
 !system 12124 Automatically choose RPS at duel start
+!system 12125 Audio backend
 #Skill characters
 !system 2100 Yami Yugi
 !system 2101 Ishizu
@@ -1396,7 +1397,7 @@ any line that doesn't start with the above keywords is ignored
 !setname 0xfd World Chalice
 !setname 0xfe World Legacy
 !setname 0xff Clear Wing
-!setname 0x100 Bonding -
+!setname 0x100 Bonding
 !setname 0x101 Code Talker
 !setname 0x102 Rokket
 !setname 0x103 Altergeist

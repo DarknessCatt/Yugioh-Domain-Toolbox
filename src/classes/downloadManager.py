@@ -1,5 +1,6 @@
 import os
 import requests
+import time
 
 from datetime import datetime, timezone, timedelta
 from constants.urlReference import URLs
@@ -20,6 +21,8 @@ class DownloadManager:
     MERGED_CDB_PREFIX = 'merged_'
     CARDS_CDB = "cards.cdb"
     RELEASE_CDB = "release-"
+
+    MAX_RETRIES = 5
 
     # Checks if the reference folder (where all data is stored)
     # exists or not.
@@ -88,6 +91,22 @@ class DownloadManager:
         
         return False
 
+    # Tries to download a file and performs up to MAX_RETRIES in case it fails
+    @staticmethod
+    def DownloadFileWithRetry(file, url : str) -> None:
+        for tryNum in range(DownloadManager.MAX_RETRIES):
+            r = requests.get(url)
+            if(r.ok):
+                file.write(r.content)
+                file.seek(0)
+                time.sleep(2) # So GitHub doesn't get mad at us after downloading something.
+                return
+            else:
+                print(f"Failed to download [{url}] -> [{r.reason}]. That was attempt {tryNum + 1}.")
+                time.sleep(5 + 3 * tryNum)
+            
+        print(f"Failed to download [{url}]. Max attempts reached, skipping.")
+
     @staticmethod
     # (Re)Downloads all files needed.
     def DownloadFiles() -> None:
@@ -125,9 +144,7 @@ class DownloadManager:
             updated = True
             print("Updating attributes and types.")
             with open(attrRacesFile, "wb") as f:
-                r = requests.get(URLs.ATTRIBUTES_AND_RACES)
-                f.write(r.content)
-                f.seek(0)
+                DownloadManager.DownloadFileWithRetry(f, URLs.ATTRIBUTES_AND_RACES)
             
         # Download the archetypes files
         archFile = os.path.join(cardInfoFolder, DownloadManager.ARCHETYPES_FILENAME)
@@ -138,9 +155,7 @@ class DownloadManager:
             updated = True
             print("Updating archetypes.")
             with open(archFile, "wb") as f:
-                r = requests.get(URLs.ARCHETYPES)
-                f.write(r.content)
-                f.seek(0)
+                DownloadManager.DownloadFileWithRetry(f, URLs.ARCHETYPES)
         
         preArchFile = os.path.join(cardInfoFolder, DownloadManager.PRE_ARCHETYPES_FILENAME)
         if(not os.path.isfile(preArchFile) 
@@ -150,9 +165,7 @@ class DownloadManager:
             updated = True
             print("Updating pre-release archetypes.")
             with open(preArchFile, "wb") as f:
-                r = requests.get(URLs.PRE_ARCHETYPES)
-                f.write(r.content)
-                f.seek(0)
+                DownloadManager.DownloadFileWithRetry(f, URLs.PRE_ARCHETYPES)
         
         # Download all the cdbs files
         mergedCDBPath = DownloadManager.GetMergedCDBPath()
@@ -167,9 +180,7 @@ class DownloadManager:
 
             for file in DownloadManager.GetCdbsForDownload():
                 with open(os.path.join(cdbFolder, file[0]), "wb") as f:
-                    r = requests.get(file[1])
-                    f.write(r.content)
-                    f.seek(0)
+                    DownloadManager.DownloadFileWithRetry(f, file[1])
     
         # Update the download information file with the last date updated
         if(shouldCheckForUpdate or updated):
