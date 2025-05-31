@@ -32,23 +32,23 @@ class CardsDB:
             raise Warning("This class is a Singleton!")
 
         CardsDB._instance = self
+        self.db = None
+        self.cursor = None
 
         print("Setting up card database.")
 
-        mergedCdbPath = DownloadManager.GetMergedCDBPath()
-        CardsDB.UpdateDBs()
-
-        self.db = sqlite3.connect(mergedCdbPath)
-        self.cursor = self.db.cursor()
-
+        self.UpdateDBs()
+        self.OpenDB()
+        
         print("Done.\n")
 
 
     # Merges all CDB files into a single database.
     # Used since some pre-release cards are in separate files.
-    @staticmethod
-    def UpdateDBs() -> None:
+    def UpdateDBs(self) -> None:
         print("Merging all CDBs into a single file.")
+
+        self.CloseDB()
 
         # Since the cards.cdb is always the biggest, we will use it as a base
         initial_db_file = DownloadManager.CARDS_CDB
@@ -109,6 +109,14 @@ class CardsDB:
                 os.path.join(DownloadManager.GetCdbFolder(), DownloadManager.CARDS_CDB),
                 DownloadManager.GetMergedCDBPath()
             )
+        
+        self.OpenDB()
+
+    def OpenDB(self) -> None:
+        if(self.db == None):
+            mergedCdbPath = DownloadManager.GetMergedCDBPath()
+            self.db = sqlite3.connect(mergedCdbPath)
+            self.cursor = self.db.cursor()
 
     # Closes the db, if any.
     def CloseDB(self) -> None:

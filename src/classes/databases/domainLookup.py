@@ -52,6 +52,17 @@ class DomainLookup:
         self.UpdateDB()
         print("Done.\n")
 
+    def OpenDB(self) -> None:
+        if(self.db is None):
+            lookupFolder = DownloadManager.GetLookupFolder()
+            lookupPath = os.path.join(lookupFolder, DomainLookup.LOOKUP_FILE)
+            self.db = sqlite3.connect(lookupPath)
+    
+    def CloseDB(self) -> None:
+        if(self.db is not None):
+            self.db.close()
+            self.db = None
+
     @staticmethod
     def CreateDB(path : str) -> None:
         db = sqlite3.connect(path)
@@ -121,8 +132,14 @@ class DomainLookup:
 
     # Updates the DB by adding missing DMs' information.
     def UpdateDB(self) -> None:
+        self.CloseDB()
+
+        lookupFolder = DownloadManager.GetLookupFolder()
+        lookupPath = os.path.join(lookupFolder, DomainLookup.LOOKUP_FILE)
+        db = sqlite3.connect(lookupPath)
+        cursor = db.cursor()
+
         all_monsters = set(CardsDB.Instance().GetAllMonsterIds())
-        cursor = self.db.cursor()
         lookup_monsters = set(cursor.execute("Select id FROM {}".format(DomainLookup.DM_TABLE)).fetchall())
 
         # Here we compare all the DMs in the CardCDB with all the DMs in the Lookup.
@@ -154,31 +171,29 @@ class DomainLookup:
             for p in processes:
                 p.join()
 
-            self.AddDomains(allDMs)
+            insert_master = "INSERT OR IGNORE INTO {}(id) VALUES (?);".format(DomainLookup.DM_TABLE)
+            insert_relation = "INSERT OR IGNORE INTO {relation} ({master}, {relation}) VALUES (?,?);"
 
-    # Adds a new domain to the database.
-    def AddDomains(self, domains : list[Domain]) -> None:
-        insert_master = "INSERT OR IGNORE INTO {}(id) VALUES (?);".format(DomainLookup.DM_TABLE)
-        insert_relation = "INSERT OR IGNORE INTO {relation} ({master}, {relation}) VALUES (?,?);"
+            for domain in allDMs:
+                cursor.execute(insert_master, (domain.DM.id,))
 
-        cursor = self.db.cursor()
-        for domain in domains:
-            cursor.execute(insert_master, (domain.DM.id,))
+                for attr in domain.attributes:
+                    cursor.execute(insert_relation.format(master=DomainLookup.DM_TABLE, relation=DomainLookup.ATTR_TABLE), (domain.DM.id, attr,))
 
-            for attr in domain.attributes:
-                cursor.execute(insert_relation.format(master=DomainLookup.DM_TABLE, relation=DomainLookup.ATTR_TABLE), (domain.DM.id, attr,))
+                for race in domain.races:
+                    cursor.execute(insert_relation.format(master=DomainLookup.DM_TABLE, relation=DomainLookup.RACE_TABLE), (domain.DM.id, race,))
+                
+                for arch in domain.setcodes:
+                    cursor.execute(insert_relation.format(master=DomainLookup.DM_TABLE, relation=DomainLookup.ARCH_TABLE), (domain.DM.id, arch,))
+                
+                for mention in domain.namedCards:
+                    cursor.execute(insert_relation.format(master=DomainLookup.DM_TABLE, relation=DomainLookup.QUOT_TABLE), (domain.DM.id, mention,))
 
-            for race in domain.races:
-                cursor.execute(insert_relation.format(master=DomainLookup.DM_TABLE, relation=DomainLookup.RACE_TABLE), (domain.DM.id, race,))
-            
-            for arch in domain.setcodes:
-                cursor.execute(insert_relation.format(master=DomainLookup.DM_TABLE, relation=DomainLookup.ARCH_TABLE), (domain.DM.id, arch,))
-            
-            for mention in domain.namedCards:
-                cursor.execute(insert_relation.format(master=DomainLookup.DM_TABLE, relation=DomainLookup.QUOT_TABLE), (domain.DM.id, mention,))
-            
+            db.commit()
+
         cursor.close()
-        self.db.commit()
+        db.close()
+        self.OpenDB()
 
     # Returns all DMs that have the given monster card in their domain.
     def FilterMonster(self, monster : Card):
