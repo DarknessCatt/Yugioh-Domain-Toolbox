@@ -9,9 +9,9 @@ class Races(TextParser):
     DIVINE = "divine"
 
     # The header of the section containing the types.
-    HEADER = "//Races\n"
+    HEADER = "/\* Monster Races \*/\n"
     # The line that describes the format of each type entry in the section.
-    PARSE_LINE = "#define RACE_([\\w]+)\\s+(\\S+)"
+    PARSE_LINE = "#define RACE_([\\w]+)\\s+(0x\\S+)"
 
     _instance = None
 
@@ -48,7 +48,7 @@ class Races(TextParser):
                 updateNameHex,
                 updateHexName
             )
-        
+    
         updateNameHex = {k.lower():int(v, 0) for k,v in updateNameHex.items()}
         updateHexName = {int(k, 0):v.lower() for k,v in updateHexName.items()}
 

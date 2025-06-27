@@ -1,13 +1,21 @@
+#Victory Reasons
+!victory 0x5 MSG_RETRY. Bad response from the client
+!victory 0x6 Core crash
+!victory 0x5a Victory by the rules of "Duelist Kingdom"
+
+#Official counters
+!counter 0x214 Season Counter
 
 #Pre-release counters
-!counter 0x214 Season Counter
 !counter 0x1090 Maiden Counter
 
 #Official archetypes
 !setname 0x100 Bonding
-
-#Pre-release archetypes
 !setname 0x1c5 Teleport
 !setname 0x1c6 Imprisoned Deity
 !setname 0x1c7 Artmegia
+
+#Pre-release archetypes
 !setname 0x1c8 Doom King
+!setname 0x1c9 Magnifistorm
+!setname 0x1ca R.B.
