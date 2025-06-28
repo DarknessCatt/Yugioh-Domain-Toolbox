@@ -9,9 +9,9 @@ class Attributes(TextParser):
     DIVINE = "divine"
 
     # The header of the section containing the attributes.
-    HEADER = "//Attributes\n"
+    HEADER = "/\* Attributes \*/\n"
     # The line that describes the format of each attribute entry in the section.
-    PARSE_LINE = "#define ATTRIBUTE_([\\w]+)\\s+(\\S+)"
+    PARSE_LINE = "#define ATTRIBUTE_([\\w]+)\\s+(0x\\S+)"
 
     _instance = None
 

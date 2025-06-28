@@ -60,6 +60,18 @@ class DownloadManager:
     def GetCdbsForDownload() -> list:
         files = []
         cdbInfo = requests.get(URLs.BABEL_CDB).json()
+
+        if(cdbInfo is None or len(cdbInfo) == 0):
+            print("Couldn't download file from " + URL + ".")
+            return files
+
+        # If it contains "message", it means it returned this:
+            # {'message': "API rate limit exceeded for IP. 
+            # (But here's the good news: Authenticated requests get a higher rate limit. Check out the documentation for more details.)",
+            # 'documentation_url': 'https://docs.github.com/rest/overview/resources-in-the-rest-api#rate-limiting'}
+        if("message" in cdbInfo):
+            return files
+
         for info in cdbInfo:
             fileName = info["name"]
             if(fileName == DownloadManager.CARDS_CDB or fileName.startswith(DownloadManager.RELEASE_CDB)):
@@ -109,7 +121,7 @@ class DownloadManager:
 
     @staticmethod
     # (Re)Downloads all files needed.
-    def DownloadFiles() -> None:
+    def DownloadFiles() -> bool:
         print("Checking for updates...")
 
         # Make the dirs
@@ -189,3 +201,4 @@ class DownloadManager:
                 f.seek(0)
 
         print("Done.\n")
+        return updated
