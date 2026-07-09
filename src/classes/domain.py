@@ -11,71 +11,6 @@ from classes.databases.databaseExceptions import CardNameNotFoundError
 
 # A Deck masters domain, including information as well as the cards themselves.
 class Domain:
-
-    # In the cards cdb, run:
-    # select '"' || replace(texts.name,'"','\"') || '",' as 'Name' from texts where texts.name LIKE '%"%' order by texts.name;
-    QUOTE_CARDS = [
-        "\"A\" Cell Breeding Device",
-        "\"A\" Cell Incubator",
-        "\"A\" Cell Recombination Device",
-        "\"A\" Cell Scatter Burst",
-        "\"Infernoble Arms - Almace\"",
-        "\"Infernoble Arms - Durendal\"",
-        "\"Infernoble Arms - Hauteclere\"",
-        "\"Infernoble Arms - Joyeuse\"",
-        "Confronting the \"C\"",
-        "Contact \"C\"",
-        "Corruption Cell \"A\"",
-        "Detonator Circle \"A\"",
-        "Flying \"C\"",
-        "Gigantic \"Champion\" Sargas",
-        "Interplanetary Invader \"A\"",
-        "Karakuri Barrel mdl 96 \"Shinkuro\"",
-        "Karakuri Bonze mdl 9763 \"Kunamzan\"",
-        "Karakuri Bushi mdl 6318 \"Muzanichiha\"",
-        "Karakuri Gama mdl 4624 \"Shirokunishi\"",
-        "Karakuri Komachi mdl 224 \"Ninishi\"",
-        "Karakuri Merchant mdl 177 \"Inashichi\"",
-        "Karakuri Muso mdl 818 \"Haipa\"",
-        "Karakuri Ninja mdl 339 \"Sazank\"",
-        "Karakuri Ninja mdl 7749 \"Nanashick\"",
-        "Karakuri Ninja mdl 919 \"Kuick\"",
-        "Karakuri Shogun mdl 00 \"Burei\"",
-        "Karakuri Soldier mdl 236 \"Nisamu\"",
-        "Karakuri Steel Shogun mdl 00X \"Bureido\"",
-        "Karakuri Strategist mdl 248 \"Nishipachi\"",
-        "Karakuri Super Shogun mdl 00N \"Bureibu\"",
-        "Karakuri Watchdog mdl 313 \"Saizan\"",
-        "Maxx \"C\"",
-        "Nouvelles Restaurant \"At Table\"",
-        "Otherworld - The \"A\" Zone",
-        "Retaliating \"C\"",
-        "Shiny Black \"C\"",
-        "Shiny Black \"C\" Squadder",
-        "Sneaky \"C\"",
-        "Spell Card: \"Monster Reborn\"",
-        "Spell Card: \"Soul Exchange\"",
-        "Spirit Message \"A\"",
-        "Spirit Message \"I\"",
-        "Spirit Message \"L\"",
-        "Spirit Message \"N\"",
-        "Super Armored Robot Armed Black Iron \"C\"",
-        "Therion \"Bull\" Ain",
-        "Therion \"Duke\" Yul",
-        "Therion \"Empress\" Alasia",
-        "Therion \"King\" Regulus",
-        "Therion \"Lily\" Borea",
-        "Therion \"Reaper\" Fum",
-        "World Legacy - \"World Ark\"",
-        "World Legacy - \"World Armor\"",
-        "World Legacy - \"World Chalice\"",
-        "World Legacy - \"World Crown\"",
-        "World Legacy - \"World Key\"",
-        "World Legacy - \"World Lance\"",
-        "World Legacy - \"World Shield\"",
-        "World Legacy - \"World Wand\"",
-    ]
-
     # Helper method that searchs a text for a pattern then removes the matches from the text,
     # returning both the found values as well as the text after changes.
     def CleanDesc(text: str, regex: str) -> tuple[list, str]:
@@ -98,7 +33,7 @@ class Domain:
         NOT_TREATED_AS = "\\(This card is not treated as an? (\".*?\") card.\\)"
         # Find cards with quotes in their names.
         # This is important since the next search would bug and split the quotes.
-        QUOTE_CARDS = "\"({})\"".format("|".join(self.QUOTE_CARDS))
+        QUOTE_CARDS = "\"({})\"".format("|".join(CardsDB.Instance().GetCardsWithQuotes()))
         # Finds all direct mentions (words between quotes), which can be either card names or archetypes
         MENTIONED_QUOTES = "\"(.*?)\""
         # Find all the races (types) mentioned in the desc
@@ -127,8 +62,14 @@ class Domain:
             else:
                 self.namedCards.add(mention)
 
+        namesToRemove = set()
+
         # Add archetype of named cards.
         for name in self.namedCards:
+            if(name.lower() == self.DM.name.lower()):
+                namesToRemove.add(name)
+                continue
+
             try:
                 data = CardsDB.Instance().GetCardByName(name)
                 card = Card(data)
@@ -137,7 +78,10 @@ class Domain:
                 # Trying to print something here crashes the threads,
                 # and most of the times it is not relevant since it is just something in quotes
                 # that is not a card, so just continue.
+                namesToRemove.add(name)
                 continue
+
+        self.namedCards -= namesToRemove
 
         # Add the HEXCODE of the attributes.
         for race in races:

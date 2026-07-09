@@ -42,6 +42,8 @@ class CardsDB:
         
         print("Done.\n")
 
+        self.cardsWithQuotes = None
+
 
     # Merges all CDB files into a single database.
     # Used since some pre-release cards are in separate files.
@@ -124,6 +126,17 @@ class CardsDB:
             self.cursor = None
             self.db.close()
             self.db = None
+
+    def GetCardsWithQuotes(self) -> any:
+        if(self.cardsWithQuotes is None):
+            self.cardsWithQuotes = []
+
+            query = "select name from texts where name LIKE '%\"%';"
+            data = self.cursor.execute(query).fetchall()
+            for row in data:
+                self.cardsWithQuotes.append(row[0])
+                
+        return self.cardsWithQuotes
 
     # Gets a single card's name through it's id (passcode)
     def GetNameById(self, id: int) -> str:
