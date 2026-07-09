@@ -4,18 +4,59 @@
 !victory 0x5a Victory by the rules of "Duelist Kingdom"
 
 #Official counters
+!counter 0x200 Counter ("Soul Pendulum")
 !counter 0x214 Season Counter
+!counter 0x215 C Counter
+!counter 0x216 Dish Counter
+!counter 0x1090 Maiden Counter
+!counter 0x217 E.C. Counter
+!counter 0x218 T Counter
+!counter 0x219 Full Moon Counter
+!counter 0x21a VIP Counter
 
 #Pre-release counters
-!counter 0x1090 Maiden Counter
+!counter 0x21b Counter ("Reversal Box")
+!counter 0x21c Crown Counter
+!counter 0x21d Myriad Counter
 
 #Official archetypes
+!setname 0x1066 Magnet
+!setname 0x2066 Warrior
+!setname 0x3066 Magnet Warrior
+!setname 0x6066 Symphonic Warrior
+!setname 0xb066 Magnet Warrior Sigma
+!setname 0x8a Traptrix
 !setname 0x100 Bonding
+!setname 0x1145 Sacred Beast
+!setname 0x1c0 Dracotail
 !setname 0x1c5 Teleport
-!setname 0x1c6 Imprisoned Deity
-!setname 0x1c7 Artmegia
+!setname 0x1c6 Power Patron
+!setname 0x1c7 Artmage
+!setname 0x1ca R.B.
+!setname 0x1c8 Doom King
+!setname 0x1c9 Radiant Typhoon
+!setname 0x1cb DoomZ
+!setname 0x1cc Hecahands
+!setname 0x1cd Enneacraft
+!setname 0x1ce Kewl Tune
+!setname 0x1cf Ecclesia
+!setname 0x1d0 Elfnote
+!setname 0x1d1 End of the World
+!setname 0x1d2 Fairy Tail
+!setname 0x1d3 Clown Crew
+!setname 0x1d4 GMX
+!setname 0x8048 Number 99
+!setname 0x1d5 Dark Tuner
+!setname 0x1d6 Blitzclique
+!setname 0x1d7 Theorealize
+!setname 0x1d8 Aleister
 
 #Pre-release archetypes
-!setname 0x1c8 Doom King
-!setname 0x1c9 Magnifistorm
-!setname 0x1ca R.B.
+!setname 0x1d9 White Knight|White Night
+!setname 0x1da Daedalus
+!setname 0x1db Asutra
+!setname 0x1dc Angelechy
+
+#Anime/manga archetypes
+!setname 0x2530 Masked Knight
+!setname 0x4016 Solidroid

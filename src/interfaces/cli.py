@@ -90,6 +90,7 @@ class CommandLineInterface:
 
                     data = DomainLookup.Instance().GetDomain(card)
                     domain = Domain.GenerateFromData(card, data)
+                    #domain = Domain.GenerateFromCard(card)
                     print(domain)
                     print("")
                     return domain
