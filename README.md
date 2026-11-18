@@ -9,4 +9,4 @@ This readme is still work-in-progress, but most classes should be sufficiently c
 Contains the source files (.py) for the program.
 
 ## tools
-Contains the Resource Hacker application, used for changing the icon of the generated exe.
+Contains the Resource Hacker or [Resource Cracker](https://www.pelock.com/products/resource-cracker) application, used for changing the icon of the generated exe.
